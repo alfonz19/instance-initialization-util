@@ -15,7 +15,7 @@ public class Main {
                 .initRandomlyFromRange(ToInit::getInitFromRange, 1, 5)
                 .initRandomlyFromRange(ToInit::getInitFromRange, 1, 5)
 //                .initRandomlyFromRange(ToInit::getSomeStringValue, 1, 5) invalid!
-                .set(ToInit::getSomeStringValue, "abc")
+                .setValue(ToInit::getSomeStringValue, "abc")
 
                 .initCollection(ToInit::getAssociatedClassList).usingItemSupplier(index->new AssociatedClass()).toSize(3)
                 .initCollection(ToInit::getAssociatedClassList).usingItemSupplier(AssociatedClass::new).toSize(3, 10)

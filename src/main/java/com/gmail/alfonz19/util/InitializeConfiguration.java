@@ -10,11 +10,11 @@ public class InitializeConfiguration<T> {
     private final Supplier<T> instanceSupplier;
 
 
-    public <K> CollectionInitializerConfiguration<T, K> initCollection(Function<T, Collection<K>> getAssociatedClassList) {
+    public <K> CollectionInitializerConfiguration<InitializeConfiguration<T>, K> initCollection(Function<T, Collection<K>> getAssociatedClassList) {
         return new CollectionInitializerConfiguration<>(this);
     }
 
-    public <K> InitializeConfiguration<T> set(Function<T, K> f, K value) {
+    public <K> InitializeConfiguration<T> setValue(Function<T, K> f, K value) {
         return null;
     }
 
