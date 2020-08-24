@@ -1,9 +1,23 @@
 package com.gmail.alfonz19.util.to.testing;
 
-import lombok.Data;
-
-@Data
+//@Data //TODO MMUCHA: lombok
 public class AssociatedClass {
     int a;
     int b;
+
+    public int getA() {
+        return a;
+    }
+
+    public void setA(int a) {
+        this.a = a;
+    }
+
+    public int getB() {
+        return b;
+    }
+
+    public void setB(int b) {
+        this.b = b;
+    }
 }

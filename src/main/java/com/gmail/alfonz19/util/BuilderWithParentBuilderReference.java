@@ -1,10 +1,11 @@
 package com.gmail.alfonz19.util;
 
-import lombok.Getter;
-
 public abstract class BuilderWithParentBuilderReference<PARENT_BUILDER> {
-    @Getter
     private PARENT_BUILDER parentBuilder;
+
+    public PARENT_BUILDER getParentBuilder() {//TODO MMUCHA: lombok.
+        return parentBuilder;
+    }
 
     protected BuilderWithParentBuilderReference(PARENT_BUILDER parentBuilder) {
         this.parentBuilder = parentBuilder;
