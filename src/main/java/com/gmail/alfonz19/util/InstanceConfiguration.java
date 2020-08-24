@@ -5,42 +5,34 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-@SuppressWarnings("squid:S119")//type variables
-public class InstanceConfiguration<SOURCE_INSTANCE> {
+@SuppressWarnings({"squid:S119", "squid:S1172", "unused"})//type variables, unused method parameters, unused constructs.
+public abstract class InstanceConfiguration<SOURCE_INSTANCE, SELF_TYPE extends InstanceConfiguration<SOURCE_INSTANCE, SELF_TYPE>> {
 
-
-    tady je potřeba udělat stejně root type a nested type + self bounding generics.
-
-
-    private final Supplier<SOURCE_INSTANCE> instanceSupplier;
-
-    public <ITEM_TYPE, COLLECTION_TYPE extends Collection<ITEM_TYPE>, GETTER_RETURN_TYPE>
-    NestedCollectionConfiguration<ITEM_TYPE, COLLECTION_TYPE, InstanceConfiguration<SOURCE_INSTANCE>> initCollection(Class<ITEM_TYPE> itemType,
-                                                                                                                     Supplier<COLLECTION_TYPE> collectionSupplier,
-                                                                                                                     Function<SOURCE_INSTANCE, Collection<GETTER_RETURN_TYPE>> getterSelector) {
-        return new NestedCollectionConfiguration<>(itemType, collectionSupplier, this);
-    }
-
-    public <K> InstanceConfiguration<SOURCE_INSTANCE> setValue(Function<SOURCE_INSTANCE, K> f, K value) {
-        return this;
-    }
-
-    public <K extends Number> InstanceConfiguration<SOURCE_INSTANCE> initRandomlyFromRange(Function<SOURCE_INSTANCE, K> c, int i, int i1) {
-        return this;
-    }
-
-    @SafeVarargs
-    public final InstanceConfiguration<SOURCE_INSTANCE> initRandomly(Consumer<SOURCE_INSTANCE> ... c ) {  //replace with something like getter selector
-        return this;
-    }
-
-    //------------------------
+    protected final Supplier<SOURCE_INSTANCE> instanceSupplier;
 
     public InstanceConfiguration(Supplier<SOURCE_INSTANCE> instanceSupplier) {
         this.instanceSupplier = instanceSupplier;
     }
 
-    public SOURCE_INSTANCE create() {
-        return instanceSupplier.get();
+    protected abstract SELF_TYPE getSelf();
+
+    public <ITEM_TYPE, COLLECTION_TYPE extends Collection<ITEM_TYPE>, GETTER_RETURN_TYPE>
+    NestedCollectionConfiguration<ITEM_TYPE, COLLECTION_TYPE, InstanceConfiguration<SOURCE_INSTANCE, SELF_TYPE>> initCollection(Class<ITEM_TYPE> itemType,
+                                                                                                                     Supplier<COLLECTION_TYPE> collectionSupplier,
+                                                                                                                     Function<SOURCE_INSTANCE, Collection<GETTER_RETURN_TYPE>> getterSelector) {
+        return new NestedCollectionConfiguration<>(itemType, collectionSupplier, getSelf());
+    }
+
+    public <K> SELF_TYPE setValue(Function<SOURCE_INSTANCE, K> f, K value) {
+        return getSelf();
+    }
+
+    public <K extends Number> SELF_TYPE initRandomlyFromRange(Function<SOURCE_INSTANCE, K> c, int i, int i1) {
+        return getSelf();
+    }
+
+    @SafeVarargs
+    public final SELF_TYPE initRandomly(Consumer<SOURCE_INSTANCE> ... c ) {  //replace with something like getter selector
+        return getSelf();
     }
 }

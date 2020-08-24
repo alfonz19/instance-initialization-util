@@ -4,19 +4,13 @@ import com.gmail.alfonz19.util.to.testing.AssociatedClass;
 import com.gmail.alfonz19.util.to.testing.ToInit;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.function.Supplier;
 
+//type variables, unused method parameters, unused constructs, unused result of method call
+@SuppressWarnings({"squid:S119", "squid:S1172", "unused", "ResultOfMethodCallIgnored"})
 public class Main {
-//    public static <T> T list(){
-//        return new ArrayList();
-//    }
 
     public static void main(String[] args) {
-
-//        List<AssociatedClass> itemType = new LinkedList<>();
 
         ToInit initialized = Initialize.instance(ToInit::new)
                 .initRandomly(ToInit::getInitRandomly, ToInit::getInitRandomly2)
@@ -28,9 +22,13 @@ public class Main {
                 .initCollection(AssociatedClass.class, ArrayList::new, ToInit::getAssociatedClassList).usingItemSupplier(index->new AssociatedClass()).toSize(3)
                 .initCollection(AssociatedClass.class, ArrayList::new, ToInit::getAssociatedClassList).usingItemSupplier(AssociatedClass::new).toSize(3, 10)
 
+                .initRandomly(ToInit::getSomeStringValue)
+
                 .initCollection(AssociatedClass.class, ArrayList::new, ToInit::getAssociatedClassList).usingItemSupplier(AssociatedClass::new)
                 .withEachItem()
                 .initRandomly(AssociatedClass::getA)
+                .create()
+                .toSize(3)
 
 //                .initCollection(List.class, ArrayList::new,ToInit::getDoubleList).usingItemSupplier((Supplier<List<AssociatedClass>>) LinkedList::new).toSize(5)
 
@@ -42,22 +40,16 @@ public class Main {
 //                    .usingItemSupplier((Supplier<List<AssociatedClass>>) ArrayList::new)
 //                    .toSize(5)
 
+                //a nuisance given by type reuse & self-bounding generics. When returning from builder to parent builder, we can be only it's most generic type, which
+                //needs to be turned into actual type by this call or by any method call of method defined on builder abstract class.
+                .getSelf()
                 .create();
 
 
         List<ToInit> collection = Initialize.collection(ToInit.class, ArrayList::new).usingItemSupplier(ToInit::new).toSize(5);
 
-        TODO    supplier dodává zdroj dat. kolekce může mít buď jednoho, anebo více náhodně či pořadím volených supplierů. Supplier určuje, co to bude za instanci a tedy
-                jak se bude inicializovat. Conditional supplier, random supplier
-
-
-        /*List<ToInit> toInits = Initialize.<ToInit>list().usingItemSupplier(ToInit::new).toSize(3);
-
-
-        CollectionConfiguration<ToInit> aa = Initialize.<ToInit>list().usingItemSupplier(ToInit::new);
-
-
-        List<Object> objects = Initialize.list().usingItemSupplier(ToInit::new).toSize(3);*/
+//        TODO    supplier dodává zdroj dat. kolekce může mít buď jednoho, anebo více náhodně či pořadím volených supplierů. Supplier určuje, co to bude za instanci a tedy
+//                jak se bude inicializovat. Conditional supplier, random supplier
 
         System.out.println(initialized);
         System.out.println(collection);

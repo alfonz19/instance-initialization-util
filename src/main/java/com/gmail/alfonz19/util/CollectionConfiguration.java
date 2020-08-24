@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-@SuppressWarnings("squid:S119")//type variables
+@SuppressWarnings({"squid:S119", "squid:S1172", "unused"})//type variables, unused method parameters, unused constructs.
 public abstract class CollectionConfiguration<ITEM_TYPE,
         COLLECTION_TYPE extends Collection<ITEM_TYPE>,
         SELF_TYPE extends CollectionConfiguration<ITEM_TYPE, COLLECTION_TYPE, SELF_TYPE>> {
@@ -22,18 +22,18 @@ public abstract class CollectionConfiguration<ITEM_TYPE,
     protected abstract SELF_TYPE getSelf();
 
 
-    SELF_TYPE usingItemSupplier(Function<Integer, ITEM_TYPE> itemSupplier) {
+    public SELF_TYPE usingItemSupplier(Function<Integer, ITEM_TYPE> itemSupplier) {
         ////TODO MMUCHA: how to get specific supplier for ith item?
         return getSelf();
     }
 
-    SELF_TYPE usingItemSupplier(Supplier<ITEM_TYPE> itemSupplier) {
+    public SELF_TYPE usingItemSupplier(Supplier<ITEM_TYPE> itemSupplier) {
         this.itemSupplier = itemSupplier;
         return getSelf();
     }
 
-    InstanceConfiguration withEachItem() {
-        return new InstanceConfiguration<>(itemSupplier);
+    public InstanceConfiguration<ITEM_TYPE, NestedInstanceConfiguration<ITEM_TYPE, SELF_TYPE>> withEachItem() {
+        return new NestedInstanceConfiguration<>(itemSupplier, getSelf());
     }
 
     //-----------

@@ -6,17 +6,17 @@ package com.gmail.alfonz19.util;
 import java.util.Collection;
 import java.util.function.Supplier;
 
-@SuppressWarnings("squid:S119")//type variables
+@SuppressWarnings({"squid:S119", "squid:S1172", "unused"})//type variables, unused method parameters, unused constructs.
 //@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Initialize {
 
     private  Initialize() { }//TODO MMUCHA: lombok.
 
-    public static <T> InstanceConfiguration<T> instance(Supplier<T> instanceSupplier) {
-        return new InstanceConfiguration<>(instanceSupplier);
+    public static <T> RootInstanceConfiguration<T> instance(Supplier<T> instanceSupplier) {
+        return new RootInstanceConfiguration<>(instanceSupplier);
     }
 
-    public static <T> InstanceConfiguration<T> instance(Class<T> instance) {
+    public static <T> RootInstanceConfiguration<T> instance(Class<T> instance) {
         return instance(()->{
             try {
                 return instance.newInstance();
