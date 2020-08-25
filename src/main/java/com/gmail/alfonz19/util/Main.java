@@ -1,5 +1,7 @@
 package com.gmail.alfonz19.util;
 
+import com.gmail.alfonz19.util.attempt2.CollectionConfiguration2;
+import com.gmail.alfonz19.util.attempt2.CollectionItemsConfiguration;
 import com.gmail.alfonz19.util.to.testing.AssociatedClass;
 import com.gmail.alfonz19.util.to.testing.ToInit;
 
@@ -48,11 +50,36 @@ public class Main {
 
         List<ToInit> collection = Initialize.collection(ToInit.class, ArrayList::new).usingItemSupplier(ToInit::new).toSize(5);
 
+
+        CollectionConfiguration2<ArrayList<I>> s1 = Initialize.list(ArrayList::new);
+
+
+        CollectionItemsConfiguration<A> s2 = s1.usingItemSupplier(A::new);
+
+        List<I> i = s2.withEachItem().beingNull();
+
+
 //        TODO    supplier dodává zdroj dat. kolekce může mít buď jednoho, anebo více náhodně či pořadím volených supplierů. Supplier určuje, co to bude za instanci a tedy
 //                jak se bude inicializovat. Conditional supplier, random supplier
 
         System.out.println(initialized);
         System.out.println(collection);
+    }
+
+    public static interface I {
+        void test();
+    }
+
+    public static class A implements I {
+        @Override
+        public void test() {
+        }
+    }
+
+    public static class B implements I {
+        @Override
+        public void test() {
+        }
     }
 
 }

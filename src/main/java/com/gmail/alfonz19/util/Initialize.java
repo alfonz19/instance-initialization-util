@@ -3,6 +3,8 @@ package com.gmail.alfonz19.util;
 //import lombok.AccessLevel;
 //import lombok.NoArgsConstructor;
 
+import com.gmail.alfonz19.util.attempt2.CollectionConfiguration2;
+
 import java.util.Collection;
 import java.util.function.Supplier;
 
@@ -31,13 +33,7 @@ public class Initialize {
         return new RootCollectionConfiguration<>(clazz, collectionSupplier);
     }
 
-
-
-//    public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE> set() {
-//        return new CollectionConfiguration<ITEM_TYPE>(HashSet::new);
-//    }
-
-//    public static <T> RootCollectionConfiguration<List<T>, T> list() {
-//        return new RootCollectionConfiguration<>();
-//    }
+    public static <COLLECTION_TYPE> CollectionConfiguration2<COLLECTION_TYPE> list(Supplier<COLLECTION_TYPE> collectionSupplier) {
+        return new CollectionConfiguration2<>();
+    }
 }

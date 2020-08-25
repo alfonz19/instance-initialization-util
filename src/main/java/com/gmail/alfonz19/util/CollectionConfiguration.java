@@ -32,7 +32,7 @@ public abstract class CollectionConfiguration<ITEM_TYPE,
         return getSelf();
     }
 
-    public InstanceConfiguration<ITEM_TYPE, NestedInstanceConfiguration<ITEM_TYPE, SELF_TYPE>> withEachItem() {
+    public InstanceConfiguration<ITEM_TYPE, NestedInstanceConfiguration<ITEM_TYPE, SELF_TYPE>> withEachItem() {//TODO MMUCHA: nested?
         return new NestedInstanceConfiguration<>(itemSupplier, getSelf());
     }
 
