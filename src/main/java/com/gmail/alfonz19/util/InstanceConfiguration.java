@@ -1,6 +1,10 @@
 package com.gmail.alfonz19.util;
 
+import com.gmail.alfonz19.util.to.testing.ToInit;
+
 import java.util.Collection;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -31,8 +35,45 @@ public abstract class InstanceConfiguration<SOURCE_INSTANCE, SELF_TYPE extends I
         return getSelf();
     }
 
+    public <K extends Number> SELF_TYPE initRandomlyFromRange(Function<SOURCE_INSTANCE, K> c, int i, int i1, BiFunction<PathContext, K, K> contextModifier) {
+        return getSelf();
+    }
+
+    public SELF_TYPE initRandomly(Function<SOURCE_INSTANCE, String> c) {
+        return getSelf();
+    }
+
+    public SELF_TYPE initRandomly(Function<SOURCE_INSTANCE, String> stringFieldSelector, BiFunction<PathContext, String, String> contextModifier) {
+        return getSelf();
+    }
+
     @SafeVarargs
     public final SELF_TYPE initRandomly(Consumer<SOURCE_INSTANCE> ... c ) {  //replace with something like getter selector
         return getSelf();
+    }
+
+    public final <K> SELF_TYPE referingToFieldUpContextPath(Function<SOURCE_INSTANCE, K> stringFieldSelector, int levelsUp) {
+        return getSelf();
+    }
+
+    public final <K, L> SELF_TYPE referingToFieldUpContextPath(Function<SOURCE_INSTANCE, K> stringFieldSelector, int levelsUp, Class<L> expectedTypeOfUpNode, Function<L, K> selector) {
+        return getSelf();
+    }
+
+    public final SELF_TYPE withPathContext(BiConsumer<SELF_TYPE, PathContext> withPathContext) {
+        withPathContext.accept(getSelf(), new PathContext());
+        return getSelf();
+    }
+
+    public static class PathContext {
+        private String path;
+
+        public String getPath() {
+            return path;
+        }
+
+        public void setPath(String path) {
+            this.path = path;
+        }
     }
 }

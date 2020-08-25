@@ -12,6 +12,8 @@ public class ToInit {
     List<AssociatedClass> associatedClassList;
     List<List<AssociatedClass>> doubleList;
 
+    ToInit anotherToInit;
+
     public int getInitWithConstant() {
         return initWithConstant;
     }
@@ -66,5 +68,13 @@ public class ToInit {
 
     public void setDoubleList(List<List<AssociatedClass>> doubleList) {
         this.doubleList = doubleList;
+    }
+
+    public ToInit getAnotherToInit() {
+        return anotherToInit;
+    }
+
+    public void setAnotherToInit(ToInit anotherToInit) {
+        this.anotherToInit = anotherToInit;
     }
 }

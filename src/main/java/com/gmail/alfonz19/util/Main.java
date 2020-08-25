@@ -7,6 +7,9 @@ import com.gmail.alfonz19.util.to.testing.ToInit;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 //type variables, unused method parameters, unused constructs, unused result of method call
 @SuppressWarnings({"squid:S119", "squid:S1172", "unused", "ResultOfMethodCallIgnored"})
@@ -18,8 +21,12 @@ public class Main {
                 .initRandomly(ToInit::getInitRandomly, ToInit::getInitRandomly2)
                 .initRandomlyFromRange(ToInit::getInitFromRange, 1, 5)
                 .initRandomlyFromRange(ToInit::getInitFromRange, 1, 5)
+                .withPathContext((builder, context) -> builder.setValue(ToInit::getSomeStringValue, context.getPath()+"someValue"))
 //                .initRandomlyFromRange(ToInit::getSomeStringValue, 1, 5) invalid!
                 .setValue(ToInit::getSomeStringValue, "abc")
+
+                .initRandomly(ToInit::getSomeStringValue)
+                .initRandomly(ToInit::getSomeStringValue, (pathContext, s) -> s + pathContext.getPath())
 
                 .initCollection(AssociatedClass.class, ArrayList::new, ToInit::getAssociatedClassList).usingItemSupplier(index->new AssociatedClass()).toSize(3)
                 .initCollection(AssociatedClass.class, ArrayList::new, ToInit::getAssociatedClassList).usingItemSupplier(AssociatedClass::new).toSize(3, 10)
@@ -29,6 +36,10 @@ public class Main {
                 .initCollection(AssociatedClass.class, ArrayList::new, ToInit::getAssociatedClassList).usingItemSupplier(AssociatedClass::new)
                 .withEachItem()
                 .initRandomly(AssociatedClass::getA)
+                .referingToFieldUpContextPath(AssociatedClass::getToInit, 1)
+                .referingToFieldUpContextPath(AssociatedClass::getToInit, 1, ToInit.class, ToInit::getAnotherToInit)
+
+
                 .create()
                 .toSize(3)
 
@@ -51,12 +62,12 @@ public class Main {
         List<ToInit> collection = Initialize.collection(ToInit.class, ArrayList::new).usingItemSupplier(ToInit::new).toSize(5);
 
 
-        CollectionConfiguration2<ArrayList<I>> s1 = Initialize.list(ArrayList::new);
-
-
-        CollectionItemsConfiguration<A> s2 = s1.usingItemSupplier(A::new);
-
-        List<I> i = s2.withEachItem().beingNull();
+//        CollectionConfiguration2<ArrayList<I>> s1 = Initialize.list(ArrayList::new);
+//
+//
+//        CollectionItemsConfiguration<A> s2 = s1.usingItemSupplier(A::new);
+//
+//        List<I> i = s2.withEachItem().beingNull();
 
 
 //        TODO    supplier dodává zdroj dat. kolekce může mít buď jednoho, anebo více náhodně či pořadím volených supplierů. Supplier určuje, co to bude za instanci a tedy
