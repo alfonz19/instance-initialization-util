@@ -20,8 +20,12 @@ import java.util.stream.Stream;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Generators {
 
-    public static StringInstanceGenerator randomString() {
-        return new StringInstanceGenerator();
+    public static RandomStringInstanceGenerator randomString() {
+        return new RandomStringInstanceGenerator();
+    }
+
+    public static ConstantBasedStringInstanceGenerator constantString(String initialValue) {
+        return new ConstantBasedStringInstanceGenerator(initialValue);
     }
 
     public static IntInstanceGenerator randomInt() {
@@ -80,11 +84,11 @@ public class Generators {
     }
 
     public static <T> Generator<T> constantGenerator(T value) {
-        return () -> value;
+        return path -> value;
     }
 
     public static <T> Generator<T> nullGenerator() {
-        return () -> null;
+        return path -> null;
     }
 
     public static <T> InstanceConfiguration<T> instance(Supplier<T> instanceSupplier) {
@@ -97,6 +101,29 @@ public class Generators {
 
     //an alternative to type Generators.<{TYPE}>instance({supplier})
     public static <T, K extends T> InstanceConfiguration<T> instance(Class<T>clazz, Supplier<K> instanceSupplier) {
+        return new InstanceConfiguration<>(instanceSupplier);
+    }
+
+    /**
+     * Can be an alternative to type Initialize.<{TYPE}>instance({supplier}), but namely this allows to pick up
+     * generic types declared in sample instance and use them in auto-generation based on class type. Probably only
+     * useful on root instance.
+     *
+     * If you use other creations and have instance say:
+     *
+     * <pre>
+     *     class A<T> {
+     *         T t;
+     *     }
+     * </pre>
+     *
+     * and instantiated it like: {@code A<List<List<String>> a = new A<>()} the type of {@code} would be impossible
+     * to determine, which will happen if you use method say {@link #instance(Class)}. However if you use this method
+     * and pass specially created sample instance, it will be possible to say, that {@code t} is {@code List<List<String>>}.
+     * You need to call it like this: {@code instance(new A<List<List<String>(){}, A::new);} Note: yes, the anonymous
+     * subclass is the needed trick.
+     */
+    public static <T, K extends T> InstanceConfiguration<T> instance(T sampleInstance, Supplier<K> instanceSupplier) {
         return new InstanceConfiguration<>(instanceSupplier);
     }
 

@@ -1,5 +1,6 @@
 package com.gmail.alfonz19.util.initialize.generator;
 
+import com.gmail.alfonz19.util.initialize.builder.PathContext;
 import com.gmail.alfonz19.util.initialize.exception.InitializeException;
 
 import java.util.List;
@@ -25,18 +26,25 @@ public class LimitedGenerator<T> implements Generator<T> {
     }
 
     @Override
-    public T create() {
+    public T create(PathContext pathContext) {
         if (remainingNumberOfItems == 0) {
             throw new InitializeException("Cannot generate more items");
         }
 
         remainingNumberOfItems--;
-        return generator.create();
+        return generator.create(pathContext);
     }
 
     @Override
     public List<T> create(int number) {
         return Stream.generate(this::create)
+                .limit(Math.min(number, remainingNumberOfItems))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<T> create(int number, PathContext pathContext) {
+        return Stream.generate(()-> create(pathContext))
                 .limit(Math.min(number, remainingNumberOfItems))
                 .collect(Collectors.toList());
     }

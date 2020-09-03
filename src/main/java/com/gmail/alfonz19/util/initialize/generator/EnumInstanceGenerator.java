@@ -1,5 +1,6 @@
 package com.gmail.alfonz19.util.initialize.generator;
 
+import com.gmail.alfonz19.util.initialize.builder.PathContext;
 import com.gmail.alfonz19.util.initialize.util.RandomUtil;
 
 import java.util.Arrays;
@@ -16,7 +17,7 @@ public class EnumInstanceGenerator<ENUM_CLASS, GENERATES> implements Generator<G
     }
 
     @Override
-    public GENERATES create() {
+    public GENERATES create(PathContext pathContext) {
         //TODO MMUCHA: this will produce runtime exception, try to fix but with kept possibility to assign enumerated type into iterfaces.
         return (GENERATES) RandomUtil.INSTANCE.randomFromList(selectFrom);
     }

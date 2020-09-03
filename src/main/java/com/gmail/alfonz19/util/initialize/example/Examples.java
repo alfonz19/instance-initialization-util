@@ -85,7 +85,7 @@ public class Examples {
         initialized = Generators.instance(RootDto::new)
                 .setProperty(RootDto::getSomeStringValue).to(Generators.randomString()
                         .withSize(10).addPrefix("abc")
-                        .updatedWithContext((s, pathContext) -> s + ":: " + pathContext.getPath()))
+                        .updatedWithContext((s, context) -> s + ":: " + context.getPath().getPathAsString()))
                 .create();
 
 
@@ -94,7 +94,7 @@ public class Examples {
                 .setAllPropertiesHavingType(String.class).to(
                         Generators.randomString()
                                 .withSize(10).addPrefix("abc")
-                                .updatedWithContext((s, pathContext) -> s + ":: " + pathContext.getPath()))
+                                .updatedWithContext((s, context) -> s + ":: " + context.getPath().getPathAsString()))
                 .create();
 
 

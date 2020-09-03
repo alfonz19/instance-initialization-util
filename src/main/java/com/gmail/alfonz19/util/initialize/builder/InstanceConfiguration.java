@@ -8,18 +8,20 @@ import com.gmail.alfonz19.util.initialize.util.IntrospectorCache;
 import com.gmail.alfonz19.util.initialize.util.InvocationSensor;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.TypeVariable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+@Slf4j
 @SuppressWarnings({"squid:S119", "squid:S1172", "unused"})//type variables, unused method parameters, unused constructs.
 public class InstanceConfiguration<SOURCE_INSTANCE> implements Generator<SOURCE_INSTANCE> {
 
@@ -32,12 +34,11 @@ public class InstanceConfiguration<SOURCE_INSTANCE> implements Generator<SOURCE_
         this.instanceSupplier = instanceSupplier;
         SOURCE_INSTANCE sampleInstance = instanceSupplier.get();
         sourceInstanceClazz = sampleInstance.getClass();
+
+        TypeVariable<? extends Class<?>>[] typeParameters = sourceInstanceClazz.getTypeParameters();
+
         invocationSensor = new InvocationSensor<>(sampleInstance);
     }
-
-
-
-
 
     //TODO MMUCHA: reimplement
 //    public final <K> InstanceConfiguration<SOURCE_INSTANCE> referringToFieldUpContextPath(SpecificTypePropertySelector<SOURCE_INSTANCE, K> stringFieldSelector, int levelsUp) {
@@ -55,14 +56,15 @@ public class InstanceConfiguration<SOURCE_INSTANCE> implements Generator<SOURCE_
 //        return this;
 //    }
 
-    public SOURCE_INSTANCE create() {
+    @Override
+    public SOURCE_INSTANCE create(PathContext pathContext) {
         SOURCE_INSTANCE instance = this.instanceSupplier.get();
-        applyAllInitializations(instance);
+        applyAllInitializations(instance, pathContext);
         return instance;
     }
 
-    private void applyAllInitializations(SOURCE_INSTANCE instance) {
-        this.propertyDescriptorsInitializations.forEach(initializations -> initializations.apply(instance));
+    private void applyAllInitializations(SOURCE_INSTANCE instance, PathContext pathContext) {
+        this.propertyDescriptorsInitializations.forEach(initializations -> initializations.apply(instance, pathContext));
     }
 
     private void addPropertyDescriptorsInitialization(PropertyDescriptor propertyDescriptor, Generator<?> valueGenerator) {
@@ -127,17 +129,20 @@ public class InstanceConfiguration<SOURCE_INSTANCE> implements Generator<SOURCE_
 
         //noinspection unchecked   //should be fine.
         Class<PROPERTY_TYPE> propertyType = (Class<PROPERTY_TYPE>) propertyDescriptor.getPropertyType();
-        return new EnumConfiguration<>(propertyType, this, addPropertyDescriptorInitialization(propertyDescriptor));
+        return new EnumConfiguration<>(propertyType, this,
+                valueGenerator -> addPropertyDescriptorsInitialization(propertyDescriptor, valueGenerator));
     }
 
     public <PROPERTY_TYPE> PropertyConfiguration<PROPERTY_TYPE, InstanceConfiguration<SOURCE_INSTANCE>>
     setProperty(SpecificTypePropertySelector<SOURCE_INSTANCE, PROPERTY_TYPE> propertySelector){
         PropertyDescriptor propertyDescriptor = invocationSensor.getTouchedPropertyDescriptor(propertySelector);
 
-        return new PropertyConfiguration<>(this, addPropertyDescriptorInitialization(propertyDescriptor));
+        return new PropertyConfiguration<>(this,
+                valueGenerator -> {
+                    log.debug("setting generator "+valueGenerator+" to property "+propertyDescriptor.getName());
+                    addPropertyDescriptorsInitialization(propertyDescriptor, valueGenerator);
+                });
     }
-
-
 
     public <PROPERTY_TYPE> InstanceConfiguration<SOURCE_INSTANCE> setPropertyTo(SpecificTypePropertySelector<SOURCE_INSTANCE, PROPERTY_TYPE> propertySelector, Generator<PROPERTY_TYPE> valueGenerator){
         PropertyDescriptor propertyDescriptor = invocationSensor.getTouchedPropertyDescriptor(propertySelector);
@@ -183,19 +188,18 @@ public class InstanceConfiguration<SOURCE_INSTANCE> implements Generator<SOURCE_
                         .collect(Collectors.toList())));
     }
 
-    private <K> Consumer<Generator<K>> addPropertyDescriptorInitialization(PropertyDescriptor propertyDescriptor) {
-        return valueGenerator -> addPropertyDescriptorsInitialization(propertyDescriptor, valueGenerator);
-    }
-
     @Getter
     @AllArgsConstructor
     private static class PropertyDescriptorInitialization {
         private final PropertyDescriptor propertyDescriptor;
         private final Generator<?> valueGenerator;
 
-        public void apply(Object instance) {
+        public void apply(Object instance, PathContext pathContext) {
             try {
-                propertyDescriptor.getWriteMethod().invoke(instance,valueGenerator.create());
+                PathContext subContext = pathContext.createSubPathTraversingProperty(propertyDescriptor);
+                //TODO MMUCHA: set known data!
+                Class<?> propertyType = propertyDescriptor.getPropertyType();
+                propertyDescriptor.getWriteMethod().invoke(instance,valueGenerator.create(subContext));
             } catch (IllegalAccessException| InvocationTargetException e) {
                 throw new InitializeException("Unable to use PropertyDescriptor writer method", e);
             }
