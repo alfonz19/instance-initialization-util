@@ -50,7 +50,7 @@ public class StringInstanceGenerator extends AbstractGenerator<String> {
     }
 
     @Override
-    public String create() {
+    protected String create(PathContext pathContext) {
         String result = RandomUtil.INSTANCE.randomStringFromDecimalNumbers(sizeSpecification.getRandomSizeAccordingToSpecification());
         for (UnaryOperator<String> transformation : transformations) {
             result = transformation.apply(result);

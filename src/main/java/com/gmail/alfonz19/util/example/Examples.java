@@ -82,7 +82,7 @@ public class Examples {
         initialized = initialize(instance(RootDto::new)
                 .setProperty(RootDto::getSomeStringValue).to(randomString()
                         .withSize(10).addPrefix("abc")
-                        .updatedWithContext((s, pathContext) -> s + ":: " + pathContext.getPath())));
+                        .updatedWithContext((s, context) -> s + ":: " + context.getPath().getPathAsString())));
 
 
         //set all String properties
@@ -90,7 +90,7 @@ public class Examples {
                 .setAllPropertiesHavingType(String.class).to(
                         randomString()
                                 .withSize(10).addPrefix("abc")
-                                .updatedWithContext((s, pathContext) -> s + ":: " + pathContext.getPath())));
+                                .updatedWithContext((s, context) -> s + ":: " + context.getPath().getPathAsString())));
 
 
         //initialize nested list instance: List<AssociatedClass>
