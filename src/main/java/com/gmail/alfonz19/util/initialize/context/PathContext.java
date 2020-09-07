@@ -44,9 +44,13 @@ public class PathContext {
 
     @Setter
     @Getter
-    private static class CalculatedNodeData {
+    public static class CalculatedNodeData {
         private Class<?> instanceClassType;
         //TODO MMUCHA: missing known generics types.
+
+        public CalculatedNodeData(Class<?> instanceClassType) {
+            this.instanceClassType = instanceClassType;
+        }
     }
 
 }

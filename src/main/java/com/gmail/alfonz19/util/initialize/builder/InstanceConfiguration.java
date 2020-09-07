@@ -5,6 +5,7 @@ import com.gmail.alfonz19.util.initialize.exception.InitializeException;
 import com.gmail.alfonz19.util.initialize.generator.AbstractGenerator;
 import com.gmail.alfonz19.util.initialize.generator.Generators;
 import com.gmail.alfonz19.util.initialize.generator.Initialize;
+import com.gmail.alfonz19.util.initialize.generator.RandomValueGenerator;
 import com.gmail.alfonz19.util.initialize.selector.SpecificTypePropertySelector;
 import com.gmail.alfonz19.util.initialize.util.IntrospectorCache;
 import com.gmail.alfonz19.util.initialize.util.InvocationSensor;
@@ -81,9 +82,7 @@ public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SO
     }
 
     private void verifyIfPropertyDescriptorIsAlreadyUsed(List<PropertyDescriptorInitialization> initializations) {
-        List<PropertyDescriptor> alreadySpecifiedPropertyDescriptors = propertyDescriptorsInitializations.stream()
-                .map(PropertyDescriptorInitialization::getPropertyDescriptor)
-                .collect(Collectors.toList());
+        List<PropertyDescriptor> alreadySpecifiedPropertyDescriptors = findSpecifiedDescriptors();
 
         String alreadyUsedProperties = initializations.stream()
                 .filter(e -> alreadySpecifiedPropertyDescriptors.contains(e.propertyDescriptor))
@@ -169,19 +168,45 @@ public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SO
     }
 
     public <K> PropertyConfiguration<K, InstanceConfiguration<SOURCE_INSTANCE>> setUnsetPropertiesHavingType(Class<K> classType) {
-        Collection<PropertyDescriptor> propertyDescriptorsHavingType =
-                IntrospectorCache.INSTANCE.getPropertyDescriptorsComplyingToType(sourceInstanceClazz, classType);
-
-        List<PropertyDescriptor> alreadySpecifiedPropertyDescriptors = propertyDescriptorsInitializations.stream()
-                .map(PropertyDescriptorInitialization::getPropertyDescriptor)
-                .collect(Collectors.toList());
-
-        List<PropertyDescriptor> missingPropertyDescriptors = propertyDescriptorsHavingType.stream()
-                .filter(e -> !alreadySpecifiedPropertyDescriptors.contains(e))
-                .collect(Collectors.toList());
+        List<PropertyDescriptor> missingPropertyDescriptors = findUnsetProperties(classType);
 
         return addGeneratorsToPropertyDescriptors(missingPropertyDescriptors);
     }
+
+    public InstanceConfiguration<SOURCE_INSTANCE> setUnsetPropertiesRandomlyUsingGuessedType() {
+        List<PropertyDescriptor> unsetProperties =
+                findUnsetProperties(IntrospectorCache.INSTANCE.getAllPropertyDescriptors(sourceInstanceClazz));
+
+        RandomValueGenerator valueGenerator = Generators.randomForGuessedType();
+        addPropertyDescriptorsInitializations(unsetProperties.stream()
+                .filter(valueGenerator::canGenerateValueFor)
+                .map(propertyDescriptor -> new PropertyDescriptorInitialization(propertyDescriptor, valueGenerator))
+                .collect(Collectors.toList()));
+
+        return this;
+    }
+
+    private <K> List<PropertyDescriptor> findUnsetProperties(Class<K> classType) {
+        Collection<PropertyDescriptor> propertyDescriptorsHavingType =
+                IntrospectorCache.INSTANCE.getPropertyDescriptorsComplyingToType(sourceInstanceClazz, classType);
+
+        return findUnsetProperties(propertyDescriptorsHavingType);
+    }
+
+    private List<PropertyDescriptor> findUnsetProperties(Collection<PropertyDescriptor> propertyDescriptorsHavingType) {
+        List<PropertyDescriptor> alreadySpecifiedPropertyDescriptors = findSpecifiedDescriptors();
+
+        return propertyDescriptorsHavingType.stream()
+                .filter(e -> !alreadySpecifiedPropertyDescriptors.contains(e))
+                .collect(Collectors.toList());
+    }
+
+    private List<PropertyDescriptor> findSpecifiedDescriptors() {
+        return propertyDescriptorsInitializations.stream()
+                .map(PropertyDescriptorInitialization::getPropertyDescriptor)
+                .collect(Collectors.toList());
+    }
+
 
     private <K> PropertyConfiguration<K, InstanceConfiguration<SOURCE_INSTANCE>> addGeneratorsToPropertyDescriptors(
             Collection<PropertyDescriptor> propertyDescriptors) {
@@ -209,7 +234,7 @@ public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SO
                 //TODO MMUCHA: set known data!
                 Class<?> propertyType = propertyDescriptor.getPropertyType();
 
-
+                subContext.setCalculatedNodeData(new PathContext.CalculatedNodeData(propertyType));
                 Object value = Initialize.initialize(valueGenerator, subContext);
                 propertyDescriptor.getWriteMethod().invoke(instance, value);
             } catch (IllegalAccessException| InvocationTargetException e) {

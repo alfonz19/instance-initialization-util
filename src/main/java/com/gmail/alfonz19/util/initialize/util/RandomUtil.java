@@ -1,8 +1,12 @@
 package com.gmail.alfonz19.util.initialize.util;
 
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+@Slf4j
 @SuppressWarnings("squid:S125")
 public enum RandomUtil {
     INSTANCE;
@@ -48,6 +52,16 @@ public enum RandomUtil {
 
     public <T> T randomFromList(List<T> list) {
         return list.get(intFromRange(0, list.size()));
+    }
+
+    public <T> T randomEnum(Class<T> enumClass) {
+        T[] enumConstants = enumClass.getEnumConstants();
+        if (enumConstants == null) {
+            log.error("Coding error, {} is not an enum class", enumClass);
+            return null;
+        }
+        List<T> asList = Arrays.asList(enumConstants);
+        return randomFromList(asList);
     }
 
     public String randomStringFromDecimalNumbers(int size) {
