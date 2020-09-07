@@ -1,6 +1,7 @@
 package com.gmail.alfonz19.util.initialize.builder;
 
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -44,9 +45,13 @@ public class PathContext {
 
     @Setter
     @Getter
-    private static class CalculatedNodeData {
+    public static class CalculatedNodeData {
         private Class<?> instanceClassType;
         //TODO MMUCHA: missing known generics types.
+
+        public CalculatedNodeData(Class<?> instanceClassType) {
+            this.instanceClassType = instanceClassType;
+        }
     }
 
 }

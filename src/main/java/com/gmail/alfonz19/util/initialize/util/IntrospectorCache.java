@@ -9,6 +9,7 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -75,5 +76,11 @@ public enum IntrospectorCache {
         return allPropertyDescriptors.stream()
                 .filter(e -> e.getPropertyType().isAssignableFrom(propertyDescriptorType))
                 .collect(Collectors.toList());
+    }
+
+    public Collection<PropertyDescriptor> getAllPropertyDescriptors(Class<?> classType) {
+        Collection<PropertyDescriptor> allPropertyDescriptors =
+                getMethodNameToPropertyDescriptorMap(classType).values();
+        return Collections.unmodifiableCollection(allPropertyDescriptors);
     }
 }

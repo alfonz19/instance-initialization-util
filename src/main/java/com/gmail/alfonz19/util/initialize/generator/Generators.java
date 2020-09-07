@@ -64,6 +64,10 @@ public class Generators {
         return new EnumInstanceGenerator<>(classType, classType);
     }
 
+    public static RandomValueGenerator randomForGuessedType() {
+        return new RandomValueGenerator();
+    }
+
     @SafeVarargs
     public static <T> Generator<T> roundRobinGenerator(Generator<T> ... generators) {
         return new RoundRobinGenerator<>(Arrays.asList(generators));
