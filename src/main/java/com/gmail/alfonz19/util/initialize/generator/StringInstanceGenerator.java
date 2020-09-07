@@ -9,7 +9,7 @@ import java.util.function.BiFunction;
 import java.util.function.UnaryOperator;
 
 @SuppressWarnings({"squid:S119", "squid:S1172", "unused"})//type variables, unused method parameters, unused constructs.
-public class StringInstanceGenerator implements Generator<String> {
+public class StringInstanceGenerator extends AbstractGenerator<String> {
     //TODO MMUCHA: externalize
     private static final int MAX_STRING_LENGTH = 100_000;
     //TODO MMUCHA: externalize

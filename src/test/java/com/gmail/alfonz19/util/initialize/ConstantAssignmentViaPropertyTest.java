@@ -1,6 +1,6 @@
 package com.gmail.alfonz19.util.initialize;
 
-import com.gmail.alfonz19.util.initialize.generator.Generator;
+import com.gmail.alfonz19.util.initialize.generator.AbstractGenerator;
 import com.gmail.alfonz19.util.initialize.generator.Generators;
 import com.gmail.alfonz19.util.initialize.selector.SpecificTypePropertySelector;
 import lombok.Data;
@@ -17,7 +17,7 @@ public class ConstantAssignmentViaPropertyTest extends AbstractTestSingleAndMult
     public static final SpecificTypePropertySelector<TestInstance, String> PROPERTY_SELECTOR = TestInstance::getSomeStringValue;
 
     @Override
-    protected Generator<TestInstance> createGenerator() {
+    protected AbstractGenerator<TestInstance> createGenerator() {
         return Generators.instance(TestInstance::new)
                 .setProperty(PROPERTY_SELECTOR).toValue(CONSTANT_VALUE);
     }

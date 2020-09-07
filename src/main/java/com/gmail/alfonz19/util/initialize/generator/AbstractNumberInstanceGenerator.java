@@ -1,7 +1,7 @@
 package com.gmail.alfonz19.util.initialize.generator;
 
 @SuppressWarnings("java:S119")
-abstract class AbstractNumberInstanceGenerator<T extends Number, SELF_TYPE extends AbstractNumberInstanceGenerator<T, SELF_TYPE>> implements Generator<T>{
+abstract class AbstractNumberInstanceGenerator<T extends Number, SELF_TYPE extends AbstractNumberInstanceGenerator<T, SELF_TYPE>> extends AbstractGenerator<T>{
 
     protected T typeMin;
     protected T typeMax;

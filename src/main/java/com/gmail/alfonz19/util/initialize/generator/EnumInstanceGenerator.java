@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @SuppressWarnings({"squid:S119", "squid:S1172", "unused"})//type variables, unused method parameters, unused constructs.
-public class EnumInstanceGenerator<ENUM_CLASS, GENERATES> implements Generator<GENERATES> {
+public class EnumInstanceGenerator<ENUM_CLASS, GENERATES> extends AbstractGenerator<GENERATES> {
     private final Class<ENUM_CLASS> testEnumClass;
     private List<ENUM_CLASS> selectFrom;
 

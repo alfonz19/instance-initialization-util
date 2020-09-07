@@ -1,7 +1,7 @@
 package com.gmail.alfonz19.util.initialize;
 
 import com.gmail.alfonz19.util.initialize.builder.CollectionConfiguration;
-import com.gmail.alfonz19.util.initialize.generator.Generator;
+import com.gmail.alfonz19.util.initialize.generator.AbstractGenerator;
 import com.gmail.alfonz19.util.initialize.selector.SpecificTypePropertySelector;
 import lombok.Data;
 
@@ -23,7 +23,7 @@ public class RandomEnumPropertyTest extends AbstractTestSingleAndMultipleInstanc
             PROPERTY_SELECTOR = TestInstance::getListOfEnumItems;
 
     @Override
-    protected Generator<TestInstance> createGenerator() {
+    protected AbstractGenerator<TestInstance> createGenerator() {
         return instance(TestInstance::new)
                 .setProperty(PROPERTY_SELECTOR).to(list(enumeratedType(TestEnum.class).random()));
     }

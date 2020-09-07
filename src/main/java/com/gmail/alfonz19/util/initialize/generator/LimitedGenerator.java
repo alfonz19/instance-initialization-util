@@ -4,14 +4,13 @@ import com.gmail.alfonz19.util.initialize.exception.InitializeException;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-public class LimitedGenerator<T> implements Generator<T> {
-    private final Generator<T> generator;
+public class LimitedGenerator<T> extends AbstractGenerator<T> {
+    private final AbstractGenerator<T> generator;
     private int remainingNumberOfItems;
 
-    public LimitedGenerator(int numberOfItems, Generator<T> generator) {
+    public LimitedGenerator(int numberOfItems, AbstractGenerator<T> generator) {
         if (numberOfItems < 1) {
             throw new IllegalArgumentException();
         }

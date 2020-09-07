@@ -5,7 +5,7 @@ import com.gmail.alfonz19.util.initialize.util.RandomUtil;
 import java.util.List;
 
 public class RandomlySelectedGenerator<T> extends CompositeGenerator<T> {
-    public RandomlySelectedGenerator(List<Generator<? extends T>> generators) {
+    public RandomlySelectedGenerator(List<AbstractGenerator<? extends T>> generators) {
         super(generators);
     }
 

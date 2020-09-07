@@ -1,7 +1,7 @@
 package com.gmail.alfonz19.util.initialize;
 
-import com.gmail.alfonz19.util.initialize.example.to.AssociatedClass;
-import com.gmail.alfonz19.util.initialize.generator.Generator;
+import com.gmail.alfonz19.util.example.to.AssociatedClass;
+import com.gmail.alfonz19.util.initialize.generator.AbstractGenerator;
 import com.gmail.alfonz19.util.initialize.generator.Generators;
 import com.gmail.alfonz19.util.initialize.selector.SpecificTypePropertySelector;
 import lombok.Data;
@@ -24,7 +24,7 @@ public class SettingRandomValueViaPropertyHavingListTypeTest extends AbstractTes
     public static final int MAX_SIZE = 3;
 
     @Override
-    protected Generator<RootDto> createGenerator() {
+    protected AbstractGenerator<RootDto> createGenerator() {
         return Generators.instance(RootDto::new)
                 .setProperty(PROPERTY_SELECTOR)
                 .to(Generators.list(Generators.instance(AssociatedClass.class)

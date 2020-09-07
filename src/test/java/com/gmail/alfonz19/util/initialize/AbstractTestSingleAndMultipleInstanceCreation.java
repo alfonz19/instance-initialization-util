@@ -2,7 +2,8 @@ package com.gmail.alfonz19.util.initialize;
 
 import com.gmail.alfonz19.testsupport.RepeatTest;
 import com.gmail.alfonz19.testsupport.RepeatedTestRule;
-import com.gmail.alfonz19.util.initialize.generator.Generator;
+import com.gmail.alfonz19.util.initialize.generator.AbstractGenerator;
+import com.gmail.alfonz19.util.initialize.generator.Initialize;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -24,17 +25,17 @@ public abstract class AbstractTestSingleAndMultipleInstanceCreation<T> {
     @Test
     @RepeatTest(times = NUMBER_OF_INSTANCES)
     public void testCreationOfNullValuedItemsCollection() {
-        T t = createGenerator().create();
+        T t = Initialize.initialize(createGenerator());
         assertCreatedInstance(t);
     }
 
     @Test
     public void testCreationOfNullValuedItemsCollectionCreatingMultipleInstances() {
-        List<T> testInstances = createGenerator().create(NUMBER_OF_INSTANCES);
+        List<T> testInstances = Initialize.initializeList(createGenerator(), NUMBER_OF_INSTANCES);
         assertCollectionSizeAndEachItem(testInstances, this::assertCreatedInstance);
     }
 
-    protected abstract Generator<T> createGenerator();
+    protected abstract AbstractGenerator<T> createGenerator();
 
     protected abstract void assertCreatedInstance(T t);
 

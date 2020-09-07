@@ -1,8 +1,9 @@
 package com.gmail.alfonz19.util.initialize.builder;
 
 import com.gmail.alfonz19.util.initialize.exception.InitializeException;
-import com.gmail.alfonz19.util.initialize.generator.Generator;
+import com.gmail.alfonz19.util.initialize.generator.AbstractGenerator;
 import com.gmail.alfonz19.util.initialize.generator.Generators;
+import com.gmail.alfonz19.util.initialize.generator.Initialize;
 import com.gmail.alfonz19.util.initialize.selector.SpecificTypePropertySelector;
 import com.gmail.alfonz19.util.initialize.util.IntrospectorCache;
 import com.gmail.alfonz19.util.initialize.util.InvocationSensor;
@@ -21,7 +22,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @SuppressWarnings({"squid:S119", "squid:S1172", "unused"})//type variables, unused method parameters, unused constructs.
-public class InstanceConfiguration<SOURCE_INSTANCE> implements Generator<SOURCE_INSTANCE> {
+public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SOURCE_INSTANCE> {
 
     private final Supplier<? extends SOURCE_INSTANCE> instanceSupplier;
     private final InvocationSensor<SOURCE_INSTANCE> invocationSensor;
@@ -55,7 +56,8 @@ public class InstanceConfiguration<SOURCE_INSTANCE> implements Generator<SOURCE_
 //        return this;
 //    }
 
-    public SOURCE_INSTANCE create() {
+    @Override
+    protected SOURCE_INSTANCE create() {
         SOURCE_INSTANCE instance = this.instanceSupplier.get();
         applyAllInitializations(instance);
         return instance;
@@ -65,7 +67,7 @@ public class InstanceConfiguration<SOURCE_INSTANCE> implements Generator<SOURCE_
         this.propertyDescriptorsInitializations.forEach(initializations -> initializations.apply(instance));
     }
 
-    private void addPropertyDescriptorsInitialization(PropertyDescriptor propertyDescriptor, Generator<?> valueGenerator) {
+    private void addPropertyDescriptorsInitialization(PropertyDescriptor propertyDescriptor, AbstractGenerator<?> valueGenerator) {
         addPropertyDescriptorsInitializations(Collections.singletonList(
                 new PropertyDescriptorInitialization(propertyDescriptor, valueGenerator)));
     }
@@ -139,7 +141,7 @@ public class InstanceConfiguration<SOURCE_INSTANCE> implements Generator<SOURCE_
 
 
 
-    public <PROPERTY_TYPE> InstanceConfiguration<SOURCE_INSTANCE> setPropertyTo(SpecificTypePropertySelector<SOURCE_INSTANCE, PROPERTY_TYPE> propertySelector, Generator<PROPERTY_TYPE> valueGenerator){
+    public <PROPERTY_TYPE> InstanceConfiguration<SOURCE_INSTANCE> setPropertyTo(SpecificTypePropertySelector<SOURCE_INSTANCE, PROPERTY_TYPE> propertySelector, AbstractGenerator<PROPERTY_TYPE> valueGenerator){
         PropertyDescriptor propertyDescriptor = invocationSensor.getTouchedPropertyDescriptor(propertySelector);
         addPropertyDescriptorsInitialization(propertyDescriptor, valueGenerator);
         return this;
@@ -183,7 +185,7 @@ public class InstanceConfiguration<SOURCE_INSTANCE> implements Generator<SOURCE_
                         .collect(Collectors.toList())));
     }
 
-    private <K> Consumer<Generator<K>> addPropertyDescriptorInitialization(PropertyDescriptor propertyDescriptor) {
+    private <K> Consumer<AbstractGenerator<K>> addPropertyDescriptorInitialization(PropertyDescriptor propertyDescriptor) {
         return valueGenerator -> addPropertyDescriptorsInitialization(propertyDescriptor, valueGenerator);
     }
 
@@ -191,11 +193,12 @@ public class InstanceConfiguration<SOURCE_INSTANCE> implements Generator<SOURCE_
     @AllArgsConstructor
     private static class PropertyDescriptorInitialization {
         private final PropertyDescriptor propertyDescriptor;
-        private final Generator<?> valueGenerator;
+        private final AbstractGenerator<?> valueGenerator;
 
         public void apply(Object instance) {
             try {
-                propertyDescriptor.getWriteMethod().invoke(instance,valueGenerator.create());
+                Object value = Initialize.initialize(valueGenerator);
+                propertyDescriptor.getWriteMethod().invoke(instance, value);
             } catch (IllegalAccessException| InvocationTargetException e) {
                 throw new InitializeException("Unable to use PropertyDescriptor writer method", e);
             }
