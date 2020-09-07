@@ -1,7 +1,7 @@
 package com.gmail.alfonz19.util.initialize;
 
-import com.gmail.alfonz19.util.initialize.builder.Initialize;
 import com.gmail.alfonz19.util.initialize.generator.Generator;
+import com.gmail.alfonz19.util.initialize.generator.Generators;
 import lombok.Data;
 
 import java.util.List;
@@ -17,9 +17,9 @@ public class NullCollectionItemsTest extends AbstractTestSingleAndMultipleInstan
     public static final int NUMBER_OF_ITEMS = 10;
 
     protected Generator<TestInstance> createGenerator() {
-        return Initialize.instance(TestInstance::new)
+        return Generators.instance(TestInstance::new)
                 .setProperty(TestInstance::getListWithNullValuedItems).to(
-                        Initialize.listWithNullItems(String.class).withSize(NUMBER_OF_ITEMS)
+                        Generators.listWithNullItems(String.class).withSize(NUMBER_OF_ITEMS)
                 );
     }
 

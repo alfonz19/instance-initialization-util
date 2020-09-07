@@ -1,7 +1,7 @@
 package com.gmail.alfonz19.util.initialize;
 
-import com.gmail.alfonz19.util.initialize.builder.Initialize;
 import com.gmail.alfonz19.util.initialize.generator.Generator;
+import com.gmail.alfonz19.util.initialize.generator.Generators;
 import lombok.Data;
 
 import static com.gmail.alfonz19.util.initialize.SimpleCreationTest.TestInstance;
@@ -12,7 +12,7 @@ public class SimpleCreationTest extends AbstractTestSingleAndMultipleInstanceCre
 
     @Override
     protected Generator<TestInstance> createGenerator() {
-        return Initialize.instance(TestInstance::new);
+        return Generators.instance(TestInstance::new);
     }
 
     @Override

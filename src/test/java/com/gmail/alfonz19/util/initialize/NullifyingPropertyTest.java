@@ -1,8 +1,8 @@
 package com.gmail.alfonz19.util.initialize;
 
-import com.gmail.alfonz19.util.initialize.builder.Initialize;
 import com.gmail.alfonz19.util.initialize.exception.SpecificTypePropertySelectorDoesNotDenoteProperty;
 import com.gmail.alfonz19.util.initialize.generator.Generator;
+import com.gmail.alfonz19.util.initialize.generator.Generators;
 import com.gmail.alfonz19.util.initialize.selector.SpecificTypePropertySelector;
 import lombok.Data;
 
@@ -29,7 +29,7 @@ public class NullifyingPropertyTest extends AbstractTestSingleAndMultipleInstanc
 
     @Override
     protected Generator<TestInstance> createGenerator() {
-        return Initialize.instance(TestInstance::new).nullifyProperties(PROPERTY_SELECTORS);
+        return Generators.instance(TestInstance::new).nullifyProperties(PROPERTY_SELECTORS);
     }
 
     @Override
@@ -47,7 +47,7 @@ public class NullifyingPropertyTest extends AbstractTestSingleAndMultipleInstanc
 
         expectedException.expect(SpecificTypePropertySelectorDoesNotDenoteProperty.class);
         expectedException.expectMessage("SpecificTypePropertySelector in class 'com.gmail.alfonz19.util.initialize.NullifyingPropertyTest$TestInstance' does not select property, method 'getInitializedFinalStringValue' s probably just a getter.");
-        TestInstance rootDto = Initialize.instance(TestInstance::new)
+        TestInstance rootDto = Generators.instance(TestInstance::new)
                 .nullifyProperty(propertySelector)
                 .create();
 

@@ -1,6 +1,5 @@
 package com.gmail.alfonz19.util.initialize;
 
-import com.gmail.alfonz19.util.initialize.builder.Initialize;
 import com.gmail.alfonz19.util.initialize.generator.Generator;
 import com.gmail.alfonz19.util.initialize.generator.Generators;
 import com.gmail.alfonz19.util.initialize.selector.SpecificTypePropertySelector;
@@ -18,7 +17,7 @@ public class SettingRandomValueViaPropertyTest extends AbstractTestSingleAndMult
 
     @Override
     protected Generator<TestInstance> createGenerator() {
-        return Initialize.instance(TestInstance::new)
+        return Generators.instance(TestInstance::new)
                 .setProperty(PROPERTY_SELECTOR).to(Generators.randomString().withSize(10).addPrefix("abc"));
     }
 

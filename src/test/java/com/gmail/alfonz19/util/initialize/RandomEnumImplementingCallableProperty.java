@@ -1,7 +1,6 @@
 package com.gmail.alfonz19.util.initialize;
 
 import com.gmail.alfonz19.util.initialize.builder.CollectionConfiguration;
-import com.gmail.alfonz19.util.initialize.builder.Initialize;
 import com.gmail.alfonz19.util.initialize.generator.Generator;
 import com.gmail.alfonz19.util.initialize.generator.Generators;
 import com.gmail.alfonz19.util.initialize.selector.SpecificTypePropertySelector;
@@ -14,7 +13,7 @@ import java.util.concurrent.Callable;
 import org.junit.Assert;
 
 import static com.gmail.alfonz19.util.initialize.RandomEnumImplementingCallableProperty.TestInstance;
-import static com.gmail.alfonz19.util.initialize.builder.Initialize.instance;
+import static com.gmail.alfonz19.util.initialize.generator.Generators.instance;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -26,7 +25,7 @@ public class RandomEnumImplementingCallableProperty extends AbstractTestSingleAn
     protected Generator<TestInstance> createGenerator() {
         return instance(TestInstance::new)
                 .setProperty(TestInstance::getListOfEnumItemsExposedAsCallable)
-                .to(Initialize.list(Generators.enumeratedType(TestEnum.class).random()));
+                .to(Generators.list(Generators.enumeratedType(TestEnum.class).random()));
     }
 
     @Override

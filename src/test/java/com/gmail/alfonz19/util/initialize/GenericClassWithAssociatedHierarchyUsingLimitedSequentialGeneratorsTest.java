@@ -1,6 +1,5 @@
 package com.gmail.alfonz19.util.initialize;
 
-import com.gmail.alfonz19.util.initialize.builder.Initialize;
 import com.gmail.alfonz19.util.initialize.generator.Generator;
 import com.gmail.alfonz19.util.initialize.generator.Generators;
 import com.gmail.alfonz19.util.initialize.selector.SpecificTypePropertySelector;
@@ -11,8 +10,8 @@ import java.util.List;
 
 import static com.gmail.alfonz19.util.initialize.GenericClassWithAssociatedHierarchyUsingLimitedSequentialGeneratorsTest.ParentClass;
 import static com.gmail.alfonz19.util.initialize.GenericClassWithAssociatedHierarchyUsingLimitedSequentialGeneratorsTest.TestInstance;
-import static com.gmail.alfonz19.util.initialize.builder.Initialize.instance;
-import static com.gmail.alfonz19.util.initialize.builder.Initialize.list;
+import static com.gmail.alfonz19.util.initialize.generator.Generators.instance;
+import static com.gmail.alfonz19.util.initialize.generator.Generators.list;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -34,7 +33,7 @@ public class GenericClassWithAssociatedHierarchyUsingLimitedSequentialGenerators
         //
         //So this constructs will set 2 items into field 'genericProperty', where first one will be
         //ParentClass, and second will be ChildClass.
-        return Initialize.<TestInstance<List<ParentClass>>>instance(TestInstance::new)
+        return Generators.<TestInstance<List<ParentClass>>>instance(TestInstance::new)
                 .setProperty(PROPERTY_SELECTOR).to(
                         list(Generators.sequentialGenerator(
                                 Generators.limitedGenerator(1,

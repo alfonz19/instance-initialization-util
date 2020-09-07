@@ -1,8 +1,8 @@
 package com.gmail.alfonz19.util.initialize;
 
-import com.gmail.alfonz19.util.initialize.builder.Initialize;
 import com.gmail.alfonz19.util.initialize.example.to.AssociatedClass;
 import com.gmail.alfonz19.util.initialize.generator.Generator;
+import com.gmail.alfonz19.util.initialize.generator.Generators;
 import com.gmail.alfonz19.util.initialize.selector.SpecificTypePropertySelector;
 import lombok.Data;
 
@@ -25,9 +25,9 @@ public class SettingRandomValueViaPropertyHavingListTypeTest extends AbstractTes
 
     @Override
     protected Generator<RootDto> createGenerator() {
-        return Initialize.instance(RootDto::new)
+        return Generators.instance(RootDto::new)
                 .setProperty(PROPERTY_SELECTOR)
-                .to(Initialize.list(Initialize.instance(AssociatedClass.class)
+                .to(Generators.list(Generators.instance(AssociatedClass.class)
                         .setAllPropertiesHavingType(Integer.TYPE)
                         .toValue(1))
 
