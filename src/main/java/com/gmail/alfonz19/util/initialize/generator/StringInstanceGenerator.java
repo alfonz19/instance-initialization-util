@@ -1,6 +1,6 @@
 package com.gmail.alfonz19.util.initialize.generator;
 
-import com.gmail.alfonz19.util.initialize.builder.PathContext;
+import com.gmail.alfonz19.util.initialize.context.PathContext;
 import com.gmail.alfonz19.util.initialize.util.RandomUtil;
 
 import java.util.LinkedList;
@@ -45,6 +45,7 @@ public class StringInstanceGenerator implements Generator<String> {
     }
 
     public StringInstanceGenerator updatedWithContext(BiFunction<String, PathContext, String> updatingFunction) {
+        //TODO MMUCHA: implement!
         return this;
     }
 

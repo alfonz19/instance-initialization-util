@@ -9,9 +9,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import static com.gmail.alfonz19.util.initialize.RandomEnumPropertyTest.TestInstance;
+import static com.gmail.alfonz19.util.initialize.generator.Generators.enumeratedType;
 import static com.gmail.alfonz19.util.initialize.generator.Generators.instance;
 import static com.gmail.alfonz19.util.initialize.generator.Generators.list;
-import static com.gmail.alfonz19.util.initialize.generator.Generators.enumeratedType;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
