@@ -1,8 +1,11 @@
 package com.gmail.alfonz19.util.initialize.context;
 
+import lombok.EqualsAndHashCode;
+
 import java.beans.PropertyDescriptor;
 import java.util.Objects;
 
+@EqualsAndHashCode(of = "path")
 public class InstancePath implements Path {
 
     private final String path;

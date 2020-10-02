@@ -1,6 +1,7 @@
 package com.gmail.alfonz19.util.initialize.builder;
 
 import com.gmail.alfonz19.util.initialize.context.PathContext;
+import com.gmail.alfonz19.util.initialize.context.Rule;
 import com.gmail.alfonz19.util.initialize.exception.InitializeException;
 import com.gmail.alfonz19.util.initialize.generator.AbstractGenerator;
 import com.gmail.alfonz19.util.initialize.generator.Generators;
@@ -19,11 +20,17 @@ import java.lang.reflect.TypeVariable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
+import java.util.Spliterator;
+import java.util.Spliterators;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 @Slf4j
 @SuppressWarnings({"squid:S119", "squid:S1172", "unused"})//type variables, unused method parameters, unused constructs.
@@ -63,12 +70,34 @@ public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SO
     @Override
     public SOURCE_INSTANCE create(PathContext pathContext) {
         SOURCE_INSTANCE instance = this.instanceSupplier.get();
+
+        applyRulesFromPathContext(pathContext);
+
         applyAllInitializations(instance, pathContext);
         return instance;
     }
 
     private void applyAllInitializations(SOURCE_INSTANCE instance, PathContext pathContext) {
         this.propertyDescriptorsInitializations.forEach(initializations -> initializations.apply(instance, pathContext));
+
+    }
+
+    private void applyRulesFromPathContext(PathContext pathContext) {
+        List<PropertyDescriptor> unsetProperties = findUnsetProperties();
+        unsetProperties.forEach(propertyDescriptor -> {
+            Class<?> propertyType = propertyDescriptor.getPropertyType();
+            PathContext subPathContext = pathContext.createSubPathTraversingProperty(propertyDescriptor);
+
+            Optional<Rule> applicableRule = iteratorToStream(subPathContext.getJoinedRulesIteratorAcrossPathContext())
+                    .filter(rule -> rule.appliesForPathAndType(subPathContext, propertyType))
+                    .findFirst();
+
+            applicableRule.ifPresent(rule->addPropertyDescriptorsInitialization(propertyDescriptor, rule.getGenerator()));
+        });
+    }
+
+    private Stream<Rule> iteratorToStream(Iterator<Rule> iterator) {
+        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED), false);
     }
 
     private void addPropertyDescriptorsInitialization(PropertyDescriptor propertyDescriptor, AbstractGenerator<?> valueGenerator) {
@@ -174,16 +203,17 @@ public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SO
     }
 
     public InstanceConfiguration<SOURCE_INSTANCE> setUnsetPropertiesRandomlyUsingGuessedType() {
-        List<PropertyDescriptor> unsetProperties =
-                findUnsetProperties(IntrospectorCache.INSTANCE.getAllPropertyDescriptors(sourceInstanceClazz));
-
         RandomValueGenerator valueGenerator = Generators.randomForGuessedType();
-        addPropertyDescriptorsInitializations(unsetProperties.stream()
+        addPropertyDescriptorsInitializations(findUnsetProperties().stream()
                 .filter(valueGenerator::canGenerateValueFor)
                 .map(propertyDescriptor -> new PropertyDescriptorInitialization(propertyDescriptor, valueGenerator))
                 .collect(Collectors.toList()));
 
         return this;
+    }
+
+    public List<PropertyDescriptor> findUnsetProperties() {
+        return findUnsetProperties(IntrospectorCache.INSTANCE.getAllPropertyDescriptors(sourceInstanceClazz));
     }
 
     private <K> List<PropertyDescriptor> findUnsetProperties(Class<K> classType) {

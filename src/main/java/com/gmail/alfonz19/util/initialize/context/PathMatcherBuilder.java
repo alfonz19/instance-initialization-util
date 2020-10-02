@@ -1,36 +1,83 @@
 package com.gmail.alfonz19.util.initialize.context;
 
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class PathMatcherBuilder {
-    private static final String PATH_SEPARATOR_REGEX = "\\.";
-    private final StringBuilder stringBuilder = new StringBuilder();
-    private final int initialLength;
+    private static final String PATH_SEPARATOR = "\\.";
+    private static final String NON_CAPTURING_START = "(?:";
+    private static final String NON_CAPTURING_END = ")";
+    private static final String OR = "|";
+    private static final String ANY_PROPERTY_NAME = "[^\\.\\[]+";
+    private static final String PRECEDED_BY_PATH_SEPARATOR = "(?<="+ PATH_SEPARATOR +")";
+    private static final String ANY_ARRAY_INDEX = "\\[\\d+\\]";
+    private static final String ANY_MAP_KEY = "\\[\"[^\"]+\"]";
+    private static final String ANY_PROPERTY =
+            NON_CAPTURING_START +
+                PRECEDED_BY_PATH_SEPARATOR + ANY_PROPERTY_NAME +
+                OR +
+                PATH_SEPARATOR + ANY_PROPERTY_NAME +
+            NON_CAPTURING_END;
 
-    public PathMatcherBuilder() {
+    private static final String ANY_PATH_COMPONENT =
+            NON_CAPTURING_START +
+                ANY_ARRAY_INDEX +
+                OR +
+                ANY_MAP_KEY +
+                OR +
+                ANY_PROPERTY +
+            NON_CAPTURING_END;
+
+    private final StringBuilder stringBuilder = new StringBuilder();
+
+    private PathMatcherBuilder() {
         stringBuilder.append("^\\.");
-        initialLength = stringBuilder.length();
     }
 
     public static PathMatcherBuilder root() {
         return new PathMatcherBuilder();
     }
 
+    public static PathMatcher matchAnyPropertyAnywhere() {
+        return root().addAnySubPath().addAnyProperty().build();
+    }
+
     public PathMatcherBuilder addProperty(String property) {
-        if (stringBuilder.length() == initialLength) {
-            stringBuilder.append(property);
-        } else {
-            stringBuilder.append(PATH_SEPARATOR_REGEX).append(property);
-        }
+        validatePropertyName(property);
+
+        stringBuilder.append(createPropertyMatchingRegex(property));
+
         return this;
     }
 
+    public PathMatcherBuilder addPropertyRegex(String property) {
+        stringBuilder.append(createPropertyMatchingRegex(property));
+
+        return this;
+    }
+
+    private String createPropertyMatchingRegex(String property) {
+        return NON_CAPTURING_START + PRECEDED_BY_PATH_SEPARATOR + property
+                + OR
+                + PATH_SEPARATOR + property + NON_CAPTURING_END;
+    }
+
     public PathMatcherBuilder addAnyProperty() {
-        if (stringBuilder.length() == initialLength) {
-            stringBuilder.append("[^\\.\\[]+");
-        } else {
-            stringBuilder.append(PATH_SEPARATOR_REGEX).append("[^\\.\\[]*");
-        }
+        stringBuilder.append(ANY_PROPERTY);
+        return this;
+    }
+
+    public PathMatcherBuilder addOptionalProperty() {
+        stringBuilder.append(
+                NON_CAPTURING_START
+                    +NON_CAPTURING_START
+                            +PRECEDED_BY_PATH_SEPARATOR+ANY_PROPERTY_NAME
+                            +OR
+                            +PATH_SEPARATOR+ANY_PROPERTY_NAME
+                    +NON_CAPTURING_END
+                +OR
+                +NON_CAPTURING_END
+        );
         return this;
     }
 
@@ -45,52 +92,86 @@ public class PathMatcherBuilder {
     }
 
     public PathMatcherBuilder addAssociativeArrayKey(String key) {
-        if (key == null || key.isEmpty()) {
-            throw new IllegalArgumentException();
-        }
+        validateKey(key);
 
         stringBuilder.append("\\[\"").append(key).append("\"\\]");
 
         return this;
     }
 
-    public Pattern getPattern() {
-        stringBuilder.append("$");
-        return Pattern.compile(stringBuilder.toString());
-    }
-
     public PathMatcherBuilder addAnyArrayIndex() {
-        stringBuilder.append("\\[\\d+\\]");
+        stringBuilder.append(ANY_ARRAY_INDEX);
         return this;
     }
 
     public PathMatcherBuilder addAnyAssociativeArray() {
-        stringBuilder.append("\\[\"[^\"]+\"]");
+        stringBuilder.append(ANY_MAP_KEY);
         return this;
     }
 
     public PathMatcherBuilder addAnyPathComponent() {
-        if (stringBuilder.length() == initialLength) {
-            //non-capturing group of or-red non-capturing groups, in order: array-index, map-key, property.
-            //two regexes differs by leading dot in property matcher.
-            stringBuilder.append("(?:(?:\\[\\d+\\])|(?:\\[\"[^\"]+\"\\])|(?:[^\\.\\[]+))");
-        } else {
-            stringBuilder.append("(?:(?:\\[\\d+\\])|(?:\\[\"[^\"]+\"\\])|(?:\\.[^\\.\\[]+))");
-        }
+        stringBuilder.append(ANY_PATH_COMPONENT);
+
+        return this;
+    }
+
+    public PathMatcherBuilder addAnyOptionalPathComponent() {
+        stringBuilder.append(
+                NON_CAPTURING_START +
+                        ANY_PATH_COMPONENT +
+                        OR +
+                NON_CAPTURING_END
+        );
 
         return this;
     }
 
     public PathMatcherBuilder addAnySubPath() {
-        if (stringBuilder.length() == initialLength) {
-            addAnyPathComponent();
-            stringBuilder.append("?");
-            addAnyPathComponent();
-            stringBuilder.append("*");
-        } else {
-            addAnyPathComponent();
-            stringBuilder.append("*");
-        }
+        stringBuilder.append(ANY_PATH_COMPONENT).append("*");
         return this;
     }
+
+    private void validatePropertyName(String property) {
+        if (property == null || property.isEmpty() || property.contains(".")) {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    private void validateKey(String key) {
+        if (key == null || key.isEmpty()) {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    public PathMatcher build() {
+        stringBuilder.append("$");
+        Pattern pattern = Pattern.compile(stringBuilder.toString());
+        return new PathMatcherImpl(pattern);
+    }
+
+    private static class PathMatcherImpl implements PathMatcher{
+        private final Pattern pattern;
+        private Matcher matcher;
+
+        private PathMatcherImpl(Pattern pattern) {
+            this.pattern = pattern;
+        }
+
+        @Override
+        public boolean matches(String input) {
+            if (matcher == null) {
+                matcher = pattern.matcher(input);
+            } else {
+                matcher.reset(input);
+            }
+
+            return matcher.matches();
+        }
+
+        @Override
+        public boolean matches(Path path) {
+            return this.matches(path.getPathAsString());
+        }
+    }
+
 }
