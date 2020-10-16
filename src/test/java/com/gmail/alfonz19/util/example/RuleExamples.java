@@ -1,9 +1,13 @@
 package com.gmail.alfonz19.util.example;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.gmail.alfonz19.util.example.to.AssociatedClass;
+import com.gmail.alfonz19.util.example.to.GenericSubClass;
+import com.gmail.alfonz19.util.example.to.GenericSubClassUsedInDepths;
+import com.gmail.alfonz19.util.example.to.GenericSubClassUsedInDepths.A;
 import com.gmail.alfonz19.util.example.to.RootDto;
 import com.gmail.alfonz19.util.initialize.context.PathMatcherBuilder;
 import com.gmail.alfonz19.util.initialize.generator.Generators;
@@ -32,5 +36,15 @@ public class RuleExamples {
 
         ObjectWriter objectWriter = new ObjectMapper().writerWithDefaultPrettyPrinter();
         System.out.println(objectWriter.writeValueAsString(rootDto));
+    }
+
+    @Test
+    public void crazyCyclicGenericInitializationWithDepthLimitation() {
+        Rules rules = new Rules()
+                .addRule(applyGenerator(instance(new TypeReference<GenericSubClass<Integer, A>>() {}))
+                        .ifPropertyClassTypeIsEqualTo(GenericSubClass.class));
+        GenericSubClassUsedInDepths initialize = withConfiguration(rules)
+                .initialize(instance(GenericSubClassUsedInDepths.class));
+        System.out.println(initialize.toString());;
     }
 }

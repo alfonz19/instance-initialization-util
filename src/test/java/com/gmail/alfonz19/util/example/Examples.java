@@ -1,6 +1,9 @@
 package com.gmail.alfonz19.util.example;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.gmail.alfonz19.util.example.to.AssociatedClass;
+import com.gmail.alfonz19.util.example.to.GenericClass;
+import com.gmail.alfonz19.util.example.to.GenericSubClass;
 import com.gmail.alfonz19.util.example.to.InterfaceTestingClassA;
 import com.gmail.alfonz19.util.example.to.InterfaceTestingClassB;
 import com.gmail.alfonz19.util.example.to.RootDto;
@@ -202,5 +205,34 @@ public class Examples {
                         list(
                                 instance(AssociatedClass::new))))
         );
+    }
+
+    @Test
+    public void automaticInitializationOfGenericClass() {
+        GenericClass<Integer> instance =
+                initialize(
+                        instance(GenericClass::new, new TypeReference<GenericClass<Integer>>() {})
+                        .setUnsetPropertiesRandomlyUsingGuessedType());
+        System.out.println(instance);
+    }
+
+    @Test
+    public void automaticInitializationOfGenericClassHavingGenericParent() {
+
+//        GenericSubClass<Integer, String> instance = initialize(
+//                instance(GenericSubClass::new, new TypeReference<GenericSubClass<Integer, String>>() {})
+//                        .setUnsetPropertiesRandomlyUsingGuessedType());
+
+        //or
+
+        GenericSubClass<Integer, String> instance = initialize(
+                instance(new TypeReference<GenericSubClass<Integer, String>>() {})
+                        .setUnsetPropertiesRandomlyUsingGuessedType());
+        System.out.println(instance);
+    }
+
+    @Test
+    public void name() {
+        initialize(instance(RootDto::new, new TypeReference<RootDto>() {}).setUnsetPropertiesRandomlyUsingGuessedType());
     }
 }

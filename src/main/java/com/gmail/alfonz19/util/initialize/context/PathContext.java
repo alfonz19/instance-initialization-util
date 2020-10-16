@@ -3,10 +3,13 @@ package com.gmail.alfonz19.util.initialize.context;
 
 import com.gmail.alfonz19.util.initialize.generator.Rules;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Objects;
 
 @SuppressWarnings({"unused"})//unused constructs.
@@ -42,12 +45,23 @@ public class PathContext {
         return new PathContext(path.createSubPathTraversingProperty(propertyDescriptor), this);
     }
 
+    public PathContext createSubPathTraversingPropertyAndSetCalculatedData(PropertyDescriptor propertyDescriptor) {
+        PathContext subContext = new PathContext(path.createSubPathTraversingProperty(propertyDescriptor), this);
+        subContext.setCalculatedNodeData(propertyDescriptor.getPropertyType());
+        return subContext;
+    }
+
     public PathContext createSubPathTraversingArray(int index) {
         return new PathContext(path.createSubPathTraversingArray(index), this);
     }
 
     public PathContext createSubPathTraversingMap(String key) {
         return new PathContext(path.createSubPathTraversingMap(key), this);
+    }
+
+    //TODO MMUCHA: can we kill this method? If we don't need it after most of functionality is done, kill it.
+    public void setCalculatedNodeData(Class<?> propertyType) {
+        setCalculatedNodeData(new CalculatedNodeData(propertyType));
     }
 
     public void setCalculatedNodeData(CalculatedNodeData calculatedNodeData) {
@@ -61,14 +75,18 @@ public class PathContext {
         return new HierarchyRulesIterator();
     }
 
-    @Setter
     @Getter
     public static class CalculatedNodeData {
-        private Class<?> instanceClassType;
-        //TODO MMUCHA: missing known generics types.
+        private final Class<?> instanceClass;
+        private final Map<TypeVariable<?>, Type> typeVariableAssignment;
 
         public CalculatedNodeData(Class<?> instanceClassType) {
-            this.instanceClassType = instanceClassType;
+            this(instanceClassType, Collections.emptyMap());
+        }
+
+        public CalculatedNodeData(Class<?> instanceClass, Map<TypeVariable<?>, Type> typeVariableAssignment) {
+            this.instanceClass = instanceClass;
+            this.typeVariableAssignment = typeVariableAssignment;
         }
     }
 

@@ -23,10 +23,10 @@ public class InvocationSensor<T> {
 
     public InvocationSensor(T instance) {
         //noinspection unchecked
-        this((Class<? extends T>) instance.getClass());
+        this((Class<T>) instance.getClass());
     }
 
-    public InvocationSensor(Class<? extends T> classType) {
+    public InvocationSensor(Class<T> classType) {
         Map<String, PropertyDescriptor> methodNameToPropertyDescriptorMap =
                 IntrospectorCache.INSTANCE.getMethodNameToPropertyDescriptorMap(classType);
 

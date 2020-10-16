@@ -22,7 +22,7 @@ public class RandomValueGenerator extends AbstractGenerator<Object> {
 
     @Override
     public Object create(PathContext pathContext) {
-        Class<?> instanceClassType = pathContext.getCalculatedNodeData().getInstanceClassType();
+        Class<?> instanceClassType = pathContext.getCalculatedNodeData().getInstanceClass();
         return randomValueFor(instanceClassType);
     }
 

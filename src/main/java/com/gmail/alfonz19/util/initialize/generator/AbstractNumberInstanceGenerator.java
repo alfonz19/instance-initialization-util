@@ -16,7 +16,7 @@ abstract class AbstractNumberInstanceGenerator<T extends Number, SELF_TYPE exten
     protected abstract SELF_TYPE getSelf();
 
     public SELF_TYPE biggerThan(T min) {
-        this.typeMin = min;
+        this.min = min;
         return getSelf();
     }
 

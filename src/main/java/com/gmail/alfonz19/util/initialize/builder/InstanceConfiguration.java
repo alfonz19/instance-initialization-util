@@ -1,6 +1,8 @@
 package com.gmail.alfonz19.util.initialize.builder;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.gmail.alfonz19.util.initialize.context.PathContext;
+import com.gmail.alfonz19.util.initialize.context.PathContext.CalculatedNodeData;
 import com.gmail.alfonz19.util.initialize.context.Rule;
 import com.gmail.alfonz19.util.initialize.exception.InitializeException;
 import com.gmail.alfonz19.util.initialize.generator.AbstractGenerator;
@@ -16,13 +18,17 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Spliterator;
 import java.util.Spliterators;
@@ -39,16 +45,25 @@ public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SO
     private final Supplier<? extends SOURCE_INSTANCE> instanceSupplier;
     private final InvocationSensor<SOURCE_INSTANCE> invocationSensor;
     private final List<PropertyDescriptorInitialization> propertyDescriptorsInitializations = new LinkedList<>();
-    private final Class<?> sourceInstanceClazz;
+    private final CalculatedNodeData calculatedNodeData;
 
-    public InstanceConfiguration(Supplier<? extends SOURCE_INSTANCE> instanceSupplier) {
+    public InstanceConfiguration(Class<SOURCE_INSTANCE> sourceInstanceClass,
+                                 Supplier<? extends SOURCE_INSTANCE> instanceSupplier,
+                                 TypeReference<SOURCE_INSTANCE> typeReference) {
+        this(sourceInstanceClass, instanceSupplier, typeVariableAssignment(sourceInstanceClass, typeReference));
+    }
+
+    public InstanceConfiguration(Class<SOURCE_INSTANCE> sourceInstanceClass,
+                                  Supplier<? extends SOURCE_INSTANCE> instanceSupplier) {
+        this(sourceInstanceClass, instanceSupplier, Collections.emptyMap());
+    }
+
+    private InstanceConfiguration(Class<SOURCE_INSTANCE> sourceInstanceClass,
+                                  Supplier<? extends SOURCE_INSTANCE> instanceSupplier,
+                                  Map<TypeVariable<?>, Type> typeVariableAssignment) {
+        this.invocationSensor = new InvocationSensor<>(sourceInstanceClass);
         this.instanceSupplier = instanceSupplier;
-        SOURCE_INSTANCE sampleInstance = instanceSupplier.get();
-        sourceInstanceClazz = sampleInstance.getClass();
-
-        TypeVariable<? extends Class<?>>[] typeParameters = sourceInstanceClazz.getTypeParameters();
-
-        invocationSensor = new InvocationSensor<>(sampleInstance);
+        calculatedNodeData = new CalculatedNodeData(sourceInstanceClass, typeVariableAssignment);
     }
 
     //TODO MMUCHA: reimplement
@@ -69,6 +84,7 @@ public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SO
 
     @Override
     public SOURCE_INSTANCE create(PathContext pathContext) {
+        pathContext.setCalculatedNodeData(calculatedNodeData);
         SOURCE_INSTANCE instance = this.instanceSupplier.get();
 
         applyRulesFromPathContext(pathContext);
@@ -191,7 +207,7 @@ public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SO
 
     public <K> PropertyConfiguration<K, InstanceConfiguration<SOURCE_INSTANCE>> setAllPropertiesHavingType(Class<K> classType) {
         Collection<PropertyDescriptor> propertyDescriptorsHavingType =
-                IntrospectorCache.INSTANCE.getPropertyDescriptorsComplyingToType(sourceInstanceClazz, classType);
+                IntrospectorCache.INSTANCE.getPropertyDescriptorsComplyingToType(getSourceInstanceClass(), classType);
 
         return addGeneratorsToPropertyDescriptors(propertyDescriptorsHavingType);
     }
@@ -213,12 +229,12 @@ public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SO
     }
 
     public List<PropertyDescriptor> findUnsetProperties() {
-        return findUnsetProperties(IntrospectorCache.INSTANCE.getAllPropertyDescriptors(sourceInstanceClazz));
+        return findUnsetProperties(IntrospectorCache.INSTANCE.getAllPropertyDescriptors(getSourceInstanceClass()));
     }
 
     private <K> List<PropertyDescriptor> findUnsetProperties(Class<K> classType) {
         Collection<PropertyDescriptor> propertyDescriptorsHavingType =
-                IntrospectorCache.INSTANCE.getPropertyDescriptorsComplyingToType(sourceInstanceClazz, classType);
+                IntrospectorCache.INSTANCE.getPropertyDescriptorsComplyingToType(getSourceInstanceClass(), classType);
 
         return findUnsetProperties(propertyDescriptorsHavingType);
     }
@@ -252,6 +268,30 @@ public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SO
         return valueGenerator -> addPropertyDescriptorsInitialization(propertyDescriptor, valueGenerator);
     }
 
+    private static <SOURCE_INSTANCE> Map<TypeVariable<?>, Type> typeVariableAssignment(Class<SOURCE_INSTANCE> sourceInstanceClass,
+                                                                                       TypeReference<SOURCE_INSTANCE> typeReference) {
+        TypeVariable<Class<SOURCE_INSTANCE>>[] typeParameters = sourceInstanceClass.getTypeParameters();
+        Type[] actualTypeArguments = ((ParameterizedType) typeReference.getType()).getActualTypeArguments();
+
+
+        int typeParametersLength = typeParameters.length;
+        int actualTypeArgumenstLength = actualTypeArguments.length;
+        if (typeParametersLength != actualTypeArgumenstLength) {
+            throw new IllegalArgumentException("Weird state, lenght of type parameters and it's actual values differs");
+        }
+
+        Map<TypeVariable<?>, Type> pairing = new HashMap<>(typeParametersLength);
+        for(int i = 0; i < typeParametersLength; i++) {
+            pairing.put(typeParameters[i], actualTypeArguments[i]);
+        }
+
+        return pairing;
+    }
+
+    private Class<?> getSourceInstanceClass() {
+        return calculatedNodeData.getInstanceClass();
+    }
+
     @Getter
     @AllArgsConstructor
     private static class PropertyDescriptorInitialization {
@@ -260,11 +300,8 @@ public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SO
 
         public void apply(Object instance, PathContext pathContext) {
             try {
-                PathContext subContext = pathContext.createSubPathTraversingProperty(propertyDescriptor);
-                //TODO MMUCHA: set known data!
-                Class<?> propertyType = propertyDescriptor.getPropertyType();
-
-                subContext.setCalculatedNodeData(new PathContext.CalculatedNodeData(propertyType));
+                PathContext subContext =
+                        pathContext.createSubPathTraversingPropertyAndSetCalculatedData(propertyDescriptor);
                 Object value = Initialize.initialize(valueGenerator, subContext);
                 propertyDescriptor.getWriteMethod().invoke(instance, value);
             } catch (IllegalAccessException| InvocationTargetException e) {
