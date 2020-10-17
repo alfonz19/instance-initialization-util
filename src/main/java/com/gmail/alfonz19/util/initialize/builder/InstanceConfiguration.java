@@ -6,6 +6,7 @@ import com.gmail.alfonz19.util.initialize.context.PathNode;
 import com.gmail.alfonz19.util.initialize.context.Rule;
 import com.gmail.alfonz19.util.initialize.exception.InitializeException;
 import com.gmail.alfonz19.util.initialize.generator.AbstractGenerator;
+import com.gmail.alfonz19.util.initialize.generator.DefaultValueGenerator;
 import com.gmail.alfonz19.util.initialize.generator.Generators;
 import com.gmail.alfonz19.util.initialize.generator.Initialize;
 import com.gmail.alfonz19.util.initialize.generator.RandomValueGenerator;
@@ -105,7 +106,7 @@ public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SO
     }
 
     private void applyRulesFromPathContext(PathNode pathNode) {
-        List<PropertyDescriptor> unsetProperties = findUnsetProperties();
+        List<PropertyDescriptor> unsetProperties = findUninitializedProperties();
         unsetProperties.forEach(propertyDescriptor -> {
             PathNode subPathNode = new PathNode.PropertyDescriptorBasedPathNode(pathNode, propertyDescriptor);
 
@@ -139,7 +140,12 @@ public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SO
     }
 
     public final InstanceConfiguration<SOURCE_INSTANCE> nullifyAllProperties(){
-        throw new UnsupportedOperationException("Not implemented yet");
+        Collection<PropertyDescriptor> allPropertyDescriptors =
+                IntrospectorCache.INSTANCE.getAllPropertyDescriptors(getSourceInstanceClass());
+        List<PropertyDescriptor> missingPropertyDescriptors = findUninitializedProperties(allPropertyDescriptors);
+        DefaultValueGenerator valueGenerator = Generators.defaultValue();
+        missingPropertyDescriptors.forEach(pd -> addPropertyDescriptorInitialization(pd, valueGenerator));
+        return this;
     }
 
     public <PROPERTY_TYPE extends Enum<?>> EnumConfiguration<PROPERTY_TYPE, InstanceConfiguration<SOURCE_INSTANCE>>
@@ -185,32 +191,32 @@ public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SO
     }
 
     public <K> PropertyConfiguration<K, InstanceConfiguration<SOURCE_INSTANCE>> setUnsetPropertiesHavingType(Class<K> classType) {
-        List<PropertyDescriptor> missingPropertyDescriptors = findUnsetProperties(classType);
+        List<PropertyDescriptor> missingPropertyDescriptors = findUninitializedProperties(classType);
 
         return addGeneratorsToPropertyDescriptors(missingPropertyDescriptors);
     }
 
     public InstanceConfiguration<SOURCE_INSTANCE> setUnsetPropertiesRandomlyUsingGuessedType() {
         RandomValueGenerator valueGenerator = Generators.randomForGuessedType();
-        findUnsetProperties().stream()
+        findUninitializedProperties().stream()
                 .filter(valueGenerator::canGenerateValueFor)
                 .forEach(propertyDescriptor -> addPropertyDescriptorInitialization(propertyDescriptor, valueGenerator));
 
         return this;
     }
 
-    public List<PropertyDescriptor> findUnsetProperties() {
-        return findUnsetProperties(IntrospectorCache.INSTANCE.getAllPropertyDescriptors(getSourceInstanceClass()));
+    public List<PropertyDescriptor> findUninitializedProperties() {
+        return findUninitializedProperties(IntrospectorCache.INSTANCE.getAllPropertyDescriptors(getSourceInstanceClass()));
     }
 
-    private <K> List<PropertyDescriptor> findUnsetProperties(Class<K> classType) {
+    private <K> List<PropertyDescriptor> findUninitializedProperties(Class<K> classType) {
         Collection<PropertyDescriptor> propertyDescriptorsHavingType =
                 IntrospectorCache.INSTANCE.getPropertyDescriptorsComplyingToType(getSourceInstanceClass(), classType);
 
-        return findUnsetProperties(propertyDescriptorsHavingType);
+        return findUninitializedProperties(propertyDescriptorsHavingType);
     }
 
-    private List<PropertyDescriptor> findUnsetProperties(Collection<PropertyDescriptor> propertyDescriptorsHavingType) {
+    private List<PropertyDescriptor> findUninitializedProperties(Collection<PropertyDescriptor> propertyDescriptorsHavingType) {
         Set<PropertyDescriptor> alreadySpecifiedPropertyDescriptors = findSpecifiedDescriptors();
 
         return propertyDescriptorsHavingType.stream()

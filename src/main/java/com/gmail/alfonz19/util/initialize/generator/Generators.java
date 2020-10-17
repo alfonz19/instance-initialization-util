@@ -70,6 +70,10 @@ public class Generators {
         return new RandomValueGenerator();
     }
 
+    public static DefaultValueGenerator defaultValue() {
+        return new DefaultValueGenerator();
+    }
+
     @SafeVarargs
     public static <T> AbstractGenerator<T> roundRobinGenerator(AbstractGenerator<T> ... generators) {
         return new RoundRobinGenerator<>(Arrays.asList(generators));
