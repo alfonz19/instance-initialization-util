@@ -1,6 +1,5 @@
 package com.gmail.alfonz19.util.initialize;
 
-import com.gmail.alfonz19.util.initialize.context.PathContext;
 import com.gmail.alfonz19.util.initialize.context.PathNode;
 import com.gmail.alfonz19.util.initialize.generator.AbstractGenerator;
 import com.gmail.alfonz19.util.initialize.generator.Generators;

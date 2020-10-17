@@ -12,7 +12,6 @@ import com.gmail.alfonz19.util.initialize.generator.RandomValueGenerator;
 import com.gmail.alfonz19.util.initialize.selector.SpecificTypePropertySelector;
 import com.gmail.alfonz19.util.initialize.util.IntrospectorCache;
 import com.gmail.alfonz19.util.initialize.util.InvocationSensor;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.beans.PropertyDescriptor;
@@ -24,9 +23,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.Consumer;
@@ -41,7 +41,8 @@ public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SO
 
     private final Supplier<? extends SOURCE_INSTANCE> instanceSupplier;
     private final InvocationSensor<SOURCE_INSTANCE> invocationSensor;
-    private final List<PropertyDescriptorInitialization> propertyDescriptorsInitializations = new LinkedList<>();
+//    private final List<PropertyDescriptorInitialization> propertyDescriptorsInitializations = new LinkedList<>();
+    private final Map<PropertyDescriptor, PropertyDescriptorInitialization> propertyDescriptorsInitializations = new LinkedHashMap<>();
     private final CalculatedNodeData calculatedNodeData;
 
     public InstanceConfiguration(Class<SOURCE_INSTANCE> sourceInstanceClass,
@@ -81,6 +82,10 @@ public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SO
 
     @Override
     public SOURCE_INSTANCE create(PathNode pathNode) {
+        //path node might be different between invocation. Example 1 generator to generate N items in collection.
+        //each item will have different pathNode.
+        //calculatedNodeData will be always the same, but they need to be set at least one, and it cannot be done
+        //sooner than here. So there is some inefficiency setting this variable multiple times.
         pathNode.setCalculatedNodeData(calculatedNodeData);
 
 
@@ -93,7 +98,8 @@ public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SO
     }
 
     private void applyAllInitializations(SOURCE_INSTANCE instance, PathNode pathNode) {
-        this.propertyDescriptorsInitializations.forEach(initializations -> initializations.apply(instance, pathNode));
+        this.propertyDescriptorsInitializations.values()
+                .forEach(initializations -> initializations.init(instance, pathNode));
     }
 
     private void applyRulesFromPathContext(PathNode pathNode) {
@@ -102,36 +108,12 @@ public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SO
             PathNode subPathNode = new PathNode.PropertyDescriptorBasedPathNode(pathNode, propertyDescriptor);
 
             subPathNode.findFirstApplicableRule()
-                    .ifPresent(rule->addPropertyDescriptorsInitialization(propertyDescriptor, rule.getGenerator()));
+                    .ifPresent(rule -> addPropertyDescriptorInitialization(propertyDescriptor, rule.getGenerator()));
         });
     }
 
     private Stream<Rule> iteratorToStream(Iterator<Rule> iterator) {
         return StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED), false);
-    }
-
-    private void addPropertyDescriptorsInitialization(PropertyDescriptor propertyDescriptor, AbstractGenerator<?> valueGenerator) {
-        addPropertyDescriptorsInitializations(Collections.singletonList(
-                new PropertyDescriptorInitialization(propertyDescriptor, valueGenerator)));
-    }
-
-    private void addPropertyDescriptorsInitializations(List<PropertyDescriptorInitialization> initializations) {
-        verifyIfPropertyDescriptorIsAlreadyUsed(initializations);
-        propertyDescriptorsInitializations.addAll(initializations);
-    }
-
-    private void verifyIfPropertyDescriptorIsAlreadyUsed(List<PropertyDescriptorInitialization> initializations) {
-        List<PropertyDescriptor> alreadySpecifiedPropertyDescriptors = findSpecifiedDescriptors();
-
-        String alreadyUsedProperties = initializations.stream()
-                .filter(e -> alreadySpecifiedPropertyDescriptors.contains(e.propertyDescriptor))
-                .map(e -> e.getPropertyDescriptor().getName())
-                .collect(Collectors.joining(", "));
-
-        if (!alreadyUsedProperties.isEmpty()) {
-            throw new InitializeException(String.format("Properties %s are already configured for initialization",
-                    alreadyUsedProperties));
-        }
     }
 
     @SafeVarargs
@@ -146,14 +128,8 @@ public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SO
 
     public InstanceConfiguration<SOURCE_INSTANCE> nullifyProperties(List<SpecificTypePropertySelector<SOURCE_INSTANCE, ?>> propertySelectors) {
         Collection<PropertyDescriptor> propertyDescriptors = invocationSensor.getTouchedPropertyDescriptors(propertySelectors);
-        addPropertyDescriptorsInitializations(createNullifyingTransformation(propertyDescriptors));
+        propertyDescriptors.forEach(e -> addPropertyDescriptorInitialization(e, Generators.nullGenerator()));
         return this;
-    }
-
-    private List<PropertyDescriptorInitialization> createNullifyingTransformation(Collection<PropertyDescriptor> propertyDescriptors) {
-        return propertyDescriptors.stream()
-                .map(e -> new PropertyDescriptorInitialization(e, Generators.nullGenerator()))
-                .collect(Collectors.toList());
     }
 
     public final InstanceConfiguration<SOURCE_INSTANCE> skipAllProperties(){
@@ -171,7 +147,7 @@ public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SO
         //noinspection unchecked   //should be fine.
         Class<PROPERTY_TYPE> propertyType = (Class<PROPERTY_TYPE>) propertyDescriptor.getPropertyType();
         return new EnumConfiguration<>(propertyType, this,
-                valueGenerator -> addPropertyDescriptorsInitialization(propertyDescriptor, valueGenerator));
+                valueGenerator -> addPropertyDescriptorInitialization(propertyDescriptor, valueGenerator));
     }
 
     public <PROPERTY_TYPE> PropertyConfiguration<PROPERTY_TYPE, InstanceConfiguration<SOURCE_INSTANCE>>
@@ -181,13 +157,13 @@ public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SO
         return new PropertyConfiguration<>(this,
                 valueGenerator -> {
                     log.debug("setting generator "+valueGenerator+" to property "+propertyDescriptor.getName());
-                    addPropertyDescriptorsInitialization(propertyDescriptor, valueGenerator);
+                    addPropertyDescriptorInitialization(propertyDescriptor, valueGenerator);
                 });
     }
 
     public <PROPERTY_TYPE> InstanceConfiguration<SOURCE_INSTANCE> setPropertyTo(SpecificTypePropertySelector<SOURCE_INSTANCE, PROPERTY_TYPE> propertySelector, AbstractGenerator<PROPERTY_TYPE> valueGenerator){
         PropertyDescriptor propertyDescriptor = invocationSensor.getTouchedPropertyDescriptor(propertySelector);
-        addPropertyDescriptorsInitialization(propertyDescriptor, valueGenerator);
+        addPropertyDescriptorInitialization(propertyDescriptor, valueGenerator);
         return this;
     }
 
@@ -214,10 +190,9 @@ public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SO
 
     public InstanceConfiguration<SOURCE_INSTANCE> setUnsetPropertiesRandomlyUsingGuessedType() {
         RandomValueGenerator valueGenerator = Generators.randomForGuessedType();
-        addPropertyDescriptorsInitializations(findUnsetProperties().stream()
+        findUnsetProperties().stream()
                 .filter(valueGenerator::canGenerateValueFor)
-                .map(propertyDescriptor -> new PropertyDescriptorInitialization(propertyDescriptor, valueGenerator))
-                .collect(Collectors.toList()));
+                .forEach(propertyDescriptor -> addPropertyDescriptorInitialization(propertyDescriptor, valueGenerator));
 
         return this;
     }
@@ -234,32 +209,27 @@ public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SO
     }
 
     private List<PropertyDescriptor> findUnsetProperties(Collection<PropertyDescriptor> propertyDescriptorsHavingType) {
-        List<PropertyDescriptor> alreadySpecifiedPropertyDescriptors = findSpecifiedDescriptors();
+        Set<PropertyDescriptor> alreadySpecifiedPropertyDescriptors = findSpecifiedDescriptors();
 
         return propertyDescriptorsHavingType.stream()
                 .filter(e -> !alreadySpecifiedPropertyDescriptors.contains(e))
                 .collect(Collectors.toList());
     }
 
-    private List<PropertyDescriptor> findSpecifiedDescriptors() {
-        return propertyDescriptorsInitializations.stream()
-                .map(PropertyDescriptorInitialization::getPropertyDescriptor)
-                .collect(Collectors.toList());
+    private Set<PropertyDescriptor> findSpecifiedDescriptors() {
+        return propertyDescriptorsInitializations.keySet();
     }
 
 
     private <K> PropertyConfiguration<K, InstanceConfiguration<SOURCE_INSTANCE>> addGeneratorsToPropertyDescriptors(
             Collection<PropertyDescriptor> propertyDescriptors) {
-        return new PropertyConfiguration<>(this, valueGenerator -> addPropertyDescriptorsInitializations(
-                propertyDescriptors.stream()
-                        .map(pd -> new PropertyDescriptorInitialization(pd, valueGenerator))
-                        .collect(Collectors.toList())));
+        return new PropertyConfiguration<>(this, valueGenerator ->
+                propertyDescriptors.forEach(pd -> addPropertyDescriptorInitialization(pd, valueGenerator)));
     }
-
 
     ////TODO MMUCHA: fix, was probably inlined. revert if possible.
     private <K> Consumer<AbstractGenerator<K>> addPropertyDescriptorInitialization(PropertyDescriptor propertyDescriptor) {
-        return valueGenerator -> addPropertyDescriptorsInitialization(propertyDescriptor, valueGenerator);
+        return valueGenerator -> addPropertyDescriptorInitialization(propertyDescriptor, valueGenerator);
     }
 
     private static <SOURCE_INSTANCE> Map<TypeVariable<?>, Type> typeVariableAssignment(Class<SOURCE_INSTANCE> sourceInstanceClass,
@@ -286,20 +256,22 @@ public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SO
         return calculatedNodeData.getClassType();
     }
 
-    @Getter
-    private static class PropertyDescriptorInitialization {
-        private final PropertyDescriptor propertyDescriptor;
-        private final AbstractGenerator<?> valueGenerator;
-
-        public PropertyDescriptorInitialization(PropertyDescriptor propertyDescriptor,
-                                                AbstractGenerator<?> valueGenerator) {
-            this.propertyDescriptor = propertyDescriptor;
-            this.valueGenerator = valueGenerator;
+    private void addPropertyDescriptorInitialization(PropertyDescriptor propertyDescriptor, AbstractGenerator<?> valueGenerator) {
+        if (this.propertyDescriptorsInitializations.containsKey(propertyDescriptor)) {
+            throw new InitializeException(String.format("Property %s is already configured.", propertyDescriptor));
         }
 
-        public void apply(Object instance, PathNode pathNode) {
-            PathNode subNode = new PathNode.PropertyDescriptorBasedPathNode(pathNode, propertyDescriptor);
+        PropertyDescriptorInitialization pdi = (instance, pathNode) -> {
+            PathNode.PropertyDescriptorBasedPathNode subNode =
+                    new PathNode.PropertyDescriptorBasedPathNode(pathNode, propertyDescriptor);
             subNode.setValue(instance, Initialize.initialize(valueGenerator, subNode));
-        }
+
+        };
+        this.propertyDescriptorsInitializations.put(propertyDescriptor, pdi);
+    }
+
+    @FunctionalInterface
+    private interface PropertyDescriptorInitialization {
+        void init(Object instance, PathNode pathNode);
     }
 }

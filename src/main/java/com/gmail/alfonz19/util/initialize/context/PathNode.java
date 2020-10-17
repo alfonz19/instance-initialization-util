@@ -37,9 +37,6 @@ public interface PathNode {
 
         @Override
         public void setCalculatedNodeData(CalculatedNodeData calculatedNodeData) {
-            if (this.calculatedNodeData != null) {
-                throw new IllegalStateException("Overwriting calculatedNodeData is not allowed.");
-            }
             this.calculatedNodeData = Objects.requireNonNull(calculatedNodeData);
         }
     }
