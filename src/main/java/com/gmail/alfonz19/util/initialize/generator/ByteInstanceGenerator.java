@@ -5,7 +5,7 @@ import com.gmail.alfonz19.util.initialize.util.RandomUtil;
 
 public class ByteInstanceGenerator extends AbstractNumberInstanceGenerator<Byte, ByteInstanceGenerator> {
     public ByteInstanceGenerator() {
-        super(Byte.MIN_VALUE, Byte.MAX_VALUE);
+        super(Byte.class, Byte.MIN_VALUE, Byte.MAX_VALUE);
     }
 
     @Override

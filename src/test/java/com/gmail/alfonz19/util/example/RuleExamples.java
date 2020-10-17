@@ -11,14 +11,22 @@ import com.gmail.alfonz19.util.example.to.GenericSubClassUsedInDepths.A;
 import com.gmail.alfonz19.util.example.to.RootDto;
 import com.gmail.alfonz19.util.initialize.context.PathMatcherBuilder;
 import com.gmail.alfonz19.util.initialize.generator.Generators;
+import com.gmail.alfonz19.util.initialize.generator.InitializationUsingRules;
 import com.gmail.alfonz19.util.initialize.generator.Rules;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 import static com.gmail.alfonz19.util.initialize.generator.Generators.instance;
 import static com.gmail.alfonz19.util.initialize.generator.Generators.list;
 import static com.gmail.alfonz19.util.initialize.generator.InitializationUsingRules.withConfiguration;
 import static com.gmail.alfonz19.util.initialize.generator.RuleBuilder.applyGenerator;
+import static org.hamcrest.CoreMatchers.isA;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
 
 @SuppressWarnings("squid:S2699")    //no assertion in tests.
 public class RuleExamples {
@@ -45,6 +53,62 @@ public class RuleExamples {
                         .ifPropertyClassTypeIsEqualTo(GenericSubClass.class));
         GenericSubClassUsedInDepths initialize = withConfiguration(rules)
                 .initialize(instance(GenericSubClassUsedInDepths.class));
-        System.out.println(initialize.toString());;
+        System.out.println(initialize.toString());
+    }
+
+    @Test
+    public void automaticInitializationOfGenericClassHavingGenericParent() {
+
+//        GenericSubClass<Integer, String> instance = initialize(
+//                instance(GenericSubClass::new, new TypeReference<GenericSubClass<Integer, String>>() {})
+//                        .setUnsetPropertiesRandomlyUsingGuessedType());
+
+        //or
+
+        Rules rules = new Rules()
+                .addRule(
+                        applyGenerator(Generators.list(Generators.randomForGuessedType(true, false)).withSize(5))
+                                .ifPropertyClassTypeIsEqualTo(List.class));
+
+        GenericSubClass<Integer, String> instance = InitializationUsingRules.withConfiguration(rules)
+                .initialize(instance(new TypeReference<GenericSubClass<Integer, String>>() {})
+                        .setUnsetPropertiesRandomlyUsingGuessedType());
+        System.out.println(instance);
+
+        assertThat(instance, isA(GenericSubClass.class));
+        assertThat(instance.getTlist(), notNullValue());
+        assertThat(instance.getTlist().size(), CoreMatchers.is(5));
+
+        instance.getTlist().forEach(e -> {
+                    assertThat(e, isA(Integer.class));
+                    assertThat(e, notNullValue());
+                }
+        );
+
+        assertThat(instance.getK(), notNullValue());
+
+
+        assertThat(instance.getT(), notNullValue());
+    }
+
+    @Test
+    public void automaticInitializationListUsingGenericRule() {
+
+        Rules rules = new Rules()
+                .addRule(
+                        applyGenerator(Generators.list(Generators.randomForGuessedType(true, false)).withSize(5))
+                                .ifPropertyClassTypeIsEqualTo(List.class));
+
+        List<List<String>> instance =
+                InitializationUsingRules.withConfiguration(rules)
+                .initialize(list(ArrayList::new, new TypeReference<List<List<String>>>() {}));
+        System.out.println(instance);
+
+        //TODO MMUCHA: missing methods for other collections. We have this:
+        // com.gmail.alfonz19.util.initialize.generator.Generators.list(java.util.function.Function<java.util.Collection<? extends ITEM_TYPE>,java.util.List<ITEM_TYPE>>, com.fasterxml.jackson.core.type.TypeReference<java.util.List<ITEM_TYPE>>)
+        //add same for set and stream.
+
+
+
     }
 }

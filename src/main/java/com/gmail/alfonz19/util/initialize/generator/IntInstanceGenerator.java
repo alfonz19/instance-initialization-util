@@ -1,11 +1,12 @@
 package com.gmail.alfonz19.util.initialize.generator;
 
+import com.gmail.alfonz19.util.initialize.context.CalculatedNodeData;
 import com.gmail.alfonz19.util.initialize.context.PathNode;
 import com.gmail.alfonz19.util.initialize.util.RandomUtil;
 
 public class IntInstanceGenerator extends AbstractNumberInstanceGenerator<Integer, IntInstanceGenerator> {
     public IntInstanceGenerator() {
-        super(Integer.MIN_VALUE, Integer.MAX_VALUE);
+        super(Integer.class, Integer.MIN_VALUE, Integer.MAX_VALUE);
     }
 
     @Override

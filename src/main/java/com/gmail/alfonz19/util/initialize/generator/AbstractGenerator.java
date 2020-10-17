@@ -1,6 +1,7 @@
 package com.gmail.alfonz19.util.initialize.generator;
 
 
+import com.gmail.alfonz19.util.initialize.context.CalculatedNodeData;
 import com.gmail.alfonz19.util.initialize.context.PathNode;
 
 import java.util.List;
@@ -13,4 +14,7 @@ public abstract class AbstractGenerator<T> {
     protected List<T> create(int number, PathNode pathNode) {
         return Stream.generate(() -> create(pathNode)).limit(number).collect(Collectors.toList());
     }
+
+    //todo hide, implement here, make final. return optional?
+    public abstract CalculatedNodeData getCalculatedNodeData();
 }

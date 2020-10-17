@@ -1,5 +1,6 @@
 package com.gmail.alfonz19.util.initialize;
 
+import com.gmail.alfonz19.util.initialize.context.CalculatedNodeData;
 import com.gmail.alfonz19.util.initialize.context.PathNode;
 import com.gmail.alfonz19.util.initialize.generator.AbstractGenerator;
 import com.gmail.alfonz19.util.initialize.generator.Generators;
@@ -51,6 +52,12 @@ public class SettingListWithContextViaPropertyWhenShufflingIsTurnedOffTest exten
                                     protected Integer create(PathNode pathNode) {
                                         return atomicInteger.getAndIncrement();
                                     }
+
+
+                                    @Override
+                                    public CalculatedNodeData getCalculatedNodeData() {
+                                        return null;    //TODO MMUCHA: fix.
+                                    }
                                 })
                         ).shuffled(shufflingEnabled)
                                 .withSize(SIZE_OF_LIST)
@@ -59,8 +66,6 @@ public class SettingListWithContextViaPropertyWhenShufflingIsTurnedOffTest exten
 
     @Override
     protected void assertCreatedInstance(TestInstance instance) {
-//        System.out.println(instance);
-
         assertThat(instance, notNullValue());
 
         List<A> aList = instance.getAList();

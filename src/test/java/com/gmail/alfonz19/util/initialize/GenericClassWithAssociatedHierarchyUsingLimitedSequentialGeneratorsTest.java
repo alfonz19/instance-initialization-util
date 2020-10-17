@@ -40,6 +40,8 @@ public class GenericClassWithAssociatedHierarchyUsingLimitedSequentialGenerators
                                         instance(ParentClass.class).setAllPropertiesHavingType(String.class).toValue(STRING_CONSTANT)),
                                 instance(ChildClass.class).setAllPropertiesHavingType(String.class).toValue(STRING_CONSTANT))
                         ).withSize(2));
+
+//        je potřeba zpropagovat type z instance, skrze všechny generatory až do horní instance — nějak.
     }
 
     @Override

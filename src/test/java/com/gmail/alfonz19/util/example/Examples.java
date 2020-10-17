@@ -3,7 +3,6 @@ package com.gmail.alfonz19.util.example;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.gmail.alfonz19.util.example.to.AssociatedClass;
 import com.gmail.alfonz19.util.example.to.GenericClass;
-import com.gmail.alfonz19.util.example.to.GenericSubClass;
 import com.gmail.alfonz19.util.example.to.InterfaceTestingClassA;
 import com.gmail.alfonz19.util.example.to.InterfaceTestingClassB;
 import com.gmail.alfonz19.util.example.to.RootDto;
@@ -14,8 +13,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.hamcrest.CoreMatchers;
-import org.junit.Assert;
 import org.junit.Test;
 
 import static com.gmail.alfonz19.util.initialize.generator.Generators.array;
@@ -201,6 +198,14 @@ public class Examples {
     }
 
     @Test
+    public void topLevelArrayCreation2() {
+        //top-level array creation
+        AssociatedClass[] associatedClassesArray =
+                initialize(array(instance(AssociatedClass::new).nullifyAllProperties())
+                        .withSize(10));
+    }
+
+    @Test
     public void unsorted() {
         RootDto rootDto1 = initialize(instance(RootDto::new).setPropertyTo(RootDto::getListOfAssociatedClasses, list(instance(AssociatedClass::new))));
         RootDto rootDto2 = initialize(instance(RootDto::new).setProperty(RootDto::getListOfAssociatedClasses).to(list(instance(AssociatedClass::new))));
@@ -219,21 +224,6 @@ public class Examples {
                         .setUnsetPropertiesRandomlyUsingGuessedType());
         System.out.println(instance);
         assertThat(instance.getT(), notNullValue());
-    }
-
-    @Test
-    public void automaticInitializationOfGenericClassHavingGenericParent() {
-
-//        GenericSubClass<Integer, String> instance = initialize(
-//                instance(GenericSubClass::new, new TypeReference<GenericSubClass<Integer, String>>() {})
-//                        .setUnsetPropertiesRandomlyUsingGuessedType());
-
-        //or
-
-        GenericSubClass<Integer, String> instance = initialize(
-                instance(new TypeReference<GenericSubClass<Integer, String>>() {})
-                        .setUnsetPropertiesRandomlyUsingGuessedType());
-        System.out.println(instance);
     }
 
     @Test

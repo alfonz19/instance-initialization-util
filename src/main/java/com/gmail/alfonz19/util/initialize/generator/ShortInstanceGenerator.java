@@ -5,7 +5,7 @@ import com.gmail.alfonz19.util.initialize.util.RandomUtil;
 
 public class ShortInstanceGenerator extends AbstractNumberInstanceGenerator<Short, ShortInstanceGenerator> {
     public ShortInstanceGenerator() {
-        super(Short.MIN_VALUE, Short.MAX_VALUE);
+        super(Short.class, Short.MIN_VALUE, Short.MAX_VALUE);
     }
 
     @Override

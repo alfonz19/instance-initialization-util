@@ -5,7 +5,7 @@ import com.gmail.alfonz19.util.initialize.util.RandomUtil;
 
 public class LongInstanceGenerator extends AbstractNumberInstanceGenerator<Long, LongInstanceGenerator> {
     public LongInstanceGenerator() {
-        super(Long.MIN_VALUE, Long.MAX_VALUE);
+        super(Long.class, Long.MIN_VALUE, Long.MAX_VALUE);
     }
 
     @Override

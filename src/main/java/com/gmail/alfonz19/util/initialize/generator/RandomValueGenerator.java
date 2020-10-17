@@ -4,11 +4,12 @@ import com.gmail.alfonz19.util.initialize.context.CalculatedNodeData;
 import com.gmail.alfonz19.util.initialize.context.PathNode;
 import com.gmail.alfonz19.util.initialize.exception.InitializeException;
 import com.gmail.alfonz19.util.initialize.util.RandomUtil;
+import com.gmail.alfonz19.util.initialize.util.ReflectUtil;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -24,43 +25,115 @@ import java.util.UUID;
 @SuppressWarnings({"squid:S119", "squid:S1172", "unused"})//type variables, unused method parameters, unused constructs.
 public class RandomValueGenerator extends AbstractGenerator<Object> {
 
-    private final Class<?> willGenerate;
-    private final boolean canGenerate;
+    private GuessTypeResult guessTypeResultToReuse;
 
-    public RandomValueGenerator(PropertyDescriptor propertyDescriptor,
-                                CalculatedNodeData calculatedNodeData) {
-        Class<?> classType = propertyDescriptor.getPropertyType();
+    private final boolean useDefaultValueAsFallback;
+    private final boolean reusingGuessedType;
 
-        Type genericReturnType = propertyDescriptor.getReadMethod().getGenericReturnType();
-        boolean justAClass = genericReturnType instanceof Class<?>;
-        if (justAClass) {
-            this.willGenerate = classType;
-            this.canGenerate = supportsType(willGenerate);
-            return;
-        }
+    public RandomValueGenerator(boolean useDefaultValueAsFallback, boolean reusingGuessedType) {
+        this.useDefaultValueAsFallback = useDefaultValueAsFallback;
+        this.reusingGuessedType = reusingGuessedType;
+    }
 
-        boolean isTypeVariable = genericReturnType instanceof TypeVariable;
-        if (isTypeVariable) {
-            if (calculatedNodeData.getTypeVariableAssignment().isEmpty()) {
-                log.debug("Unable to instantiate generic type {} because I have no info about actual implementation.", genericReturnType);
-                this.canGenerate = false;
-                this.willGenerate = null;
-            } else {
-                Type type = calculatedNodeData.getTypeVariableAssignment().get(genericReturnType);
-                if (type instanceof Class) {
-                    this.willGenerate = (Class<?>)type;
-                    this.canGenerate = supportsType(willGenerate);
-                } else {
-                    log.debug("Unable to instantiate generic type {} after substitution, because I have no idea what it is.", genericReturnType);
-                    this.canGenerate = false;
-                    this.willGenerate = null;
-                }
-            }
+    private GuessTypeResult guessType(PropertyDescriptor propertyDescriptor, CalculatedNodeData calculatedNodeData) {
+        Type substitutedType =
+                ReflectUtil.substituteTypeVariables(propertyDescriptor, calculatedNodeData.getTypeVariableAssignment());
+
+        return guessType(substitutedType);
+
+
+//        Type genericClassType = propertyDescriptor.getReadMethod().getGenericReturnType();
+//        Class<?> classType = propertyDescriptor.getPropertyType();
+//
+//        boolean justAClass = genericClassType instanceof Class<?>;
+//        if (justAClass) {
+//            return new GuessTypeResult(classType, supportsType(classType));
+//        }
+//
+//        Class<?> declaringClass = propertyDescriptor.getReadMethod().getDeclaringClass();
+//        boolean isTypeVariable = genericClassType instanceof TypeVariable;
+//        if (isTypeVariable) {
+//            TypeVariable<?> typeVariable = (TypeVariable<?>) genericClassType;
+//            TypeVariableAssignments typeVariableAssignment = calculatedNodeData.getTypeVariableAssignment();
+//            boolean hasAssignment = typeVariableAssignment.containsAssignmentInfoFor(declaringClass, typeVariable);
+//
+//            if (!hasAssignment) {
+//                log.debug("Unable to instantiate generic type {} because I have no info about actual implementation.", typeVariable);
+//                return GuessTypeResult.cannotGenerate();
+//            } else {
+//                Type type = typeVariableAssignment.getAssignmentFor(declaringClass, typeVariable);
+//                if (type instanceof Class) {
+//                    return new GuessTypeResult((Class<?>)type, supportsType((Class<?>)type));
+//                } else {
+//                    log.debug("Unable to instantiate generic type {} after substitution, because I have no idea what it is.", typeVariable);
+//                    return GuessTypeResult.cannotGenerate();
+//                }
+//            }
+//        } else {
+//            log.debug("I have no idea what this class ({}) is, cannot instantiate.", classType);
+//            return GuessTypeResult.cannotGenerate();
+//        }
+    }
+
+    private GuessTypeResult guessType(Type substitutedType) {
+        if (substitutedType instanceof Class<?>) {
+            return new GuessTypeResult((Class<?>) substitutedType, supportsType((Class<?>) substitutedType));
         } else {
-            log.debug("I have no idea what this class ({}) is, cannot instantiate.", classType);
-            this.canGenerate = false;
-            this.willGenerate = null;
+            return GuessTypeResult.cannotGenerate();
         }
+    }
+
+    private GuessTypeResult guessType(PathNode pathNode) {
+        return guessType(pathNode.getCalculatedNodeData().getGenericClassType());
+//        if (pathNode instanceof PathNode.PropertyDescriptorBasedPathNode) {
+//            PathNode.PropertyDescriptorBasedPathNode pdbpn = (PathNode.PropertyDescriptorBasedPathNode) pathNode;
+//            return guessType(pdbpn.getPropertyDescriptor(), pathNode.getCalculatedNodeData());
+//        } else {
+//            return GuessTypeResult.cannotGenerate();
+//        }
+
+//---------------------
+
+
+//        if (!(pathNode instanceof PathNode.PropertyDescriptorBasedPathNode)) {
+//            throw new IllegalStateException("");
+//        }
+//
+//        PathNode.PropertyDescriptorBasedPathNode pdpn = (PathNode.PropertyDescriptorBasedPathNode) pathNode;
+//        Class<?> declaringClass = pdpn.getDeclaringClass();
+//
+//        CalculatedNodeData calculatedNodeData = pdpn.getCalculatedNodeData();
+//        Type genericClassType = calculatedNodeData.getGenericClassType();
+//        Class<?> classType = calculatedNodeData.getClassType();
+//
+//        boolean justAClass = genericClassType instanceof Class<?>;
+//        if (justAClass) {
+//            return new GuessTypeResult(classType, supportsType(classType));
+//        }
+//
+//        boolean isTypeVariable = genericClassType instanceof TypeVariable;
+//        if (isTypeVariable) {
+//            TypeVariable<?> typeVariable = (TypeVariable<?>) genericClassType;
+//            TypeVariableAssignments typeVariableAssignment = calculatedNodeData.getTypeVariableAssignment();
+//            boolean hasAssignment = typeVariableAssignment.containsAssignmentInfoFor(declaringClass, typeVariable);
+//
+//            if (!hasAssignment) {
+//                log.debug("Unable to instantiate generic type {} because I have no info about actual implementation.", typeVariable);
+//                return GuessTypeResult.cannotGenerate();
+//            } else {
+//                Type type = typeVariableAssignment.getAssignmentFor(declaringClass, typeVariable);
+//                if (type instanceof Class) {
+//                    return new GuessTypeResult((Class<?>)type, supportsType((Class<?>)type));
+//                } else {
+//                    log.debug("Unable to instantiate generic type {} after substitution, because I have no idea what it is.", typeVariable);
+//                    return GuessTypeResult.cannotGenerate();
+//                }
+//            }
+//        } else {
+//            log.debug("I have no idea what this class ({}) is, cannot instantiate.", classType);
+//            return GuessTypeResult.cannotGenerate();
+//        }
+
     }
 
     private boolean supportsType(Class<?> classType) {
@@ -86,13 +159,50 @@ public class RandomValueGenerator extends AbstractGenerator<Object> {
         return supportedClasses.contains(classType);
     }
 
-    @Override
-    public Object create(PathNode pathNode) {
-        return randomValueFor(willGenerate);
+    public boolean canGenerateValue(PropertyDescriptor propertyDescriptor, CalculatedNodeData calculatedNodeData) {
+        if (reusingGuessedType) {
+            if (guessTypeResultToReuse == null) {
+                guessTypeResultToReuse = guessType(propertyDescriptor, calculatedNodeData);
+            } else {
+                throw new IllegalStateException("Already initialized, you're probably trying to reuse RandomValueGenerator for multiple properties, which is unsupported");
+            }
+
+            return useDefaultValueAsFallback || guessTypeResultToReuse.canGenerate;
+        } else {
+            return useDefaultValueAsFallback || guessType(propertyDescriptor, calculatedNodeData).canGenerate;
+
+        }
     }
 
-    public boolean canGenerateValue() {
-        return canGenerate;
+    @Override
+    public Object create(PathNode pathNode) {
+        if (reusingGuessedType) {
+            if (guessTypeResultToReuse == null) {
+                guessTypeResultToReuse = guessType(pathNode);
+            }
+
+            if (guessTypeResultToReuse.canGenerate) {
+                return randomValueFor(guessTypeResultToReuse.willGenerate);
+            } else {
+                if (useDefaultValueAsFallback) {
+                    return ReflectUtil.nullOrDefaultValue(pathNode.getCalculatedNodeData().getClassType());
+                } else {
+                    throw new InitializeException("Cannot create random value, unsupported type.");
+                }
+            }
+        } else {
+            GuessTypeResult guessTypeResult = guessType(pathNode);
+            if (guessTypeResult.canGenerate) {
+                return randomValueFor(guessTypeResult.willGenerate);
+            } else {
+                if (useDefaultValueAsFallback) {
+                    return ReflectUtil.nullOrDefaultValue(pathNode.getCalculatedNodeData().getClassType());
+                } else {
+                    throw new InitializeException("Cannot create random value, unsupported type.");
+                }
+            }
+
+        }
     }
 
     ////TODO MMUCHA: extension point via service loader or registration.
@@ -134,5 +244,21 @@ public class RandomValueGenerator extends AbstractGenerator<Object> {
             default:
                 throw new InitializeException("Coding error, trying to initialize unsupported class type: "+instanceClassType);
         }
+    }
+
+    @AllArgsConstructor
+    private static class GuessTypeResult {
+        public final Class<?> willGenerate;
+        public final boolean canGenerate;
+
+        public static GuessTypeResult cannotGenerate() {
+            return new GuessTypeResult(null, false);
+        }
+    }
+
+
+    @Override
+    public CalculatedNodeData getCalculatedNodeData() {
+        return new CalculatedNodeData(Object.class);    //TODO MMUCHA: fix.
     }
 }

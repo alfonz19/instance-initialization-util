@@ -1,23 +1,32 @@
 package com.gmail.alfonz19.util.initialize.context;
 
+import com.gmail.alfonz19.util.initialize.util.TypeVariableAssignments;
 import lombok.Getter;
 
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
-import java.util.Collections;
-import java.util.Map;
 
-@Getter
 public class CalculatedNodeData {
+    @Getter
     private final Class<?> classType;
-    private final Map<TypeVariable<?>, Type> typeVariableAssignment;
+
+    //TODO MMUCHA: not sure if this is worthy to keep. Lets see over time. This should represent (IIUC)
+    @Getter
+    private final Type genericClassType;
+    @Getter
+    private final TypeVariableAssignments typeVariableAssignment;
 
     public CalculatedNodeData(Class<?> instanceClassType) {
-        this(instanceClassType, Collections.emptyMap());
+        this(instanceClassType, instanceClassType, TypeVariableAssignments.NO_TYPE_VARIABLE_ASSIGNMENTS);
     }
 
-    public CalculatedNodeData(Class<?> classType, Map<TypeVariable<?>, Type> typeVariableAssignment) {
+    public CalculatedNodeData(Class<?> classType, Type genericClassType, TypeVariableAssignments typeVariableAssignment) {
         this.classType = classType;
+        this.genericClassType = genericClassType;
         this.typeVariableAssignment = typeVariableAssignment;
+    }
+
+    public boolean representsParameterizedType() {
+        return genericClassType instanceof ParameterizedType;
     }
 }

@@ -1,40 +1,26 @@
 package com.gmail.alfonz19.util.initialize;
 
+import com.gmail.alfonz19.util.initialize.generator.AbstractGenerator;
 import lombok.Data;
 
 import java.util.Date;
 import java.util.UUID;
 
-import org.hamcrest.CoreMatchers;
-import org.junit.Assert;
-import org.junit.Test;
-
 import static com.gmail.alfonz19.util.initialize.generator.Generators.instance;
-import static com.gmail.alfonz19.util.initialize.generator.Initialize.initialize;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
+import static com.gmail.alfonz19.util.initialize.SettingRandomValueViaPropertyGeneratingValueBasedOnClassTypeTest.TestInstance;
 
-public class SettingRandomValueViaPropertyGeneratingValueBasedOnClassTypeTest /*extends AbstractTestSingleAndMultipleInstanceCreation<TestInstance>*/{
+public class SettingRandomValueViaPropertyGeneratingValueBasedOnClassTypeTest extends AbstractTestSingleAndMultipleInstanceCreation<TestInstance>{
 
-
-//    @Override
-//    protected Generator<TestInstance> createGenerator() {
-//        return Initialize.instance(TestInstance::new).setUnsetPropertiesRandomly()
-//                .setProperty(PROPERTY_SELECTOR).to(Generators.randomString().withSize(10).addPrefix("abc"));
-//    }
-
-//    @Override
-    protected void assertCreatedInstance(TestInstance rootDto) {
-//        assertThat(rootDto, notNullValue());
-//        assertThat(PROPERTY_SELECTOR.select(rootDto), notNullValue());
-//        assertThat(PROPERTY_SELECTOR.select(rootDto), Matchers.matchesPattern("^abc\\d{10}$"));
+    @Override
+    protected AbstractGenerator<TestInstance> createGenerator() {
+        return instance(TestInstance::new).setUnsetPropertiesRandomlyUsingGuessedType();
     }
 
-    @Test
-    public void testName() {
-        TestInstance testInstance = initialize(instance(TestInstance::new).setUnsetPropertiesRandomlyUsingGuessedType());
-        System.out.println(testInstance);
+    @Override
+    protected void assertCreatedInstance(TestInstance testInstance) {
         assertThat(testInstance.getN1(), nullValue());
         assertThat(testInstance.getSomeUUIDValue(), notNullValue());
     }

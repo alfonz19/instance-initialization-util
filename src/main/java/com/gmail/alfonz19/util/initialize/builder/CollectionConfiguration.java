@@ -1,11 +1,17 @@
 package com.gmail.alfonz19.util.initialize.builder;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.gmail.alfonz19.util.initialize.context.CalculatedNodeData;
 import com.gmail.alfonz19.util.initialize.context.PathComponent;
 import com.gmail.alfonz19.util.initialize.context.PathNode;
-import com.gmail.alfonz19.util.initialize.generator.AbstractGenerator;
-import com.gmail.alfonz19.util.initialize.generator.Initialize;
+import com.gmail.alfonz19.util.initialize.context.Rule;
 import com.gmail.alfonz19.util.initialize.exception.InitializeException;
+import com.gmail.alfonz19.util.initialize.generator.AbstractGenerator;
+import com.gmail.alfonz19.util.initialize.generator.Generators;
+import com.gmail.alfonz19.util.initialize.generator.Initialize;
 import com.gmail.alfonz19.util.initialize.generator.SizeSpecification;
+import com.gmail.alfonz19.util.initialize.util.ReflectUtil;
+import com.gmail.alfonz19.util.initialize.util.TypeReferenceUtil;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -14,6 +20,8 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+import static com.gmail.alfonz19.util.initialize.util.TypeVariableAssignments.NO_TYPE_VARIABLE_ASSIGNMENTS;
 
 @SuppressWarnings({"java:S119", "squid:S1172", "unused", "squid:S1068", "FieldCanBeLocal"})
 //type variables, unused method parameters, unused constructs, field can be converted to local variable, same
@@ -28,10 +36,29 @@ public class CollectionConfiguration<ITEM_TYPE, GENERATES> extends AbstractGener
     private final SizeSpecification sizeSpecification =
             new SizeSpecification(0, MAX_COLLECTION_LENGTH, UNCONFIGURED_COLLECTION_SIZE);
     private boolean shuffled;
+    private final CalculatedNodeData calculatedNodeData;
+    //this states, whether it's probable, that we have more specific information about type than one passed via PathNode.
+    private final boolean overwriteCalculatedNodeData;
 
-    public CollectionConfiguration(Function<Collection<? extends ITEM_TYPE>, GENERATES> listInstanceSupplier, AbstractGenerator<? extends ITEM_TYPE> itemGenerator) {
+    public CollectionConfiguration(Function<Collection<? extends ITEM_TYPE>, GENERATES> listInstanceSupplier, TypeReference<GENERATES> typeReference) {
+        this.listInstanceSupplier = listInstanceSupplier;
+        this.itemGenerator = null;
+
+        Class<GENERATES> classType = TypeReferenceUtil.getRawTypeClassType(typeReference);
+        calculatedNodeData = new CalculatedNodeData(classType,
+                typeReference.getType(),
+                ReflectUtil.typeVariableAssignment(classType, typeReference));
+        overwriteCalculatedNodeData = true;
+    }
+
+    public CollectionConfiguration(Class<?> classType,
+                                   Function<Collection<? extends ITEM_TYPE>, GENERATES> listInstanceSupplier,
+                                   AbstractGenerator<? extends ITEM_TYPE> itemGenerator) {
         this.listInstanceSupplier = listInstanceSupplier;
         this.itemGenerator = itemGenerator;
+
+        this.calculatedNodeData = new CalculatedNodeData(classType, classType, NO_TYPE_VARIABLE_ASSIGNMENTS);
+        this.overwriteCalculatedNodeData = false;
     }
 
     public CollectionConfiguration<ITEM_TYPE, GENERATES> withMinSize(int minSize) {
@@ -59,15 +86,26 @@ public class CollectionConfiguration<ITEM_TYPE, GENERATES> extends AbstractGener
     }
 
     @Override
-    public GENERATES create(PathNode pathNode) {
+    protected GENERATES create(PathNode pathNode) {
+        if (overwriteCalculatedNodeData || pathNode.getCalculatedNodeData() == null) {
+            pathNode.setCalculatedNodeData(calculatedNodeData);
+        }
+
         int numberOfItemsToBeGenerated = sizeSpecification.getRandomSizeAccordingToSpecification();
+
+        AbstractGenerator<? extends ITEM_TYPE> itemGeneratorToUse = getGeneratorToUse(pathNode);
+
+        CalculatedNodeData itemsCalculatedNodeData = (pathNode.getCalculatedNodeData().representsParameterizedType())
+                ? ReflectUtil.unwrapParameterizedType(pathNode.getCalculatedNodeData())
+                : itemGeneratorToUse.getCalculatedNodeData() == null
+                        ? new CalculatedNodeData(Object.class, Object.class, NO_TYPE_VARIABLE_ASSIGNMENTS)
+                        : itemGeneratorToUse.getCalculatedNodeData();
 
         if (!shuffled) {
             List<? extends ITEM_TYPE> items = IntStream.range(0, numberOfItemsToBeGenerated).boxed()
                     //create array-like subPaths using index.
-                    //TODO MMUCHA: calculated node data as null??
-                    .map(index -> new PathNode.CollectionItemNode(pathNode, index, null))
-                    .map((Function<PathNode, ITEM_TYPE>) pt -> Initialize.initialize(itemGenerator, pt))
+                    .map(index -> new PathNode.CollectionItemNode(pathNode, index, itemsCalculatedNodeData))
+                    .map((Function<PathNode, ITEM_TYPE>) pt -> Initialize.initialize(itemGeneratorToUse, pt))
                     .collect(Collectors.toList());
             return listInstanceSupplier.apply(items);
         }
@@ -89,7 +127,7 @@ public class CollectionConfiguration<ITEM_TYPE, GENERATES> extends AbstractGener
                 //TODO MMUCHA: calculated node data as null??
                 .map(index -> new PathNode.CollectionItemNode(pathNode, index, null))
                 .collect(Collectors.toMap(Function.identity(),
-                        (Function<PathNode, ITEM_TYPE>) pt -> Initialize.initialize(itemGenerator, pt)));
+                        (Function<PathNode, ITEM_TYPE>) pt -> Initialize.initialize(itemGeneratorToUse, pt)));
 
         List<? extends ITEM_TYPE> shuffledItems = instancePathToGeneratedValue.keySet().stream()
                 .sorted((o1, o2) -> {
@@ -106,5 +144,26 @@ public class CollectionConfiguration<ITEM_TYPE, GENERATES> extends AbstractGener
                 .collect(Collectors.toList());
 
         return listInstanceSupplier.apply(shuffledItems);
+    }
+
+    private AbstractGenerator<? extends ITEM_TYPE> getGeneratorToUse(PathNode pathNode) {
+        if (this.itemGenerator != null) {
+            return itemGenerator;
+        }
+
+        //noinspection unchecked
+        AbstractGenerator<? extends ITEM_TYPE> itemGeneratorToUse =
+                (AbstractGenerator<? extends ITEM_TYPE>) pathNode.findFirstApplicableRule()
+                        .map(Rule::getGenerator)
+                        .orElse(null);
+        if (itemGeneratorToUse == null) {
+            itemGeneratorToUse = Generators.defaultValue();
+        }
+        return itemGeneratorToUse;
+    }
+
+    @Override
+    public CalculatedNodeData getCalculatedNodeData() {
+        return calculatedNodeData;
     }
 }

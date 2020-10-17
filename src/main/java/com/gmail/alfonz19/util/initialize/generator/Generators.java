@@ -3,13 +3,11 @@ package com.gmail.alfonz19.util.initialize.generator;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.gmail.alfonz19.util.initialize.builder.CollectionConfiguration;
 import com.gmail.alfonz19.util.initialize.builder.InstanceConfiguration;
-import com.gmail.alfonz19.util.initialize.context.CalculatedNodeData;
 import com.gmail.alfonz19.util.initialize.util.ReflectUtil;
 import com.gmail.alfonz19.util.initialize.util.TypeReferenceUtil;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -68,13 +66,12 @@ public class Generators {
         return new EnumInstanceGenerator<>(classType, classType);
     }
 
-    public static RandomValueGenerator randomForGuessedType(PropertyDescriptor propertyDescriptor,
-                                                            CalculatedNodeData calculatedNodeData) {
-        return new RandomValueGenerator(propertyDescriptor, calculatedNodeData);
+    public static RandomValueGenerator randomForGuessedType(boolean useDefaultValueAsFallback, boolean reusingGuessedType) {
+        return new RandomValueGenerator(useDefaultValueAsFallback, reusingGuessedType);
     }
 
-    public static DefaultValueGenerator defaultValue() {
-        return new DefaultValueGenerator();
+    public static <T> DefaultValueGenerator<T> defaultValue() {
+        return new DefaultValueGenerator<>();
     }
 
     @SafeVarargs
@@ -115,7 +112,7 @@ public class Generators {
     }
 
     public static <T> InstanceConfiguration<T> instance(Supplier<T> instanceSupplier) {
-        return new InstanceConfiguration<>(ReflectUtil.classTypeOfItemsProducedBySupplier(instanceSupplier), instanceSupplier);
+        return instance(null, instanceSupplier);
     }
 
     public static <T> InstanceConfiguration<T> instance(Class<T> instanceClass) {
@@ -144,7 +141,14 @@ public class Generators {
 
     public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, List<ITEM_TYPE>> list(Function<Collection<? extends ITEM_TYPE>, List<ITEM_TYPE>> listInstanceCreationFunction,
                                                                                        AbstractGenerator<? extends ITEM_TYPE> itemGenerator) {
-        return new CollectionConfiguration<>(listInstanceCreationFunction, itemGenerator);
+        return new CollectionConfiguration<>(List.class, listInstanceCreationFunction, itemGenerator);
+    }
+
+    public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, List<ITEM_TYPE>> list(
+            Function<Collection<? extends ITEM_TYPE>, List<ITEM_TYPE>> listInstanceCreationFunction,
+            TypeReference<List<ITEM_TYPE>> typeReference) {
+
+        return new CollectionConfiguration<>(listInstanceCreationFunction, typeReference);
     }
 
     public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, Set<ITEM_TYPE>> set(Class<ITEM_TYPE>clazz, AbstractGenerator<ITEM_TYPE> itemGenerator) {
@@ -161,7 +165,7 @@ public class Generators {
 
     public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, Set<ITEM_TYPE>> set(Function<Collection<? extends ITEM_TYPE>, Set<ITEM_TYPE>> listInstanceCreationFunction,
                                                                                      AbstractGenerator<ITEM_TYPE> itemGenerator) {
-        return new CollectionConfiguration<>(listInstanceCreationFunction, itemGenerator);
+        return new CollectionConfiguration<>(Set.class, listInstanceCreationFunction, itemGenerator);
     }
 
     public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, Stream<ITEM_TYPE>> stream(Class<ITEM_TYPE>clazz, AbstractGenerator<ITEM_TYPE> itemGenerator) {
@@ -178,15 +182,17 @@ public class Generators {
 
     public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, Stream<ITEM_TYPE>> stream(Function<Collection<? extends ITEM_TYPE>, Stream<ITEM_TYPE>> listInstanceCreationFunction,
                                                                                            AbstractGenerator<ITEM_TYPE> itemGenerator) {
-        return new CollectionConfiguration<>(listInstanceCreationFunction, itemGenerator);
+        return new CollectionConfiguration<>(Stream.class, listInstanceCreationFunction, itemGenerator);
     }
 
     public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, ITEM_TYPE[]> array(Class<ITEM_TYPE> arrayType, AbstractGenerator<ITEM_TYPE> itemGenerator) {
-        return array(items -> ReflectUtil.createArray(arrayType, items), itemGenerator);
+        return new CollectionConfiguration<>(arrayType, items -> ReflectUtil.createArray(arrayType, items), itemGenerator);
     }
 
-    private static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, ITEM_TYPE[]> array(Function<Collection<? extends ITEM_TYPE>, ITEM_TYPE[]> arrayInstanceCreationFunction, AbstractGenerator<ITEM_TYPE> itemGenerator) {
-        return new CollectionConfiguration<>(arrayInstanceCreationFunction, itemGenerator);
+    public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, ITEM_TYPE[]> array(AbstractGenerator<ITEM_TYPE> itemGenerator) {
+        //noinspection unchecked
+        Class<ITEM_TYPE> arrayType = (Class<ITEM_TYPE>) itemGenerator.getCalculatedNodeData().getClassType();
+        return array(arrayType, itemGenerator);
     }
 
 }

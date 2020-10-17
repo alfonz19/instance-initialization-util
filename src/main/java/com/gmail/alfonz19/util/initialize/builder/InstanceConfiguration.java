@@ -13,18 +13,15 @@ import com.gmail.alfonz19.util.initialize.selector.SpecificTypePropertySelector;
 import com.gmail.alfonz19.util.initialize.util.IntrospectorCache;
 import com.gmail.alfonz19.util.initialize.util.InvocationSensor;
 import com.gmail.alfonz19.util.initialize.util.ReflectUtil;
-import com.gmail.alfonz19.util.initialize.util.TypeReferenceUtil;
+import com.gmail.alfonz19.util.initialize.util.TypeVariableAssignments;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -51,21 +48,35 @@ public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SO
     public InstanceConfiguration(Class<SOURCE_INSTANCE> sourceInstanceClass,
                                  Supplier<? extends SOURCE_INSTANCE> instanceSupplier,
                                  TypeReference<SOURCE_INSTANCE> typeReference) {
-        this(sourceInstanceClass, instanceSupplier, typeVariableAssignment(sourceInstanceClass, typeReference));
+        this(sourceInstanceClass,
+                typeReference.getType(),
+                instanceSupplier, ReflectUtil.typeVariableAssignment(sourceInstanceClass, typeReference)
+        );
     }
 
     public InstanceConfiguration(Class<SOURCE_INSTANCE> sourceInstanceClass,
                                   Supplier<? extends SOURCE_INSTANCE> instanceSupplier) {
-        //introspector cannot work with interfaces.
-        this(ReflectUtil.replaceClassTypeIfItIsInterface(sourceInstanceClass, instanceSupplier), instanceSupplier, Collections.emptyMap());
+
+        //noinspection unchecked
+        Class<SOURCE_INSTANCE> instanceClassToUse = (sourceInstanceClass == null || sourceInstanceClass.isInterface())
+                ? (Class<SOURCE_INSTANCE>) instanceSupplier.get().getClass()
+                : sourceInstanceClass;
+
+        this.invocationSensor = new InvocationSensor<>(instanceClassToUse);
+        this.instanceSupplier = instanceSupplier;
+        this.calculatedNodeData = new CalculatedNodeData(instanceClassToUse,
+                instanceClassToUse,
+                ReflectUtil.getTypeVariableAssignment(instanceClassToUse));
+
     }
 
     private InstanceConfiguration(Class<SOURCE_INSTANCE> sourceInstanceClass,
+                                  Type genericClassType,
                                   Supplier<? extends SOURCE_INSTANCE> instanceSupplier,
-                                  Map<TypeVariable<?>, Type> typeVariableAssignment) {
+                                  TypeVariableAssignments typeVariableAssignment) {
         this.invocationSensor = new InvocationSensor<>(sourceInstanceClass);
         this.instanceSupplier = instanceSupplier;
-        calculatedNodeData = new CalculatedNodeData(sourceInstanceClass, typeVariableAssignment);
+        this.calculatedNodeData = new CalculatedNodeData(sourceInstanceClass, genericClassType, typeVariableAssignment);
     }
 
     //TODO MMUCHA: reimplement
@@ -144,7 +155,7 @@ public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SO
         Collection<PropertyDescriptor> allPropertyDescriptors =
                 IntrospectorCache.INSTANCE.getAllPropertyDescriptors(getSourceInstanceClass());
         List<PropertyDescriptor> missingPropertyDescriptors = findUninitializedProperties(allPropertyDescriptors);
-        DefaultValueGenerator valueGenerator = Generators.defaultValue();
+        DefaultValueGenerator<?> valueGenerator = Generators.defaultValue();
         missingPropertyDescriptors.forEach(pd -> addPropertyDescriptorInitialization(pd, valueGenerator));
         return this;
     }
@@ -199,8 +210,8 @@ public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SO
 
     public InstanceConfiguration<SOURCE_INSTANCE> setUnsetPropertiesRandomlyUsingGuessedType() {
         findUninitializedProperties().stream()
-                .map(pd -> new Pair<>(pd, Generators.randomForGuessedType(pd, this.calculatedNodeData)))
-                .filter(pair->pair.getSecond().canGenerateValue())
+                .map(pd -> new Pair<>(pd, Generators.randomForGuessedType(false, true)))
+                .filter(pair->pair.getSecond().canGenerateValue(pair.first, this.calculatedNodeData))
                 .forEach(pair -> addPropertyDescriptorInitialization(pair.first, pair.second));
 
         return this;
@@ -248,26 +259,6 @@ public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SO
         return valueGenerator -> addPropertyDescriptorInitialization(propertyDescriptor, valueGenerator);
     }
 
-    private static <SOURCE_INSTANCE> Map<TypeVariable<?>, Type> typeVariableAssignment(Class<SOURCE_INSTANCE> sourceInstanceClass,
-                                                                                       TypeReference<SOURCE_INSTANCE> typeReference) {
-        TypeVariable<Class<SOURCE_INSTANCE>>[] typeParameters = sourceInstanceClass.getTypeParameters();
-        Type[] actualTypeArguments = TypeReferenceUtil.getActualTypeArguments(typeReference);
-
-
-        int typeParametersLength = typeParameters.length;
-        int actualTypeArgumenstLength = actualTypeArguments.length;
-        if (typeParametersLength != actualTypeArgumenstLength) {
-            throw new IllegalArgumentException("Weird state, lenght of type parameters and it's actual values differs");
-        }
-
-        Map<TypeVariable<?>, Type> pairing = new HashMap<>(typeParametersLength);
-        for(int i = 0; i < typeParametersLength; i++) {
-            pairing.put(typeParameters[i], actualTypeArguments[i]);
-        }
-
-        return pairing;
-    }
-
     private Class<?> getSourceInstanceClass() {
         return calculatedNodeData.getClassType();
     }
@@ -284,6 +275,11 @@ public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SO
 
         };
         this.propertyDescriptorsInitializations.put(propertyDescriptor, pdi);
+    }
+
+    @Override
+    public CalculatedNodeData getCalculatedNodeData() {
+        return calculatedNodeData;
     }
 
     @FunctionalInterface

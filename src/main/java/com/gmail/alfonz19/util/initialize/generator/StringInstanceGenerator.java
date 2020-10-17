@@ -1,5 +1,6 @@
 package com.gmail.alfonz19.util.initialize.generator;
 
+import com.gmail.alfonz19.util.initialize.context.CalculatedNodeData;
 import com.gmail.alfonz19.util.initialize.context.PathNode;
 import com.gmail.alfonz19.util.initialize.util.RandomUtil;
 
@@ -56,5 +57,10 @@ public class StringInstanceGenerator extends AbstractGenerator<String> {
             result = transformation.apply(result);
         }
         return result;
+    }
+
+    @Override
+    public CalculatedNodeData getCalculatedNodeData() {
+        return new CalculatedNodeData(String.class);
     }
 }

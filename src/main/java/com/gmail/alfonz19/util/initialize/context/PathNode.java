@@ -2,6 +2,7 @@ package com.gmail.alfonz19.util.initialize.context;
 
 import com.gmail.alfonz19.util.initialize.exception.InitializeException;
 import com.gmail.alfonz19.util.initialize.generator.Rules;
+import com.gmail.alfonz19.util.initialize.util.ReflectUtil;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
@@ -84,11 +85,15 @@ public interface PathNode {
 
         @Override
         public Optional<Rule> findFirstApplicableRule() {
-            return Optional.empty();
+            return findFirstApplicableRule(this);
         }
 
         public List<Rule> getRules() {
             return rules;
+        }
+
+        public Optional<Rule> findFirstApplicableRule(PathNode pathNode) {
+            return getRules().stream().filter(rule->rule.appliesForPathAndType(pathNode)).findFirst();
         }
     }
 
@@ -119,9 +124,7 @@ public interface PathNode {
 
         @Override
         public Optional<Rule> findFirstApplicableRule() {
-            RootPathNode rootPathNode = getRootNode();
-            List<Rule> rules = rootPathNode.getRules();
-            return rules.stream().filter(rule->rule.appliesForPathAndType(this)).findFirst();
+            return getRootNode().findFirstApplicableRule(this);
         }
 
         private RootPathNode getRootNode() {
@@ -139,11 +142,17 @@ public interface PathNode {
     class PropertyDescriptorBasedPathNode extends AbstractNonRootNode {
 
         private final PropertyDescriptor propertyDescriptor;
+        private final Class<?> declaringClass;
 
         public PropertyDescriptorBasedPathNode(PathNode parent, PropertyDescriptor propertyDescriptor) {
-            super(parent, parent.getPath().createSubPathTraversingProperty(propertyDescriptor),
-                    new CalculatedNodeData(propertyDescriptor.getPropertyType()));
+            super(parent,
+                    parent.getPath().createSubPathTraversingProperty(propertyDescriptor),
+                    new CalculatedNodeData(propertyDescriptor.getPropertyType(),
+                            ReflectUtil.substituteTypeVariables(propertyDescriptor, parent.getCalculatedNodeData().getTypeVariableAssignment()),
+                            ReflectUtil.recalculateTypeVariableAssignment(propertyDescriptor, parent.getCalculatedNodeData().getTypeVariableAssignment())));
             this.propertyDescriptor = propertyDescriptor;
+            this.declaringClass = propertyDescriptor.getReadMethod().getDeclaringClass();
+
         }
 
         @Override
@@ -164,7 +173,9 @@ public interface PathNode {
             }
         }
 
-
+        public Class<?> getDeclaringClass() {
+            return declaringClass;
+        }
     }
 
     class CollectionItemNode extends AbstractNonRootNode {

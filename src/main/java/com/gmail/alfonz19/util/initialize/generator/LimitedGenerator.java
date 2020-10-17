@@ -1,5 +1,6 @@
 package com.gmail.alfonz19.util.initialize.generator;
 
+import com.gmail.alfonz19.util.initialize.context.CalculatedNodeData;
 import com.gmail.alfonz19.util.initialize.context.PathNode;
 import com.gmail.alfonz19.util.initialize.exception.InitializeException;
 
@@ -39,5 +40,10 @@ public class LimitedGenerator<T> extends AbstractGenerator<T> {
         return Stream.generate(()-> create(pathNode))
                 .limit(Math.min(number, remainingNumberOfItems))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public CalculatedNodeData getCalculatedNodeData() {
+        return generator.getCalculatedNodeData();
     }
 }
