@@ -4,14 +4,14 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 @EqualsAndHashCode
-public abstract class AbstractPathComponent<T extends Comparable<T>> implements PathComponent {
+public abstract class AbstractPathComponent implements PathComponent {
 
     @Getter
-    private final T value;
+    private final Object value;
     @Getter
     private final PathComponentType pathComponentType;
 
-    public AbstractPathComponent(T value, PathComponentType pathComponentType) {
+    public AbstractPathComponent(Object value, PathComponentType pathComponentType) {
 
         this.value = value;
         this.pathComponentType = pathComponentType;

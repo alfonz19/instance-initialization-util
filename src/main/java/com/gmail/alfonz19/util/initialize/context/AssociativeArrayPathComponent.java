@@ -1,6 +1,6 @@
 package com.gmail.alfonz19.util.initialize.context;
 
-public class AssociativeArrayPathComponent extends AbstractPathComponent<String> {
+public class AssociativeArrayPathComponent extends AbstractPathComponent {
     public AssociativeArrayPathComponent(String key) {
         super(key, PathComponentType.MAP_KEY);
     }
@@ -11,6 +11,6 @@ public class AssociativeArrayPathComponent extends AbstractPathComponent<String>
         if (a != 0) {
             return a;
         }
-        return this.getValue().compareTo((String)other.getValue());
+        return ((String)this.getValue()).compareTo((String)other.getValue());
     }
 }

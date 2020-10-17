@@ -1,6 +1,6 @@
 package com.gmail.alfonz19.util.initialize.context;
 
-public class PropertyPathComponent extends AbstractPathComponent<String> {
+public class PropertyPathComponent extends AbstractPathComponent {
 
     public PropertyPathComponent(String value) {
         super(value, PathComponentType.PROPERTY);
@@ -12,6 +12,6 @@ public class PropertyPathComponent extends AbstractPathComponent<String> {
         if (a != 0) {
             return a;
         }
-        return this.getValue().compareTo((String)other.getValue());
+        return ((String)this.getValue()).compareTo((String)other.getValue());
     }
 }

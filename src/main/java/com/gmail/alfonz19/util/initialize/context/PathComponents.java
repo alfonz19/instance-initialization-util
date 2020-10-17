@@ -3,7 +3,6 @@ package com.gmail.alfonz19.util.initialize.context;
 import com.gmail.alfonz19.util.initialize.exception.IncorrectContextPathException;
 import lombok.Getter;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -36,7 +35,7 @@ public class PathComponents {
         components.add(componentToAdd);
     }
 
-    private List<AbstractPathComponent<? extends Comparable<?>>> createPathComponents(String path) {
+    private List<AbstractPathComponent> createPathComponents(String path) {
         if (path == null) {
             return Collections.emptyList();
         }
@@ -46,7 +45,7 @@ public class PathComponents {
             return Collections.emptyList();
         }
 
-        List<AbstractPathComponent<? extends Comparable<?>>> result = new LinkedList<>();
+        List<AbstractPathComponent> result = new LinkedList<>();
 
         if (path.charAt(0) != Path.PATH_SEPARATOR) {
             throw new IncorrectContextPathException();
@@ -71,7 +70,7 @@ public class PathComponents {
         return result;
     }
 
-    private AbstractPathComponent<?> processPathPart(String pathPart, boolean firstWord) {
+    private AbstractPathComponent processPathPart(String pathPart, boolean firstWord) {
         if (pathPart.length() == 1) {
             throw new IncorrectContextPathException();
         }
@@ -97,7 +96,7 @@ public class PathComponents {
             }
     }
 
-    private AbstractPathComponent<? extends Serializable> processArrayPart(String pathPart) {
+    private AbstractPathComponent processArrayPart(String pathPart) {
         if (pathPart.length() <= 2) {
             throw new IncorrectContextPathException();
         }

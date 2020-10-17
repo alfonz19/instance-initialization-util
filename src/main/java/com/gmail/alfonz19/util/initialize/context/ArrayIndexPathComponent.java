@@ -1,6 +1,6 @@
 package com.gmail.alfonz19.util.initialize.context;
 
-public class ArrayIndexPathComponent extends AbstractPathComponent<Integer> {
+public class ArrayIndexPathComponent extends AbstractPathComponent {
 
     public ArrayIndexPathComponent(Integer value) {
         super(value, PathComponentType.ARRAY_INDEX);
@@ -12,6 +12,6 @@ public class ArrayIndexPathComponent extends AbstractPathComponent<Integer> {
         if (a != 0) {
             return a;
         }
-        return this.getValue().compareTo((Integer)other.getValue());
+        return ((Integer)this.getValue()).compareTo((Integer)other.getValue());
     }
 }
