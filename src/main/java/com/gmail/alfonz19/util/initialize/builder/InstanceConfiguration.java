@@ -12,10 +12,10 @@ import com.gmail.alfonz19.util.initialize.generator.RandomValueGenerator;
 import com.gmail.alfonz19.util.initialize.selector.SpecificTypePropertySelector;
 import com.gmail.alfonz19.util.initialize.util.IntrospectorCache;
 import com.gmail.alfonz19.util.initialize.util.InvocationSensor;
+import com.gmail.alfonz19.util.initialize.util.TypeReferenceUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.beans.PropertyDescriptor;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.Arrays;
@@ -235,7 +235,7 @@ public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SO
     private static <SOURCE_INSTANCE> Map<TypeVariable<?>, Type> typeVariableAssignment(Class<SOURCE_INSTANCE> sourceInstanceClass,
                                                                                        TypeReference<SOURCE_INSTANCE> typeReference) {
         TypeVariable<Class<SOURCE_INSTANCE>>[] typeParameters = sourceInstanceClass.getTypeParameters();
-        Type[] actualTypeArguments = ((ParameterizedType) typeReference.getType()).getActualTypeArguments();
+        Type[] actualTypeArguments = TypeReferenceUtil.getActualTypeArguments(typeReference);
 
 
         int typeParametersLength = typeParameters.length;
