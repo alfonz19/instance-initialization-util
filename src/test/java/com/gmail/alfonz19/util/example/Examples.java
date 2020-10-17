@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.hamcrest.CoreMatchers;
+import org.junit.Assert;
 import org.junit.Test;
 
 import static com.gmail.alfonz19.util.initialize.generator.Generators.array;
@@ -25,6 +27,8 @@ import static com.gmail.alfonz19.util.initialize.generator.Generators.randomStri
 import static com.gmail.alfonz19.util.initialize.generator.Generators.roundRobinGenerator;
 import static com.gmail.alfonz19.util.initialize.generator.Initialize.initialize;
 import static com.gmail.alfonz19.util.initialize.generator.Initialize.initializeList;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
 
 //type variables, unused method parameters, unused constructs, unused result of method call, useless assignment, unused variable, no assertion in tests.
 @SuppressWarnings({"squid:S119",
@@ -214,6 +218,7 @@ public class Examples {
                         instance(GenericClass::new, new TypeReference<GenericClass<Integer>>() {})
                         .setUnsetPropertiesRandomlyUsingGuessedType());
         System.out.println(instance);
+        assertThat(instance.getT(), notNullValue());
     }
 
     @Test

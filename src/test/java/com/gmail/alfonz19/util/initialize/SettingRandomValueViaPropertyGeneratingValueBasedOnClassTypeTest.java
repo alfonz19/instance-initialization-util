@@ -5,10 +5,15 @@ import lombok.Data;
 import java.util.Date;
 import java.util.UUID;
 
+import org.hamcrest.CoreMatchers;
+import org.junit.Assert;
 import org.junit.Test;
 
 import static com.gmail.alfonz19.util.initialize.generator.Generators.instance;
 import static com.gmail.alfonz19.util.initialize.generator.Initialize.initialize;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertThat;
 
 public class SettingRandomValueViaPropertyGeneratingValueBasedOnClassTypeTest /*extends AbstractTestSingleAndMultipleInstanceCreation<TestInstance>*/{
 
@@ -28,9 +33,10 @@ public class SettingRandomValueViaPropertyGeneratingValueBasedOnClassTypeTest /*
 
     @Test
     public void testName() {
-
         TestInstance testInstance = initialize(instance(TestInstance::new).setUnsetPropertiesRandomlyUsingGuessedType());
         System.out.println(testInstance);
+        assertThat(testInstance.getN1(), nullValue());
+        assertThat(testInstance.getSomeUUIDValue(), notNullValue());
     }
 
     @Data

@@ -1,10 +1,14 @@
 package com.gmail.alfonz19.util.initialize.generator;
 
+import com.gmail.alfonz19.util.initialize.context.CalculatedNodeData;
 import com.gmail.alfonz19.util.initialize.context.PathNode;
 import com.gmail.alfonz19.util.initialize.exception.InitializeException;
 import com.gmail.alfonz19.util.initialize.util.RandomUtil;
+import lombok.extern.slf4j.Slf4j;
 
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -16,19 +20,50 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @SuppressWarnings({"squid:S119", "squid:S1172", "unused"})//type variables, unused method parameters, unused constructs.
 public class RandomValueGenerator extends AbstractGenerator<Object> {
 
+    private final Class<?> willGenerate;
+    private final boolean canGenerate;
 
-    @Override
-    public Object create(PathNode pathNode) {
-        Class<?> instanceClassType = pathNode.getCalculatedNodeData().getClassType();
-        return randomValueFor(instanceClassType);
+    public RandomValueGenerator(PropertyDescriptor propertyDescriptor,
+                                CalculatedNodeData calculatedNodeData) {
+        Class<?> classType = propertyDescriptor.getPropertyType();
+
+        Type genericReturnType = propertyDescriptor.getReadMethod().getGenericReturnType();
+        boolean justAClass = genericReturnType instanceof Class<?>;
+        if (justAClass) {
+            this.willGenerate = classType;
+            this.canGenerate = supportsType(willGenerate);
+            return;
+        }
+
+        boolean isTypeVariable = genericReturnType instanceof TypeVariable;
+        if (isTypeVariable) {
+            if (calculatedNodeData.getTypeVariableAssignment().isEmpty()) {
+                log.debug("Unable to instantiate generic type {} because I have no info about actual implementation.", genericReturnType);
+                this.canGenerate = false;
+                this.willGenerate = null;
+            } else {
+                Type type = calculatedNodeData.getTypeVariableAssignment().get(genericReturnType);
+                if (type instanceof Class) {
+                    this.willGenerate = (Class<?>)type;
+                    this.canGenerate = supportsType(willGenerate);
+                } else {
+                    log.debug("Unable to instantiate generic type {} after substitution, because I have no idea what it is.", genericReturnType);
+                    this.canGenerate = false;
+                    this.willGenerate = null;
+                }
+            }
+        } else {
+            log.debug("I have no idea what this class ({}) is, cannot instantiate.", classType);
+            this.canGenerate = false;
+            this.willGenerate = null;
+        }
     }
 
-    public boolean canGenerateValueFor(PropertyDescriptor propertyDescriptor) {
-        //TODO MMUCHA: duplicate with com.gmail.alfonz19.util.initialize.builder.InstanceConfiguration.PropertyDescriptorInitialization figuring out classType should be in 1 place.
-        Class<?> classType = propertyDescriptor.getPropertyType();
+    private boolean supportsType(Class<?> classType) {
         if (classType.isEnum()) {
             return true;
         }
@@ -49,6 +84,15 @@ public class RandomValueGenerator extends AbstractGenerator<Object> {
                 java.math.BigDecimal.class);
 
         return supportedClasses.contains(classType);
+    }
+
+    @Override
+    public Object create(PathNode pathNode) {
+        return randomValueFor(willGenerate);
+    }
+
+    public boolean canGenerateValue() {
+        return canGenerate;
     }
 
     ////TODO MMUCHA: extension point via service loader or registration.
@@ -88,7 +132,7 @@ public class RandomValueGenerator extends AbstractGenerator<Object> {
                 return BigDecimal.valueOf(RandomUtil.INSTANCE.getRandom().nextDouble());
 
             default:
-                throw new InitializeException("Coding error, trying to initialize unsupported class type.");
+                throw new InitializeException("Coding error, trying to initialize unsupported class type: "+instanceClassType);
         }
     }
 }

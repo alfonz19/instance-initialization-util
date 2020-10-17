@@ -3,11 +3,13 @@ package com.gmail.alfonz19.util.initialize.generator;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.gmail.alfonz19.util.initialize.builder.CollectionConfiguration;
 import com.gmail.alfonz19.util.initialize.builder.InstanceConfiguration;
+import com.gmail.alfonz19.util.initialize.context.CalculatedNodeData;
 import com.gmail.alfonz19.util.initialize.util.ReflectUtil;
 import com.gmail.alfonz19.util.initialize.util.TypeReferenceUtil;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -66,8 +68,9 @@ public class Generators {
         return new EnumInstanceGenerator<>(classType, classType);
     }
 
-    public static RandomValueGenerator randomForGuessedType() {
-        return new RandomValueGenerator();
+    public static RandomValueGenerator randomForGuessedType(PropertyDescriptor propertyDescriptor,
+                                                            CalculatedNodeData calculatedNodeData) {
+        return new RandomValueGenerator(propertyDescriptor, calculatedNodeData);
     }
 
     public static DefaultValueGenerator defaultValue() {

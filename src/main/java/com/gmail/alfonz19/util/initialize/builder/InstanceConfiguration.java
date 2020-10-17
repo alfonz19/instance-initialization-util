@@ -9,12 +9,13 @@ import com.gmail.alfonz19.util.initialize.generator.AbstractGenerator;
 import com.gmail.alfonz19.util.initialize.generator.DefaultValueGenerator;
 import com.gmail.alfonz19.util.initialize.generator.Generators;
 import com.gmail.alfonz19.util.initialize.generator.Initialize;
-import com.gmail.alfonz19.util.initialize.generator.RandomValueGenerator;
 import com.gmail.alfonz19.util.initialize.selector.SpecificTypePropertySelector;
 import com.gmail.alfonz19.util.initialize.util.IntrospectorCache;
 import com.gmail.alfonz19.util.initialize.util.InvocationSensor;
 import com.gmail.alfonz19.util.initialize.util.ReflectUtil;
 import com.gmail.alfonz19.util.initialize.util.TypeReferenceUtil;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 import java.beans.PropertyDescriptor;
@@ -197,12 +198,19 @@ public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SO
     }
 
     public InstanceConfiguration<SOURCE_INSTANCE> setUnsetPropertiesRandomlyUsingGuessedType() {
-        RandomValueGenerator valueGenerator = Generators.randomForGuessedType();
         findUninitializedProperties().stream()
-                .filter(valueGenerator::canGenerateValueFor)
-                .forEach(propertyDescriptor -> addPropertyDescriptorInitialization(propertyDescriptor, valueGenerator));
+                .map(pd -> new Pair<>(pd, Generators.randomForGuessedType(pd, this.calculatedNodeData)))
+                .filter(pair->pair.getSecond().canGenerateValue())
+                .forEach(pair -> addPropertyDescriptorInitialization(pair.first, pair.second));
 
         return this;
+    }
+
+    @AllArgsConstructor
+    @Data
+    public static class Pair<T,K> {
+        private T first;
+        private K second;
     }
 
     public List<PropertyDescriptor> findUninitializedProperties() {
