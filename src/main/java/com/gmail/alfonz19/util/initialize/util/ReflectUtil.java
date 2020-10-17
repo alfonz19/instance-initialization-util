@@ -30,4 +30,16 @@ public enum ReflectUtil {
         ITEM_TYPE[] castedArray = (ITEM_TYPE[]) array;
         return items.toArray(castedArray);
     }
+
+    public static <T> Class<T> classTypeOfItemsProducedBySupplier(Supplier<? extends T> instanceSupplier) {
+        //noinspection unchecked
+        return (Class<T>) instanceSupplier.get().getClass();
+    }
+
+    public static <T> Class<T> replaceClassTypeIfItIsInterface(Class<T> sourceInstanceClass,
+                                                               Supplier<? extends T> instanceSupplier) {
+        return sourceInstanceClass.isInterface()
+                ? classTypeOfItemsProducedBySupplier(instanceSupplier)
+                : sourceInstanceClass;
+    }
 }

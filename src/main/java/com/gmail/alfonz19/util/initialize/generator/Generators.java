@@ -108,11 +108,13 @@ public class Generators {
     }
 
     public static <T> InstanceConfiguration<T> instance(Supplier<T> instanceSupplier) {
-        //noinspection unchecked
-        return new InstanceConfiguration<>((Class<T>)instanceSupplier.get().getClass(), instanceSupplier);
+        return new InstanceConfiguration<>(ReflectUtil.classTypeOfItemsProducedBySupplier(instanceSupplier), instanceSupplier);
     }
 
     public static <T> InstanceConfiguration<T> instance(Class<T> instanceClass) {
+        if (instanceClass.isInterface()) {
+            throw new IllegalArgumentException("Cannot create generator from interface");
+        }
         return instance(instanceClass, ReflectUtil.supplierFromClass(instanceClass));
     }
 

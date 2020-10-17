@@ -12,6 +12,7 @@ import com.gmail.alfonz19.util.initialize.generator.RandomValueGenerator;
 import com.gmail.alfonz19.util.initialize.selector.SpecificTypePropertySelector;
 import com.gmail.alfonz19.util.initialize.util.IntrospectorCache;
 import com.gmail.alfonz19.util.initialize.util.InvocationSensor;
+import com.gmail.alfonz19.util.initialize.util.ReflectUtil;
 import com.gmail.alfonz19.util.initialize.util.TypeReferenceUtil;
 import lombok.extern.slf4j.Slf4j;
 
@@ -53,7 +54,8 @@ public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SO
 
     public InstanceConfiguration(Class<SOURCE_INSTANCE> sourceInstanceClass,
                                   Supplier<? extends SOURCE_INSTANCE> instanceSupplier) {
-        this(sourceInstanceClass, instanceSupplier, Collections.emptyMap());
+        //introspector cannot work with interfaces.
+        this(ReflectUtil.replaceClassTypeIfItIsInterface(sourceInstanceClass, instanceSupplier), instanceSupplier, Collections.emptyMap());
     }
 
     private InstanceConfiguration(Class<SOURCE_INSTANCE> sourceInstanceClass,
