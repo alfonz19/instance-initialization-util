@@ -1,6 +1,6 @@
 package com.gmail.alfonz19.util.initialize.generator;
 
-import com.gmail.alfonz19.util.initialize.context.PathContext;
+import com.gmail.alfonz19.util.initialize.context.PathNode;
 import com.gmail.alfonz19.util.initialize.util.RandomUtil;
 
 public class LongInstanceGenerator extends AbstractNumberInstanceGenerator<Long, LongInstanceGenerator> {
@@ -14,7 +14,7 @@ public class LongInstanceGenerator extends AbstractNumberInstanceGenerator<Long,
     }
 
     @Override
-    public Long create(PathContext pathContext) {
+    public Long create(PathNode pathNode) {
         return RandomUtil.INSTANCE.longFromRange(min, max);
     }
 }

@@ -1,6 +1,6 @@
 package com.gmail.alfonz19.util.initialize.generator;
 
-import com.gmail.alfonz19.util.initialize.context.PathContext;
+import com.gmail.alfonz19.util.initialize.context.PathNode;
 import com.gmail.alfonz19.util.initialize.util.RandomUtil;
 
 public class ByteInstanceGenerator extends AbstractNumberInstanceGenerator<Byte, ByteInstanceGenerator> {
@@ -14,7 +14,7 @@ public class ByteInstanceGenerator extends AbstractNumberInstanceGenerator<Byte,
     }
 
     @Override
-    public Byte create(PathContext pathContext) {
+    public Byte create(PathNode pathNode) {
         return (byte) RandomUtil.INSTANCE.intFromRange((int) min, (int) max);
     }
 }

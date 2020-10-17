@@ -1,6 +1,7 @@
 package com.gmail.alfonz19.util.initialize;
 
 import com.gmail.alfonz19.util.initialize.context.PathContext;
+import com.gmail.alfonz19.util.initialize.context.PathNode;
 import com.gmail.alfonz19.util.initialize.generator.AbstractGenerator;
 import com.gmail.alfonz19.util.initialize.generator.Generators;
 import lombok.Data;
@@ -48,7 +49,7 @@ public class SettingListWithContextViaPropertyWhenShufflingIsTurnedOffTest exten
                                         Generators.constantString(null).updatedWithContext((a, b) -> b.getPath().getPathAsString()))
                                 .setPropertyTo(A::getValue, new AbstractGenerator<Integer>() {
                                     @Override
-                                    protected Integer create(PathContext pathContext) {
+                                    protected Integer create(PathNode pathNode) {
                                         return atomicInteger.getAndIncrement();
                                     }
                                 })

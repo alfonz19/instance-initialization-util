@@ -1,15 +1,15 @@
 package com.gmail.alfonz19.util.initialize.generator;
 
 import com.gmail.alfonz19.util.initialize.context.Path;
-import com.gmail.alfonz19.util.initialize.context.PathContext;
 import com.gmail.alfonz19.util.initialize.context.PathMatcher;
 import com.gmail.alfonz19.util.initialize.context.PathMatcherBuilder;
+import com.gmail.alfonz19.util.initialize.context.PathNode;
 import com.gmail.alfonz19.util.initialize.context.Rule;
 import lombok.AllArgsConstructor;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 
 public class RuleBuilder {
 
@@ -20,7 +20,7 @@ public class RuleBuilder {
     }
 
     public RuleBuilder ifPathEqualTo(Path path) {
-        rule.addTest((pathContext, classType) -> pathContext.getPath().equals(path));
+        rule.addTest((pathNode) -> pathNode.getPath().equals(path));
         return this;
     }
 
@@ -29,17 +29,17 @@ public class RuleBuilder {
     }
 
     public RuleBuilder ifPathMatches(PathMatcher pathMatcher) {
-        rule.addTest((pathContext, classType) -> pathMatcher.matches(pathContext.getPath()));
+        rule.addTest((pathNode) -> pathMatcher.matches(pathNode.getPath()));
         return this;
     }
 
     public RuleBuilder ifPropertyClassTypeIsEqualTo(Class<?> requestedClassType) {
-        rule.addTest((pathContext, classType) -> requestedClassType.equals(classType));
+        rule.addTest((pathNode) -> requestedClassType.equals(pathNode.getCalculatedNodeData().getClassType()));
         return this;
     }
 
     public RuleBuilder ifPropertyClassTypeIsAssignableFrom(Class<?> requestedClassType) {
-        rule.addTest((pathContext, classType) -> requestedClassType.isAssignableFrom(classType));
+        rule.addTest((pathNode) -> requestedClassType.isAssignableFrom(pathNode.getCalculatedNodeData().getClassType()));
         return this;
     }
 
@@ -55,11 +55,11 @@ public class RuleBuilder {
     private static final class RuleImpl implements Rule {
 
         private final AbstractGenerator<?> generator;
-        private final List<BiPredicate<PathContext, Class<?>>> tests = new LinkedList<>();
+        private final List<Predicate<PathNode>> tests = new LinkedList<>();
 
         @Override
-        public boolean appliesForPathAndType(PathContext pathContext, Class<?> classType) {
-            return tests.stream().map(e -> e.test(pathContext, classType)).filter(e -> !e).findFirst().orElse(true);
+        public boolean appliesForPathAndType(PathNode pathNode) {
+            return tests.stream().map(e -> e.test(pathNode)).filter(e -> !e).findFirst().orElse(true);
         }
 
         @Override
@@ -67,7 +67,7 @@ public class RuleBuilder {
             return generator;
         }
 
-        public void addTest(BiPredicate<PathContext, Class<?>> test) {
+        public void addTest(Predicate<PathNode> test) {
             tests.add(test);
         }
     }

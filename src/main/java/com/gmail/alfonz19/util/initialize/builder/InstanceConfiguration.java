@@ -1,8 +1,8 @@
 package com.gmail.alfonz19.util.initialize.builder;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.gmail.alfonz19.util.initialize.context.PathContext;
-import com.gmail.alfonz19.util.initialize.context.PathContext.CalculatedNodeData;
+import com.gmail.alfonz19.util.initialize.context.CalculatedNodeData;
+import com.gmail.alfonz19.util.initialize.context.PathNode;
 import com.gmail.alfonz19.util.initialize.context.Rule;
 import com.gmail.alfonz19.util.initialize.exception.InitializeException;
 import com.gmail.alfonz19.util.initialize.generator.AbstractGenerator;
@@ -12,12 +12,10 @@ import com.gmail.alfonz19.util.initialize.generator.RandomValueGenerator;
 import com.gmail.alfonz19.util.initialize.selector.SpecificTypePropertySelector;
 import com.gmail.alfonz19.util.initialize.util.IntrospectorCache;
 import com.gmail.alfonz19.util.initialize.util.InvocationSensor;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.beans.PropertyDescriptor;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
@@ -29,7 +27,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.Consumer;
@@ -83,32 +80,29 @@ public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SO
 //    }
 
     @Override
-    public SOURCE_INSTANCE create(PathContext pathContext) {
-        pathContext.setCalculatedNodeData(calculatedNodeData);
+    public SOURCE_INSTANCE create(PathNode pathNode) {
+        pathNode.setCalculatedNodeData(calculatedNodeData);
+
+
         SOURCE_INSTANCE instance = this.instanceSupplier.get();
 
-        applyRulesFromPathContext(pathContext);
+        applyRulesFromPathContext(pathNode);
 
-        applyAllInitializations(instance, pathContext);
+        applyAllInitializations(instance, pathNode);
         return instance;
     }
 
-    private void applyAllInitializations(SOURCE_INSTANCE instance, PathContext pathContext) {
-        this.propertyDescriptorsInitializations.forEach(initializations -> initializations.apply(instance, pathContext));
-
+    private void applyAllInitializations(SOURCE_INSTANCE instance, PathNode pathNode) {
+        this.propertyDescriptorsInitializations.forEach(initializations -> initializations.apply(instance, pathNode));
     }
 
-    private void applyRulesFromPathContext(PathContext pathContext) {
+    private void applyRulesFromPathContext(PathNode pathNode) {
         List<PropertyDescriptor> unsetProperties = findUnsetProperties();
         unsetProperties.forEach(propertyDescriptor -> {
-            Class<?> propertyType = propertyDescriptor.getPropertyType();
-            PathContext subPathContext = pathContext.createSubPathTraversingProperty(propertyDescriptor);
+            PathNode subPathNode = new PathNode.PropertyDescriptorBasedPathNode(pathNode, propertyDescriptor);
 
-            Optional<Rule> applicableRule = iteratorToStream(subPathContext.getJoinedRulesIteratorAcrossPathContext())
-                    .filter(rule -> rule.appliesForPathAndType(subPathContext, propertyType))
-                    .findFirst();
-
-            applicableRule.ifPresent(rule->addPropertyDescriptorsInitialization(propertyDescriptor, rule.getGenerator()));
+            subPathNode.findFirstApplicableRule()
+                    .ifPresent(rule->addPropertyDescriptorsInitialization(propertyDescriptor, rule.getGenerator()));
         });
     }
 
@@ -289,24 +283,23 @@ public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SO
     }
 
     private Class<?> getSourceInstanceClass() {
-        return calculatedNodeData.getInstanceClass();
+        return calculatedNodeData.getClassType();
     }
 
     @Getter
-    @AllArgsConstructor
     private static class PropertyDescriptorInitialization {
         private final PropertyDescriptor propertyDescriptor;
         private final AbstractGenerator<?> valueGenerator;
 
-        public void apply(Object instance, PathContext pathContext) {
-            try {
-                PathContext subContext =
-                        pathContext.createSubPathTraversingPropertyAndSetCalculatedData(propertyDescriptor);
-                Object value = Initialize.initialize(valueGenerator, subContext);
-                propertyDescriptor.getWriteMethod().invoke(instance, value);
-            } catch (IllegalAccessException| InvocationTargetException e) {
-                throw new InitializeException("Unable to use PropertyDescriptor writer method", e);
-            }
+        public PropertyDescriptorInitialization(PropertyDescriptor propertyDescriptor,
+                                                AbstractGenerator<?> valueGenerator) {
+            this.propertyDescriptor = propertyDescriptor;
+            this.valueGenerator = valueGenerator;
+        }
+
+        public void apply(Object instance, PathNode pathNode) {
+            PathNode subNode = new PathNode.PropertyDescriptorBasedPathNode(pathNode, propertyDescriptor);
+            subNode.setValue(instance, Initialize.initialize(valueGenerator, subNode));
         }
     }
 }

@@ -2,7 +2,7 @@ package com.gmail.alfonz19.util.initialize.generator;
 
 import com.gmail.alfonz19.util.initialize.context.Rule;
 
-import java.util.Iterator;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -24,7 +24,7 @@ public class Rules {
         return this;
     }
 
-    public Iterator<Rule> iterator() {
-        return ruleList.iterator();
+    public List<Rule> getRuleList() {
+        return Collections.unmodifiableList(ruleList);
     }
 }

@@ -1,6 +1,6 @@
 package com.gmail.alfonz19.util.initialize.generator;
 
-import com.gmail.alfonz19.util.initialize.context.PathContext;
+import com.gmail.alfonz19.util.initialize.context.PathNode;
 import com.gmail.alfonz19.util.initialize.exception.InitializeException;
 import com.gmail.alfonz19.util.initialize.util.RandomUtil;
 
@@ -21,8 +21,8 @@ public class RandomValueGenerator extends AbstractGenerator<Object> {
 
 
     @Override
-    public Object create(PathContext pathContext) {
-        Class<?> instanceClassType = pathContext.getCalculatedNodeData().getInstanceClass();
+    public Object create(PathNode pathNode) {
+        Class<?> instanceClassType = pathNode.getCalculatedNodeData().getClassType();
         return randomValueFor(instanceClassType);
     }
 

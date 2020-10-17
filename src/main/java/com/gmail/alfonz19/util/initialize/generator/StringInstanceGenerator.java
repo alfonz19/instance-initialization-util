@@ -1,6 +1,6 @@
 package com.gmail.alfonz19.util.initialize.generator;
 
-import com.gmail.alfonz19.util.initialize.context.PathContext;
+import com.gmail.alfonz19.util.initialize.context.PathNode;
 import com.gmail.alfonz19.util.initialize.util.RandomUtil;
 
 import java.util.LinkedList;
@@ -44,13 +44,13 @@ public class StringInstanceGenerator extends AbstractGenerator<String> {
         return this;
     }
 
-    public StringInstanceGenerator updatedWithContext(BiFunction<String, PathContext, String> updatingFunction) {
+    public StringInstanceGenerator updatedWithContext(BiFunction<String, PathNode, String> updatingFunction) {
         //TODO MMUCHA: implement!
         return this;
     }
 
     @Override
-    protected String create(PathContext pathContext) {
+    protected String create(PathNode pathNode) {
         String result = RandomUtil.INSTANCE.randomStringFromDecimalNumbers(sizeSpecification.getRandomSizeAccordingToSpecification());
         for (UnaryOperator<String> transformation : transformations) {
             result = transformation.apply(result);

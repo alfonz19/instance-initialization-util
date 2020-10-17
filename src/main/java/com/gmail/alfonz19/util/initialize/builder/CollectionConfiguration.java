@@ -1,7 +1,7 @@
 package com.gmail.alfonz19.util.initialize.builder;
 
 import com.gmail.alfonz19.util.initialize.context.PathComponent;
-import com.gmail.alfonz19.util.initialize.context.PathContext;
+import com.gmail.alfonz19.util.initialize.context.PathNode;
 import com.gmail.alfonz19.util.initialize.generator.AbstractGenerator;
 import com.gmail.alfonz19.util.initialize.generator.Initialize;
 import com.gmail.alfonz19.util.initialize.exception.InitializeException;
@@ -59,14 +59,15 @@ public class CollectionConfiguration<ITEM_TYPE, GENERATES> extends AbstractGener
     }
 
     @Override
-    public GENERATES create(PathContext pathContext) {
+    public GENERATES create(PathNode pathNode) {
         int numberOfItemsToBeGenerated = sizeSpecification.getRandomSizeAccordingToSpecification();
 
         if (!shuffled) {
             List<? extends ITEM_TYPE> items = IntStream.range(0, numberOfItemsToBeGenerated).boxed()
                     //create array-like subPaths using index.
-                    .map(pathContext::createSubPathTraversingArray)
-                    .map((Function<PathContext, ITEM_TYPE>) pt -> Initialize.initialize(itemGenerator, pt))
+                    //TODO MMUCHA: calculated node data as null??
+                    .map(index -> new PathNode.CollectionItemNode(pathNode, index, null))
+                    .map((Function<PathNode, ITEM_TYPE>) pt -> Initialize.initialize(itemGenerator, pt))
                     .collect(Collectors.toList());
             return listInstanceSupplier.apply(items);
         }
@@ -84,10 +85,11 @@ public class CollectionConfiguration<ITEM_TYPE, GENERATES> extends AbstractGener
         List<Integer> indices = IntStream.range(0, numberOfItemsToBeGenerated).boxed().collect(Collectors.toList());
         Collections.shuffle(indices);
 
-        Map<PathContext, ? extends ITEM_TYPE> instancePathToGeneratedValue = indices.stream()
-                .map(pathContext::createSubPathTraversingArray)
+        Map<PathNode, ? extends ITEM_TYPE> instancePathToGeneratedValue = indices.stream()
+                //TODO MMUCHA: calculated node data as null??
+                .map(index -> new PathNode.CollectionItemNode(pathNode, index, null))
                 .collect(Collectors.toMap(Function.identity(),
-                        (Function<PathContext, ITEM_TYPE>) pt -> Initialize.initialize(itemGenerator, pt)));
+                        (Function<PathNode, ITEM_TYPE>) pt -> Initialize.initialize(itemGenerator, pt)));
 
         List<? extends ITEM_TYPE> shuffledItems = instancePathToGeneratedValue.keySet().stream()
                 .sorted((o1, o2) -> {
