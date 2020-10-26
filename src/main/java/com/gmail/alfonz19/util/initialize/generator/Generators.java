@@ -67,6 +67,14 @@ public class Generators {
         return new EnumInstanceGenerator<>(classType, classType);
     }
 
+    public static <T extends K, K> EnumInstanceGenerator<T, K> enumeratedType(Class<T> classType, Class<K> interfaceEnumImplements) {
+        return new EnumInstanceGenerator<>(classType, interfaceEnumImplements);
+    }
+
+    public static <T extends K, K> EnumInstanceGenerator<T, K> enumeratedType(Class<T> classType, TypeReference<K> interfaceEnumImplements) {
+        return new EnumInstanceGenerator<>(classType, interfaceEnumImplements);
+    }
+
     public static RandomValueGenerator randomForGuessedType(boolean useDefaultValueAsFallback, boolean reusingGuessedType) {
         return new RandomValueGenerator(useDefaultValueAsFallback, reusingGuessedType);
     }

@@ -12,6 +12,7 @@ import com.gmail.alfonz19.util.initialize.generator.Generators;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Supplier;
 
 import org.junit.Test;
 
@@ -24,6 +25,8 @@ import static com.gmail.alfonz19.util.initialize.generator.Generators.randomStri
 import static com.gmail.alfonz19.util.initialize.generator.Generators.roundRobinGenerator;
 import static com.gmail.alfonz19.util.initialize.generator.Initialize.initialize;
 import static com.gmail.alfonz19.util.initialize.generator.Initialize.initializeList;
+import static org.hamcrest.CoreMatchers.anyOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
@@ -81,6 +84,28 @@ public class Examples {
         initialize(instance(RootDto::new)
                 .setEnumProperty(RootDto::getEnumerated).random()
                 .setAllPropertiesHavingType(String.class).toNull());
+    }
+
+    @Test
+    public void testEnumImplementingInterface() {
+        //noinspection rawtypes  //this is limitation of this usage, generic type cannot be guessed.
+        Supplier supplier = initialize(enumeratedType(EnumImplementingInterface.class, Supplier.class));
+        assertThat(supplier.get(), anyOf(is("A"), is("B")));
+    }
+
+    @Test
+    public void testEnumImplementingInterfaceWithTypeReference() {
+        Supplier<String> supplier =
+                initialize(enumeratedType(EnumImplementingInterface.class, new TypeReference<Supplier<String>>() {}));
+        assertThat(supplier.get(), anyOf(is("A"), is("B")));
+    }
+
+    public enum EnumImplementingInterface implements Supplier<String> {
+        A, B;
+
+        public String get() {
+            return name();
+        }
     }
 
     @Test
