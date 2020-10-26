@@ -1,6 +1,6 @@
 package com.gmail.alfonz19.util.initialize;
 
-import com.gmail.alfonz19.util.initialize.builder.CollectionConfiguration;
+import com.gmail.alfonz19.util.initialize.generator.CollectionGenerator;
 import com.gmail.alfonz19.util.initialize.generator.Generator;
 import com.gmail.alfonz19.util.initialize.generator.Generators;
 import com.gmail.alfonz19.util.initialize.selector.SpecificTypePropertySelector;
@@ -34,7 +34,7 @@ public class RandomEnumImplementingRunnableProperty extends AbstractTestSingleAn
                                         TestInstance testInstance) {
         assertThat(testInstance, notNullValue());
         List<Runnable> list = propertySelector.select(testInstance);
-        assertThat(list.size(), is(CollectionConfiguration.UNCONFIGURED_COLLECTION_SIZE));
+        assertThat(list.size(), is(CollectionGenerator.UNCONFIGURED_COLLECTION_SIZE));
         list.forEach(e-> {
             assertThat(e, notNullValue());
             assertTrue(e instanceof TestEnum);

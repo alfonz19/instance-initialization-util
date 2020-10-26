@@ -1,7 +1,6 @@
 package com.gmail.alfonz19.util.initialize.generator;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.gmail.alfonz19.util.initialize.builder.CollectionConfiguration;
 import com.gmail.alfonz19.util.initialize.context.PathNode;
 import com.gmail.alfonz19.util.initialize.util.ReflectUtil;
 import com.gmail.alfonz19.util.initialize.util.TypeReferenceUtil;
@@ -135,95 +134,95 @@ public class Generators {
         return new InstanceGenerator<>(classType, instanceSupplier);
     }
 
-    public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, List<ITEM_TYPE>> list(Class<ITEM_TYPE>clazz, Generator<ITEM_TYPE> itemGenerator) {
+    public static <ITEM_TYPE> CollectionGenerator<ITEM_TYPE, List<ITEM_TYPE>> list(Class<ITEM_TYPE>clazz, Generator<ITEM_TYPE> itemGenerator) {
         return list(ArrayList::new, itemGenerator);
     }
 
-    public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, List<ITEM_TYPE>> list(Generator<? extends ITEM_TYPE> itemGenerator) {
+    public static <ITEM_TYPE> CollectionGenerator<ITEM_TYPE, List<ITEM_TYPE>> list(Generator<? extends ITEM_TYPE> itemGenerator) {
         return list(ArrayList::new, itemGenerator);
     }
 
-    public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, List<ITEM_TYPE>> listWithNullItems(Class<ITEM_TYPE> itemClassType) {
+    public static <ITEM_TYPE> CollectionGenerator<ITEM_TYPE, List<ITEM_TYPE>> listWithNullItems(Class<ITEM_TYPE> itemClassType) {
         return list(ArrayList::new, nullGenerator());
     }
 
-    public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, List<ITEM_TYPE>> list(Function<Collection<? extends ITEM_TYPE>, List<ITEM_TYPE>> listInstanceCreationFunction,
-                                                                                       Generator<? extends ITEM_TYPE> itemGenerator) {
-        return new CollectionConfiguration<>(List.class, listInstanceCreationFunction, itemGenerator);
+    public static <ITEM_TYPE> CollectionGenerator<ITEM_TYPE, List<ITEM_TYPE>> list(Function<Collection<? extends ITEM_TYPE>, List<ITEM_TYPE>> listInstanceCreationFunction,
+                                                                                   Generator<? extends ITEM_TYPE> itemGenerator) {
+        return new CollectionGenerator<>(List.class, listInstanceCreationFunction, itemGenerator);
     }
 
-    public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, List<ITEM_TYPE>> list(TypeReference<List<ITEM_TYPE>> typeReference) {
+    public static <ITEM_TYPE> CollectionGenerator<ITEM_TYPE, List<ITEM_TYPE>> list(TypeReference<List<ITEM_TYPE>> typeReference) {
         return list(ArrayList::new, typeReference);
     }
 
-    public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, List<ITEM_TYPE>> list(
+    public static <ITEM_TYPE> CollectionGenerator<ITEM_TYPE, List<ITEM_TYPE>> list(
             Function<Collection<? extends ITEM_TYPE>, List<ITEM_TYPE>> listInstanceCreationFunction,
             TypeReference<List<ITEM_TYPE>> typeReference) {
 
-        return new CollectionConfiguration<>(listInstanceCreationFunction, typeReference);
+        return new CollectionGenerator<>(listInstanceCreationFunction, typeReference);
     }
 
-    public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, Set<ITEM_TYPE>> set(Class<ITEM_TYPE>clazz, Generator<ITEM_TYPE> itemGenerator) {
+    public static <ITEM_TYPE> CollectionGenerator<ITEM_TYPE, Set<ITEM_TYPE>> set(Class<ITEM_TYPE>clazz, Generator<ITEM_TYPE> itemGenerator) {
         return set(HashSet::new, itemGenerator);
     }
 
-    public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, Set<ITEM_TYPE>> set(Generator<ITEM_TYPE> itemGenerator) {
+    public static <ITEM_TYPE> CollectionGenerator<ITEM_TYPE, Set<ITEM_TYPE>> set(Generator<ITEM_TYPE> itemGenerator) {
         return set(HashSet::new, itemGenerator);
     }
 
-    public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, Set<ITEM_TYPE>> setWithNullItems(Class<ITEM_TYPE> itemClassType) {
+    public static <ITEM_TYPE> CollectionGenerator<ITEM_TYPE, Set<ITEM_TYPE>> setWithNullItems(Class<ITEM_TYPE> itemClassType) {
         return set(HashSet::new, nullGenerator());
     }
 
-    public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, Set<ITEM_TYPE>> set(Function<Collection<? extends ITEM_TYPE>, Set<ITEM_TYPE>> listInstanceCreationFunction,
-                                                                                     Generator<ITEM_TYPE> itemGenerator) {
-        return new CollectionConfiguration<>(Set.class, listInstanceCreationFunction, itemGenerator);
+    public static <ITEM_TYPE> CollectionGenerator<ITEM_TYPE, Set<ITEM_TYPE>> set(Function<Collection<? extends ITEM_TYPE>, Set<ITEM_TYPE>> listInstanceCreationFunction,
+                                                                                 Generator<ITEM_TYPE> itemGenerator) {
+        return new CollectionGenerator<>(Set.class, listInstanceCreationFunction, itemGenerator);
     }
 
-    public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, Set<ITEM_TYPE>> set(TypeReference<Set<ITEM_TYPE>> typeReference) {
+    public static <ITEM_TYPE> CollectionGenerator<ITEM_TYPE, Set<ITEM_TYPE>> set(TypeReference<Set<ITEM_TYPE>> typeReference) {
         return set(HashSet::new, typeReference);
     }
 
-    public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, Set<ITEM_TYPE>> set(
+    public static <ITEM_TYPE> CollectionGenerator<ITEM_TYPE, Set<ITEM_TYPE>> set(
             Function<Collection<? extends ITEM_TYPE>, Set<ITEM_TYPE>> setInstanceCreationFunction,
             TypeReference<Set<ITEM_TYPE>> typeReference) {
 
-        return new CollectionConfiguration<>(setInstanceCreationFunction, typeReference);
+        return new CollectionGenerator<>(setInstanceCreationFunction, typeReference);
     }
 
-    public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, Stream<ITEM_TYPE>> stream(Class<ITEM_TYPE>clazz, Generator<ITEM_TYPE> itemGenerator) {
+    public static <ITEM_TYPE> CollectionGenerator<ITEM_TYPE, Stream<ITEM_TYPE>> stream(Class<ITEM_TYPE>clazz, Generator<ITEM_TYPE> itemGenerator) {
         return stream(c -> new ArrayList<ITEM_TYPE>(c).stream(), itemGenerator);
     }
 
-    public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, Stream<ITEM_TYPE>> stream(Generator<ITEM_TYPE> itemGenerator) {
+    public static <ITEM_TYPE> CollectionGenerator<ITEM_TYPE, Stream<ITEM_TYPE>> stream(Generator<ITEM_TYPE> itemGenerator) {
         return stream(c -> new ArrayList<ITEM_TYPE>(c).stream(), itemGenerator);
     }
 
-    public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, Stream<ITEM_TYPE>> streamWithNullItems(Class<ITEM_TYPE> itemClassType) {
+    public static <ITEM_TYPE> CollectionGenerator<ITEM_TYPE, Stream<ITEM_TYPE>> streamWithNullItems(Class<ITEM_TYPE> itemClassType) {
         return stream(c -> new ArrayList<ITEM_TYPE>(c).stream(), nullGenerator());
     }
 
-    public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, Stream<ITEM_TYPE>> stream(Function<Collection<? extends ITEM_TYPE>, Stream<ITEM_TYPE>> listInstanceCreationFunction,
-                                                                                           Generator<ITEM_TYPE> itemGenerator) {
-        return new CollectionConfiguration<>(Stream.class, listInstanceCreationFunction, itemGenerator);
+    public static <ITEM_TYPE> CollectionGenerator<ITEM_TYPE, Stream<ITEM_TYPE>> stream(Function<Collection<? extends ITEM_TYPE>, Stream<ITEM_TYPE>> listInstanceCreationFunction,
+                                                                                       Generator<ITEM_TYPE> itemGenerator) {
+        return new CollectionGenerator<>(Stream.class, listInstanceCreationFunction, itemGenerator);
     }
 
-    public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, Stream<ITEM_TYPE>> stream(TypeReference<Stream<ITEM_TYPE>> typeReference) {
+    public static <ITEM_TYPE> CollectionGenerator<ITEM_TYPE, Stream<ITEM_TYPE>> stream(TypeReference<Stream<ITEM_TYPE>> typeReference) {
         return stream(c -> new ArrayList<ITEM_TYPE>(c).stream(), typeReference);
     }
 
-    public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, Stream<ITEM_TYPE>> stream(
+    public static <ITEM_TYPE> CollectionGenerator<ITEM_TYPE, Stream<ITEM_TYPE>> stream(
             Function<Collection<? extends ITEM_TYPE>, Stream<ITEM_TYPE>> streamInstanceCreationFunction,
             TypeReference<Stream<ITEM_TYPE>> typeReference) {
 
-        return new CollectionConfiguration<>(streamInstanceCreationFunction, typeReference);
+        return new CollectionGenerator<>(streamInstanceCreationFunction, typeReference);
     }
 
-    public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, ITEM_TYPE[]> array(Class<ITEM_TYPE> arrayType, Generator<ITEM_TYPE> itemGenerator) {
-        return new CollectionConfiguration<>(arrayType, items -> ReflectUtil.createArray(arrayType, items), itemGenerator);
+    public static <ITEM_TYPE> CollectionGenerator<ITEM_TYPE, ITEM_TYPE[]> array(Class<ITEM_TYPE> arrayType, Generator<ITEM_TYPE> itemGenerator) {
+        return new CollectionGenerator<>(arrayType, items -> ReflectUtil.createArray(arrayType, items), itemGenerator);
     }
 
-    public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, ITEM_TYPE[]> array(Generator<ITEM_TYPE> itemGenerator) {
+    public static <ITEM_TYPE> CollectionGenerator<ITEM_TYPE, ITEM_TYPE[]> array(Generator<ITEM_TYPE> itemGenerator) {
         //noinspection unchecked
         Class<ITEM_TYPE> arrayType = (Class<ITEM_TYPE>) GeneratorAccessor.getCalculatedNodeData(itemGenerator).getClassType();
         return array(arrayType, itemGenerator);

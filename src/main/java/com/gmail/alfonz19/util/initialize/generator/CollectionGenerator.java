@@ -1,4 +1,4 @@
-package com.gmail.alfonz19.util.initialize.builder;
+package com.gmail.alfonz19.util.initialize.generator;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.gmail.alfonz19.util.initialize.context.CalculatedNodeData;
@@ -6,12 +6,6 @@ import com.gmail.alfonz19.util.initialize.context.PathComponent;
 import com.gmail.alfonz19.util.initialize.context.PathNode;
 import com.gmail.alfonz19.util.initialize.context.Rule;
 import com.gmail.alfonz19.util.initialize.exception.InitializeException;
-import com.gmail.alfonz19.util.initialize.generator.AbstractGenerator;
-import com.gmail.alfonz19.util.initialize.generator.Generator;
-import com.gmail.alfonz19.util.initialize.generator.GeneratorAccessor;
-import com.gmail.alfonz19.util.initialize.generator.Generators;
-import com.gmail.alfonz19.util.initialize.generator.Initialize;
-import com.gmail.alfonz19.util.initialize.generator.SizeSpecification;
 import com.gmail.alfonz19.util.initialize.util.ReflectUtil;
 import com.gmail.alfonz19.util.initialize.util.TypeReferenceUtil;
 
@@ -28,7 +22,7 @@ import static com.gmail.alfonz19.util.initialize.util.TypeVariableAssignments.NO
 
 @SuppressWarnings({"java:S119", "squid:S1172", "unused", "squid:S1068", "FieldCanBeLocal"})
 //type variables, unused method parameters, unused constructs, field can be converted to local variable, same
-public class CollectionConfiguration<ITEM_TYPE, GENERATES> extends AbstractGenerator<GENERATES> {
+public class CollectionGenerator<ITEM_TYPE, GENERATES> extends AbstractGenerator<GENERATES> {
     //TODO MMUCHA: externalize.
     private static final int MAX_COLLECTION_LENGTH = 100;
     //TODO MMUCHA: externalize.
@@ -42,7 +36,7 @@ public class CollectionConfiguration<ITEM_TYPE, GENERATES> extends AbstractGener
     //this states, whether it's probable, that we have more specific information about type than one passed via PathNode.
     private final boolean overwriteCalculatedNodeData;
 
-    public CollectionConfiguration(Function<Collection<? extends ITEM_TYPE>, GENERATES> listInstanceSupplier, TypeReference<GENERATES> typeReference) {
+    public CollectionGenerator(Function<Collection<? extends ITEM_TYPE>, GENERATES> listInstanceSupplier, TypeReference<GENERATES> typeReference) {
         this.listInstanceSupplier = listInstanceSupplier;
         this.itemGenerator = null;
 
@@ -53,9 +47,9 @@ public class CollectionConfiguration<ITEM_TYPE, GENERATES> extends AbstractGener
         overwriteCalculatedNodeData = true;
     }
 
-    public CollectionConfiguration(Class<?> classType,
-                                   Function<Collection<? extends ITEM_TYPE>, GENERATES> listInstanceSupplier,
-                                   Generator<? extends ITEM_TYPE> itemGenerator) {
+    public CollectionGenerator(Class<?> classType,
+                               Function<Collection<? extends ITEM_TYPE>, GENERATES> listInstanceSupplier,
+                               Generator<? extends ITEM_TYPE> itemGenerator) {
         this.listInstanceSupplier = listInstanceSupplier;
         this.itemGenerator = itemGenerator;
 
@@ -63,26 +57,26 @@ public class CollectionConfiguration<ITEM_TYPE, GENERATES> extends AbstractGener
         this.overwriteCalculatedNodeData = false;
     }
 
-    public CollectionConfiguration<ITEM_TYPE, GENERATES> withMinSize(int minSize) {
+    public CollectionGenerator<ITEM_TYPE, GENERATES> withMinSize(int minSize) {
         sizeSpecification.setRequestedMinSize(minSize);
         return this;
     }
 
-    public CollectionConfiguration<ITEM_TYPE, GENERATES> withMaxSize(int maxSize) {
+    public CollectionGenerator<ITEM_TYPE, GENERATES> withMaxSize(int maxSize) {
         sizeSpecification.setRequestedMaxSize(maxSize);
         return this;
     }
 
-    public CollectionConfiguration<ITEM_TYPE, GENERATES> withSize(int size) {
+    public CollectionGenerator<ITEM_TYPE, GENERATES> withSize(int size) {
         sizeSpecification.setRequestedSize(size);
         return this;
     }
 
-    public CollectionConfiguration<ITEM_TYPE, GENERATES> shuffled() {
+    public CollectionGenerator<ITEM_TYPE, GENERATES> shuffled() {
         return shuffled(true);
     }
 
-    public CollectionConfiguration<ITEM_TYPE, GENERATES> shuffled(boolean shuffle) {
+    public CollectionGenerator<ITEM_TYPE, GENERATES> shuffled(boolean shuffle) {
         this.shuffled = shuffle;
         return this;
     }
