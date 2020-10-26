@@ -126,8 +126,7 @@ public class CollectionConfiguration<ITEM_TYPE, GENERATES> extends AbstractGener
         Collections.shuffle(indices);
 
         Map<PathNode, ? extends ITEM_TYPE> instancePathToGeneratedValue = indices.stream()
-                //TODO MMUCHA: calculated node data as null??
-                .map(index -> new PathNode.CollectionItemNode(pathNode, index, null))
+                .map(index -> new PathNode.CollectionItemNode(pathNode, index, itemsCalculatedNodeData))
                 .collect(Collectors.toMap(Function.identity(),
                         (Function<PathNode, ITEM_TYPE>) pt -> Initialize.initialize(itemGeneratorToUse, pt)));
 
