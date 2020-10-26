@@ -11,7 +11,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import static com.gmail.alfonz19.util.initialize.generator.Generators.instance;
-import static com.gmail.alfonz19.util.initialize.generator.InitializationUsingRules.withConfiguration;
+import static com.gmail.alfonz19.util.initialize.InitializationUsingRules.withConfiguration;
 import static com.gmail.alfonz19.util.initialize.generator.RuleBuilder.applyGenerator;
 
 public class CyclicGenericInitializationWithDepthLimitationTest {

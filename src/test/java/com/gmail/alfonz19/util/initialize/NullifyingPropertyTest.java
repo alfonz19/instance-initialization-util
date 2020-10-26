@@ -3,7 +3,6 @@ package com.gmail.alfonz19.util.initialize;
 import com.gmail.alfonz19.util.initialize.exception.SpecificTypePropertySelectorDoesNotDenoteProperty;
 import com.gmail.alfonz19.util.initialize.generator.Generator;
 import com.gmail.alfonz19.util.initialize.generator.Generators;
-import com.gmail.alfonz19.util.initialize.generator.Initialize;
 import com.gmail.alfonz19.util.initialize.selector.SpecificTypePropertySelector;
 import lombok.Data;
 

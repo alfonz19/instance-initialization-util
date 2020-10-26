@@ -3,7 +3,6 @@ package com.gmail.alfonz19.util.initialize;
 import com.gmail.alfonz19.testsupport.RepeatTest;
 import com.gmail.alfonz19.testsupport.RepeatedTestRule;
 import com.gmail.alfonz19.util.initialize.generator.Generator;
-import com.gmail.alfonz19.util.initialize.generator.Initialize;
 
 import java.util.List;
 import java.util.function.Consumer;

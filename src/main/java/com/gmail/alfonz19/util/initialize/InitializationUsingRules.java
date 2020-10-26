@@ -1,6 +1,9 @@
-package com.gmail.alfonz19.util.initialize.generator;
+package com.gmail.alfonz19.util.initialize;
 
 import com.gmail.alfonz19.util.initialize.context.PathNode;
+import com.gmail.alfonz19.util.initialize.generator.Generator;
+import com.gmail.alfonz19.util.initialize.generator.GeneratorAccessor;
+import com.gmail.alfonz19.util.initialize.generator.Rules;
 import lombok.AllArgsConstructor;
 
 import java.util.List;

@@ -1,6 +1,7 @@
 package com.gmail.alfonz19.util.initialize.generator;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.gmail.alfonz19.util.initialize.Initialize;
 import com.gmail.alfonz19.util.initialize.context.CalculatedNodeData;
 import com.gmail.alfonz19.util.initialize.context.PathComponent;
 import com.gmail.alfonz19.util.initialize.context.PathNode;

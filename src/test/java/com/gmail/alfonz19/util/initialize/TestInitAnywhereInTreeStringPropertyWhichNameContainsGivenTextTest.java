@@ -15,7 +15,7 @@ import org.junit.Test;
 
 import static com.gmail.alfonz19.util.initialize.generator.Generators.instance;
 import static com.gmail.alfonz19.util.initialize.generator.Generators.list;
-import static com.gmail.alfonz19.util.initialize.generator.InitializationUsingRules.withConfiguration;
+import static com.gmail.alfonz19.util.initialize.InitializationUsingRules.withConfiguration;
 import static com.gmail.alfonz19.util.initialize.generator.RuleBuilder.applyGenerator;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;

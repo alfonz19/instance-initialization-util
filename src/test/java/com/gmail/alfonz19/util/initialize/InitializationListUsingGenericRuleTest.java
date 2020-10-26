@@ -2,7 +2,6 @@ package com.gmail.alfonz19.util.initialize;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.gmail.alfonz19.testsupport.InitializedInstanceLogger;
-import com.gmail.alfonz19.util.initialize.generator.InitializationUsingRules;
 import com.gmail.alfonz19.util.initialize.generator.Rules;
 
 import java.util.ArrayList;

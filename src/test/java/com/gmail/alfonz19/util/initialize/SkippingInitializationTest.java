@@ -8,7 +8,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import static com.gmail.alfonz19.util.initialize.generator.Generators.instance;
-import static com.gmail.alfonz19.util.initialize.generator.Initialize.initialize;
+import static com.gmail.alfonz19.util.initialize.Initialize.initialize;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 
