@@ -3,11 +3,10 @@ package com.gmail.alfonz19.util.initialize.builder;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.gmail.alfonz19.util.initialize.context.CalculatedNodeData;
 import com.gmail.alfonz19.util.initialize.context.PathNode;
-import com.gmail.alfonz19.util.initialize.context.Rule;
 import com.gmail.alfonz19.util.initialize.exception.InitializeException;
 import com.gmail.alfonz19.util.initialize.generator.AbstractGenerator;
-import com.gmail.alfonz19.util.initialize.generator.Generator;
 import com.gmail.alfonz19.util.initialize.generator.DefaultValueGenerator;
+import com.gmail.alfonz19.util.initialize.generator.Generator;
 import com.gmail.alfonz19.util.initialize.generator.Generators;
 import com.gmail.alfonz19.util.initialize.generator.Initialize;
 import com.gmail.alfonz19.util.initialize.selector.SpecificTypePropertySelector;
@@ -23,21 +22,15 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Spliterator;
-import java.util.Spliterators;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 @Slf4j
-@SuppressWarnings({"squid:S119", "squid:S1172", "unused"})//type variables, unused method parameters, unused constructs.
+@SuppressWarnings({"squid:S119"})//type variables
 public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SOURCE_INSTANCE> {
 
     private final Supplier<? extends SOURCE_INSTANCE> instanceSupplier;
@@ -128,18 +121,20 @@ public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SO
         });
     }
 
-    private Stream<Rule> iteratorToStream(Iterator<Rule> iterator) {
-        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED), false);
+    @SafeVarargs
+    public final InstanceConfiguration<SOURCE_INSTANCE> skipProperty(SpecificTypePropertySelector<SOURCE_INSTANCE, ?> ... propertySelectors){
+        return skipProperties(Arrays.asList(propertySelectors));
     }
 
-    @SafeVarargs
-    public final InstanceConfiguration<SOURCE_INSTANCE> skipProperty(SpecificTypePropertySelector<SOURCE_INSTANCE, ?> ... stringFieldSelector){
+    public final InstanceConfiguration<SOURCE_INSTANCE> skipProperties(List<SpecificTypePropertySelector<SOURCE_INSTANCE, ?>> propertySelectors){
+        invocationSensor.getTouchedPropertyDescriptors(propertySelectors)
+                .forEach(this::addSkippingPropertyDescriptorInitialization);
         return this;
     }
 
     @SafeVarargs
-    public final InstanceConfiguration<SOURCE_INSTANCE> nullifyProperty(SpecificTypePropertySelector<SOURCE_INSTANCE, ?> ... stringFieldSelectors){
-        return nullifyProperties(Arrays.asList(stringFieldSelectors));
+    public final InstanceConfiguration<SOURCE_INSTANCE> nullifyProperty(SpecificTypePropertySelector<SOURCE_INSTANCE, ?> ... propertySelectors){
+        return nullifyProperties(Arrays.asList(propertySelectors));
     }
 
     public InstanceConfiguration<SOURCE_INSTANCE> nullifyProperties(List<SpecificTypePropertySelector<SOURCE_INSTANCE, ?>> propertySelectors) {
@@ -149,13 +144,12 @@ public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SO
     }
 
     public final InstanceConfiguration<SOURCE_INSTANCE> skipAllProperties(){
-        throw new UnsupportedOperationException("Not implemented yet");
+        findUninitializedProperties().forEach(this::addSkippingPropertyDescriptorInitialization);
+        return this;
     }
 
     public final InstanceConfiguration<SOURCE_INSTANCE> nullifyAllProperties(){
-        Collection<PropertyDescriptor> allPropertyDescriptors =
-                IntrospectorCache.INSTANCE.getAllPropertyDescriptors(getSourceInstanceClass());
-        List<PropertyDescriptor> missingPropertyDescriptors = findUninitializedProperties(allPropertyDescriptors);
+        List<PropertyDescriptor> missingPropertyDescriptors = findUninitializedProperties();
         DefaultValueGenerator<?> valueGenerator = Generators.defaultValue();
         missingPropertyDescriptors.forEach(pd -> addPropertyDescriptorInitialization(pd, valueGenerator));
         return this;
@@ -260,17 +254,33 @@ public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SO
     }
 
     private void addPropertyDescriptorInitialization(PropertyDescriptor propertyDescriptor, Generator<?> valueGenerator) {
-        if (this.propertyDescriptorsInitializations.containsKey(propertyDescriptor)) {
-            throw new InitializeException(String.format("Property %s is already configured.", propertyDescriptor));
-        }
-
         PropertyDescriptorInitialization pdi = (instance, pathNode) -> {
             PathNode.PropertyDescriptorBasedPathNode subNode =
                     new PathNode.PropertyDescriptorBasedPathNode(pathNode, propertyDescriptor);
             subNode.setValue(instance, Initialize.initialize(valueGenerator, subNode));
 
         };
+
+        addPropertyDescriptorInitialization(propertyDescriptor, pdi);
+    }
+
+    private void addSkippingPropertyDescriptorInitialization(PropertyDescriptor propertyDescriptor) {
+        PropertyDescriptorInitialization pdi = (instance, pathNode) -> {
+            //NO-OP
+        };
+        addPropertyDescriptorInitialization(propertyDescriptor, pdi);
+    }
+
+    private void addPropertyDescriptorInitialization(PropertyDescriptor propertyDescriptor,
+                                                     PropertyDescriptorInitialization pdi) {
+        testIfPropertyDescriptorIsNotUser(propertyDescriptor);
         this.propertyDescriptorsInitializations.put(propertyDescriptor, pdi);
+    }
+
+    private void testIfPropertyDescriptorIsNotUser(PropertyDescriptor propertyDescriptor) {
+        if (this.propertyDescriptorsInitializations.containsKey(propertyDescriptor)) {
+            throw new InitializeException(String.format("Property %s is already configured.", propertyDescriptor));
+        }
     }
 
     @FunctionalInterface
