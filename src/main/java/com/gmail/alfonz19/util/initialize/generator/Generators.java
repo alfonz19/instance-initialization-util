@@ -145,6 +145,10 @@ public class Generators {
         return new CollectionConfiguration<>(List.class, listInstanceCreationFunction, itemGenerator);
     }
 
+    public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, List<ITEM_TYPE>> list(TypeReference<List<ITEM_TYPE>> typeReference) {
+        return list(ArrayList::new, typeReference);
+    }
+
     public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, List<ITEM_TYPE>> list(
             Function<Collection<? extends ITEM_TYPE>, List<ITEM_TYPE>> listInstanceCreationFunction,
             TypeReference<List<ITEM_TYPE>> typeReference) {
