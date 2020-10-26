@@ -18,9 +18,4 @@ public class RoundRobinGenerator<T> extends CompositeGenerator<T> {
         indexOfGeneratorToUse = (indexOfGeneratorToUse + 1) % generators.size();
         return indexOfGeneratorToUse;
     }
-
-    @Override
-    public CalculatedNodeData getCalculatedNodeData() {
-        return new CalculatedNodeData(Object.class);    //TODO MMUCHA: fix.
-    }
 }

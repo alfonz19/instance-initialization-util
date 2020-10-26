@@ -3,6 +3,7 @@ package com.gmail.alfonz19.util.initialize.generator;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.gmail.alfonz19.util.initialize.builder.CollectionConfiguration;
 import com.gmail.alfonz19.util.initialize.builder.InstanceConfiguration;
+import com.gmail.alfonz19.util.initialize.context.PathNode;
 import com.gmail.alfonz19.util.initialize.util.ReflectUtil;
 import com.gmail.alfonz19.util.initialize.util.TypeReferenceUtil;
 import lombok.AccessLevel;
@@ -195,4 +196,12 @@ public class Generators {
         return array(arrayType, itemGenerator);
     }
 
+    public static <T> Generator<T> generatorFromSupplier(Supplier<T> supplier) {
+        return new AbstractGenerator<T>() {
+            @Override
+            protected T create(PathNode pathNode) {
+                return supplier.get();
+            }
+        };
+    }
 }

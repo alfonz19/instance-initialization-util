@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import com.gmail.alfonz19.util.initialize.util.TypeVariableAssignments;
 
 import static com.gmail.alfonz19.util.initialize.util.TypeVariableAssignments.NO_TYPE_VARIABLE_ASSIGNMENTS;
 
@@ -38,7 +39,6 @@ public class CollectionConfiguration<ITEM_TYPE, GENERATES> extends AbstractGener
     private final SizeSpecification sizeSpecification =
             new SizeSpecification(0, MAX_COLLECTION_LENGTH, UNCONFIGURED_COLLECTION_SIZE);
     private boolean shuffled;
-    private final CalculatedNodeData calculatedNodeData;
     //this states, whether it's probable, that we have more specific information about type than one passed via PathNode.
     private final boolean overwriteCalculatedNodeData;
 
@@ -47,9 +47,9 @@ public class CollectionConfiguration<ITEM_TYPE, GENERATES> extends AbstractGener
         this.itemGenerator = null;
 
         Class<GENERATES> classType = TypeReferenceUtil.getRawTypeClassType(typeReference);
-        calculatedNodeData = new CalculatedNodeData(classType,
-                typeReference.getType(),
-                ReflectUtil.typeVariableAssignment(classType, typeReference));
+        TypeVariableAssignments typeVariableAssignments = ReflectUtil.typeVariableAssignment(classType, typeReference);
+        setCalculatedNodeData(true,
+                new CalculatedNodeData(classType, typeReference.getType(), typeVariableAssignments));
         overwriteCalculatedNodeData = true;
     }
 
@@ -59,7 +59,7 @@ public class CollectionConfiguration<ITEM_TYPE, GENERATES> extends AbstractGener
         this.listInstanceSupplier = listInstanceSupplier;
         this.itemGenerator = itemGenerator;
 
-        this.calculatedNodeData = new CalculatedNodeData(classType, classType, NO_TYPE_VARIABLE_ASSIGNMENTS);
+        setCalculatedNodeData(true, new CalculatedNodeData(classType, classType, NO_TYPE_VARIABLE_ASSIGNMENTS));
         this.overwriteCalculatedNodeData = false;
     }
 
@@ -90,7 +90,7 @@ public class CollectionConfiguration<ITEM_TYPE, GENERATES> extends AbstractGener
     @Override
     protected GENERATES create(PathNode pathNode) {
         if (overwriteCalculatedNodeData || pathNode.getCalculatedNodeData() == null) {
-            pathNode.setCalculatedNodeData(calculatedNodeData);
+            pathNode.setCalculatedNodeData(getCalculatedNodeData());
         }
 
         int numberOfItemsToBeGenerated = sizeSpecification.getRandomSizeAccordingToSpecification();
@@ -162,10 +162,5 @@ public class CollectionConfiguration<ITEM_TYPE, GENERATES> extends AbstractGener
             itemGeneratorToUse = Generators.defaultValue();
         }
         return itemGeneratorToUse;
-    }
-
-    @Override
-    public CalculatedNodeData getCalculatedNodeData() {
-        return calculatedNodeData;
     }
 }

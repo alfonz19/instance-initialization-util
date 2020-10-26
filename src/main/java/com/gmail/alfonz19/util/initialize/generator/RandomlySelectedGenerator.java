@@ -14,10 +14,4 @@ public class RandomlySelectedGenerator<T> extends CompositeGenerator<T> {
     protected int selectGenerator() {
         return RandomUtil.INSTANCE.intFromRange(0, generators.size());
     }
-
-
-    @Override
-    public CalculatedNodeData getCalculatedNodeData() {
-        return new CalculatedNodeData(Object.class);    //TODO MMUCHA: fix.
-    }
 }

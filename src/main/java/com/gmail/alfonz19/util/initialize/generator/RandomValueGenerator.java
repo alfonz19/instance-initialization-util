@@ -255,10 +255,4 @@ public class RandomValueGenerator extends AbstractGenerator<Object> {
             return new GuessTypeResult(null, false);
         }
     }
-
-
-    @Override
-    public CalculatedNodeData getCalculatedNodeData() {
-        return new CalculatedNodeData(Object.class);    //TODO MMUCHA: fix.
-    }
 }

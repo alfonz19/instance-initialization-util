@@ -19,6 +19,9 @@ public class LimitedGenerator<T> extends AbstractGenerator<T> {
 
         this.remainingNumberOfItems = numberOfItems;
         this.generator = generator;
+        AbstractGenerator<T> castedGenerator = GeneratorAccessor.castGenerator(generator);
+        setCalculatedNodeData(castedGenerator.hasSingleCalculatedNodeData(),
+                castedGenerator.getCalculatedNodeData());
     }
 
     public int canGenerateNItems() {
@@ -40,10 +43,5 @@ public class LimitedGenerator<T> extends AbstractGenerator<T> {
         return Stream.generate(()-> create(pathNode))
                 .limit(Math.min(number, remainingNumberOfItems))
                 .collect(Collectors.toList());
-    }
-
-    @Override
-    public CalculatedNodeData getCalculatedNodeData() {
-        return GeneratorAccessor.getCalculatedNodeData(generator);
     }
 }

@@ -5,16 +5,15 @@ import com.gmail.alfonz19.util.initialize.context.CalculatedNodeData;
 @SuppressWarnings("java:S119")
 abstract class AbstractNumberInstanceGenerator<T extends Number, SELF_TYPE extends AbstractNumberInstanceGenerator<T, SELF_TYPE>> extends AbstractGenerator<T>{
 
-    private final CalculatedNodeData calculatedNodeData;
     protected T typeMin;
     protected T typeMax;
     protected T min;
     protected T max;
 
     protected AbstractNumberInstanceGenerator(Class<T> classType, T typeMin, T typeMax) {
+        super(true, new CalculatedNodeData(classType));
         this.typeMin = typeMin;
         this.typeMax = typeMax;
-        this.calculatedNodeData = new CalculatedNodeData(classType);
     }
 
     protected abstract SELF_TYPE getSelf();
@@ -27,10 +26,5 @@ abstract class AbstractNumberInstanceGenerator<T extends Number, SELF_TYPE exten
     public SELF_TYPE smallerThan(T max) {
         this.max = max;
         return getSelf();
-    }
-
-    @Override
-    public CalculatedNodeData getCalculatedNodeData() {
-        return calculatedNodeData;
     }
 }

@@ -36,7 +36,7 @@ public class GeneratorAccessor {
         return castGenerator(generator).create(number, pathNode);
     }
 
-    private static <T> AbstractGenerator<T> castGenerator(Generator<T> generator) {
+    public static <T> AbstractGenerator<T> castGenerator(Generator<T> generator) {
         //noinspection unchecked
         return (AbstractGenerator<T>) generator;
     }

@@ -12,6 +12,10 @@ import java.util.function.BiFunction;
 public abstract class AbstractStringInstanceGenerator extends AbstractGenerator<String> {
     protected final List<BiFunction<String, PathNode, String>> transformations = new LinkedList<>();
 
+    public AbstractStringInstanceGenerator() {
+        super(true, new CalculatedNodeData(String.class));
+    }
+
     public AbstractStringInstanceGenerator addPrefix(String prefix) {
         transformations.add((currentValue, path) -> prefix + currentValue);
         return this;
@@ -35,10 +39,5 @@ public abstract class AbstractStringInstanceGenerator extends AbstractGenerator<
             result = transformation.apply(result, pathNode);
         }
         return result;
-    }
-
-    @Override
-    public CalculatedNodeData getCalculatedNodeData() {
-        return new CalculatedNodeData(String.class);
     }
 }

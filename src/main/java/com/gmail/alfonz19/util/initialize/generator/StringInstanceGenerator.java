@@ -20,6 +20,10 @@ public class StringInstanceGenerator extends AbstractGenerator<String> {
 
     private final List<UnaryOperator<String>> transformations = new LinkedList<>();
 
+    public StringInstanceGenerator() {
+        super(true, new CalculatedNodeData(String.class));
+    }
+
     public StringInstanceGenerator withMinSize(int minLength) {
         sizeSpecification.setRequestedMinSize(minLength);
         return this;
@@ -57,10 +61,5 @@ public class StringInstanceGenerator extends AbstractGenerator<String> {
             result = transformation.apply(result);
         }
         return result;
-    }
-
-    @Override
-    public CalculatedNodeData getCalculatedNodeData() {
-        return new CalculatedNodeData(String.class);
     }
 }

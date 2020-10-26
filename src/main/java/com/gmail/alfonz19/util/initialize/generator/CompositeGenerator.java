@@ -1,5 +1,6 @@
 package com.gmail.alfonz19.util.initialize.generator;
 
+import com.gmail.alfonz19.util.initialize.context.CalculatedNodeData;
 import com.gmail.alfonz19.util.initialize.context.PathNode;
 import com.gmail.alfonz19.util.initialize.exception.InitializeException;
 
@@ -15,6 +16,7 @@ public abstract class CompositeGenerator<T> extends AbstractGenerator<T> {
         this.generators = new ArrayList<>(generators);
     }
 
+    //TODO MMUCHA: to better implement getting calculated node value, we need to be able to propagate to selected generator multiple calls, advancing only after create is called.
     protected abstract int selectGenerator();
 
     @Override

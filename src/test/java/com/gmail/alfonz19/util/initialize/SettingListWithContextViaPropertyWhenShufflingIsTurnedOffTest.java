@@ -1,8 +1,5 @@
 package com.gmail.alfonz19.util.initialize;
 
-import com.gmail.alfonz19.util.initialize.context.CalculatedNodeData;
-import com.gmail.alfonz19.util.initialize.context.PathNode;
-import com.gmail.alfonz19.util.initialize.generator.AbstractGenerator;
 import com.gmail.alfonz19.util.initialize.generator.Generator;
 import com.gmail.alfonz19.util.initialize.generator.Generators;
 import lombok.Data;
@@ -14,6 +11,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import static com.gmail.alfonz19.util.initialize.SettingListWithContextViaPropertyWhenShufflingIsTurnedOffTest.TestInstance;
+import static com.gmail.alfonz19.util.initialize.generator.Generators.generatorFromSupplier;
 import static com.gmail.alfonz19.util.initialize.generator.Generators.instance;
 import static com.gmail.alfonz19.util.initialize.generator.Generators.list;
 import static org.hamcrest.CoreMatchers.is;
@@ -48,18 +46,7 @@ public class SettingListWithContextViaPropertyWhenShufflingIsTurnedOffTest exten
                         list(instance(A::new)
                                 .setPropertyTo(A::getContext,
                                         Generators.constantString(null).updatedWithContext((a, b) -> b.getPath().getPathAsString()))
-                                .setPropertyTo(A::getValue, new AbstractGenerator<Integer>() {
-                                    @Override
-                                    protected Integer create(PathNode pathNode) {
-                                        return atomicInteger.getAndIncrement();
-                                    }
-
-
-                                    @Override
-                                    public CalculatedNodeData getCalculatedNodeData() {
-                                        return null;    //TODO MMUCHA: fix.
-                                    }
-                                })
+                                .setPropertyTo(A::getValue, generatorFromSupplier(atomicInteger::getAndIncrement))
                         ).shuffled(shufflingEnabled)
                                 .withSize(SIZE_OF_LIST)
                 );

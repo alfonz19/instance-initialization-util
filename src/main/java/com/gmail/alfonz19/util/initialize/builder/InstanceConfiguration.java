@@ -44,7 +44,6 @@ public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SO
     private final InvocationSensor<SOURCE_INSTANCE> invocationSensor;
 //    private final List<PropertyDescriptorInitialization> propertyDescriptorsInitializations = new LinkedList<>();
     private final Map<PropertyDescriptor, PropertyDescriptorInitialization> propertyDescriptorsInitializations = new LinkedHashMap<>();
-    private final CalculatedNodeData calculatedNodeData;
 
     public InstanceConfiguration(Class<SOURCE_INSTANCE> sourceInstanceClass,
                                  Supplier<? extends SOURCE_INSTANCE> instanceSupplier,
@@ -65,9 +64,9 @@ public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SO
 
         this.invocationSensor = new InvocationSensor<>(instanceClassToUse);
         this.instanceSupplier = instanceSupplier;
-        this.calculatedNodeData = new CalculatedNodeData(instanceClassToUse,
+        setCalculatedNodeData(true, new CalculatedNodeData(instanceClassToUse,
                 instanceClassToUse,
-                ReflectUtil.getTypeVariableAssignment(instanceClassToUse));
+                ReflectUtil.getTypeVariableAssignment(instanceClassToUse)));
 
     }
 
@@ -77,7 +76,8 @@ public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SO
                                   TypeVariableAssignments typeVariableAssignment) {
         this.invocationSensor = new InvocationSensor<>(sourceInstanceClass);
         this.instanceSupplier = instanceSupplier;
-        this.calculatedNodeData = new CalculatedNodeData(sourceInstanceClass, genericClassType, typeVariableAssignment);
+        setCalculatedNodeData(true,
+                new CalculatedNodeData(sourceInstanceClass, genericClassType, typeVariableAssignment));
     }
 
     //TODO MMUCHA: reimplement
@@ -102,7 +102,7 @@ public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SO
         //each item will have different pathNode.
         //calculatedNodeData will be always the same, but they need to be set at least one, and it cannot be done
         //sooner than here. So there is some inefficiency setting this variable multiple times.
-        pathNode.setCalculatedNodeData(calculatedNodeData);
+        pathNode.setCalculatedNodeData(getCalculatedNodeData());
 
 
         SOURCE_INSTANCE instance = this.instanceSupplier.get();
@@ -212,7 +212,7 @@ public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SO
     public InstanceConfiguration<SOURCE_INSTANCE> setUnsetPropertiesRandomlyUsingGuessedType() {
         findUninitializedProperties().stream()
                 .map(pd -> new Pair<>(pd, Generators.randomForGuessedType(false, true)))
-                .filter(pair->pair.getSecond().canGenerateValue(pair.first, this.calculatedNodeData))
+                .filter(pair->pair.getSecond().canGenerateValue(pair.first, getCalculatedNodeData()))
                 .forEach(pair -> addPropertyDescriptorInitialization(pair.first, pair.second));
 
         return this;
@@ -261,7 +261,7 @@ public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SO
     }
 
     private Class<?> getSourceInstanceClass() {
-        return calculatedNodeData.getClassType();
+        return getCalculatedNodeData().getClassType();
     }
 
     private void addPropertyDescriptorInitialization(PropertyDescriptor propertyDescriptor, Generator<?> valueGenerator) {
@@ -276,11 +276,6 @@ public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SO
 
         };
         this.propertyDescriptorsInitializations.put(propertyDescriptor, pdi);
-    }
-
-    @Override
-    public CalculatedNodeData getCalculatedNodeData() {
-        return calculatedNodeData;
     }
 
     @FunctionalInterface
