@@ -8,6 +8,7 @@ import com.gmail.alfonz19.util.example.to.InterfaceTestingClassB;
 import com.gmail.alfonz19.util.example.to.RootDto;
 import com.gmail.alfonz19.util.example.to.TestingInterface;
 import com.gmail.alfonz19.util.initialize.generator.Generators;
+import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -16,6 +17,8 @@ import java.util.function.Supplier;
 
 import org.junit.Test;
 
+import static com.gmail.alfonz19.util.initialize.Initialize.initialize;
+import static com.gmail.alfonz19.util.initialize.Initialize.initializeList;
 import static com.gmail.alfonz19.util.initialize.generator.Generators.array;
 import static com.gmail.alfonz19.util.initialize.generator.Generators.enumeratedType;
 import static com.gmail.alfonz19.util.initialize.generator.Generators.instance;
@@ -23,8 +26,6 @@ import static com.gmail.alfonz19.util.initialize.generator.Generators.list;
 import static com.gmail.alfonz19.util.initialize.generator.Generators.randomInt;
 import static com.gmail.alfonz19.util.initialize.generator.Generators.randomString;
 import static com.gmail.alfonz19.util.initialize.generator.Generators.roundRobinGenerator;
-import static com.gmail.alfonz19.util.initialize.Initialize.initialize;
-import static com.gmail.alfonz19.util.initialize.Initialize.initializeList;
 import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -87,6 +88,14 @@ public class Examples {
     }
 
     @Test
+    public void enumAssignment3() {
+        //simplified enum specification
+        initialize(instance(RootDto::new)
+                .setEnumProperty(RootDto::getEnumerated).randomFrom(RootDto.Enumerated.A)
+                .setAllPropertiesHavingType(String.class).toNull());
+    }
+
+    @Test
     public void testEnumImplementingInterface() {
         //noinspection rawtypes  //this is limitation of this usage, generic type cannot be guessed.
         Supplier supplier = initialize(enumeratedType(EnumImplementingInterface.class, Supplier.class));
@@ -98,6 +107,21 @@ public class Examples {
         Supplier<String> supplier =
                 initialize(enumeratedType(EnumImplementingInterface.class, new TypeReference<Supplier<String>>() {}));
         assertThat(supplier.get(), anyOf(is("A"), is("B")));
+
+        Supplier<String> supplier2 =
+                initialize(enumeratedType(EnumImplementingInterface.class, new TypeReference<Supplier<String>>() {})
+                        .randomFrom(EnumImplementingInterface.A));
+        assertThat(supplier2.get(), is("A"));
+    }
+
+    @Test
+    public void testAssigningEnumToFieldHavingTypeImplementedByEnum() {
+        AssignEnumToInterface instance = initialize(instance(AssignEnumToInterface.class)
+                .setProperty(AssignEnumToInterface::getSupplier)
+                .to(enumeratedType(EnumImplementingInterface.class, new TypeReference<Supplier<String>>() {})));
+
+
+        assertThat(instance.getSupplier().get(), anyOf(is("A"), is("B")));
     }
 
     public enum EnumImplementingInterface implements Supplier<String> {
@@ -106,6 +130,11 @@ public class Examples {
         public String get() {
             return name();
         }
+    }
+
+    @Data
+    public static class AssignEnumToInterface {
+        Supplier<String> supplier;
     }
 
     @Test
