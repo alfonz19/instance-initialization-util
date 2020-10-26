@@ -26,6 +26,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -286,5 +287,29 @@ public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SO
     @FunctionalInterface
     private interface PropertyDescriptorInitialization {
         void init(Object instance, PathNode pathNode);
+    }
+
+    public static class PropertyConfiguration<PROPERTY_TYPE, PARENT_BUILDER>
+            extends BuilderWithParentBuilderReference<PARENT_BUILDER> {
+
+        private final Consumer<Generator<PROPERTY_TYPE>> generatorSetCallback;
+
+        public PropertyConfiguration(PARENT_BUILDER parentBuilder, Consumer<Generator<PROPERTY_TYPE>> generatorSetCallback) {
+            super(parentBuilder);
+            this.generatorSetCallback = generatorSetCallback;
+        }
+
+        public PARENT_BUILDER toValue(PROPERTY_TYPE value) {
+            return to(Generators.constantGenerator(value));
+        }
+
+        public PARENT_BUILDER toNull() {
+            return to(Generators.nullGenerator());
+        }
+
+        public PARENT_BUILDER to(Generator<PROPERTY_TYPE> valueGenerator) {
+            generatorSetCallback.accept(valueGenerator);
+            return getParentBuilder();
+        }
     }
 }
