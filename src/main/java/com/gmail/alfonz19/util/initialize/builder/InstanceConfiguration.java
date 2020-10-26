@@ -255,11 +255,6 @@ public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SO
                 propertyDescriptors.forEach(pd -> addPropertyDescriptorInitialization(pd, valueGenerator)));
     }
 
-    ////TODO MMUCHA: fix, was probably inlined. revert if possible.
-    private <K> Consumer<Generator<K>> addPropertyDescriptorInitialization(PropertyDescriptor propertyDescriptor) {
-        return valueGenerator -> addPropertyDescriptorInitialization(propertyDescriptor, valueGenerator);
-    }
-
     private Class<?> getSourceInstanceClass() {
         return getCalculatedNodeData().getClassType();
     }
