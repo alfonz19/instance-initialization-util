@@ -1,14 +1,11 @@
-package com.gmail.alfonz19.util.initialize.builder;
+package com.gmail.alfonz19.util.initialize.generator;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.gmail.alfonz19.util.initialize.builder.BuilderWithParentBuilderReference;
+import com.gmail.alfonz19.util.initialize.builder.EnumConfiguration;
 import com.gmail.alfonz19.util.initialize.context.CalculatedNodeData;
 import com.gmail.alfonz19.util.initialize.context.PathNode;
 import com.gmail.alfonz19.util.initialize.exception.InitializeException;
-import com.gmail.alfonz19.util.initialize.generator.AbstractGenerator;
-import com.gmail.alfonz19.util.initialize.generator.DefaultValueGenerator;
-import com.gmail.alfonz19.util.initialize.generator.Generator;
-import com.gmail.alfonz19.util.initialize.generator.Generators;
-import com.gmail.alfonz19.util.initialize.generator.Initialize;
 import com.gmail.alfonz19.util.initialize.selector.SpecificTypePropertySelector;
 import com.gmail.alfonz19.util.initialize.util.IntrospectorCache;
 import com.gmail.alfonz19.util.initialize.util.InvocationSensor;
@@ -32,24 +29,24 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @SuppressWarnings({"squid:S119"})//type variables
-public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SOURCE_INSTANCE> {
+public class InstanceGenerator<SOURCE_INSTANCE> extends AbstractGenerator<SOURCE_INSTANCE> {
 
     private final Supplier<? extends SOURCE_INSTANCE> instanceSupplier;
     private final InvocationSensor<SOURCE_INSTANCE> invocationSensor;
 //    private final List<PropertyDescriptorInitialization> propertyDescriptorsInitializations = new LinkedList<>();
     private final Map<PropertyDescriptor, PropertyDescriptorInitialization> propertyDescriptorsInitializations = new LinkedHashMap<>();
 
-    public InstanceConfiguration(Class<SOURCE_INSTANCE> sourceInstanceClass,
-                                 Supplier<? extends SOURCE_INSTANCE> instanceSupplier,
-                                 TypeReference<SOURCE_INSTANCE> typeReference) {
+    public InstanceGenerator(Class<SOURCE_INSTANCE> sourceInstanceClass,
+                             Supplier<? extends SOURCE_INSTANCE> instanceSupplier,
+                             TypeReference<SOURCE_INSTANCE> typeReference) {
         this(sourceInstanceClass,
                 typeReference.getType(),
                 instanceSupplier, ReflectUtil.typeVariableAssignment(sourceInstanceClass, typeReference)
         );
     }
 
-    public InstanceConfiguration(Class<SOURCE_INSTANCE> sourceInstanceClass,
-                                  Supplier<? extends SOURCE_INSTANCE> instanceSupplier) {
+    public InstanceGenerator(Class<SOURCE_INSTANCE> sourceInstanceClass,
+                             Supplier<? extends SOURCE_INSTANCE> instanceSupplier) {
 
         //noinspection unchecked
         Class<SOURCE_INSTANCE> instanceClassToUse = (sourceInstanceClass == null || sourceInstanceClass.isInterface())
@@ -64,10 +61,10 @@ public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SO
 
     }
 
-    private InstanceConfiguration(Class<SOURCE_INSTANCE> sourceInstanceClass,
-                                  Type genericClassType,
-                                  Supplier<? extends SOURCE_INSTANCE> instanceSupplier,
-                                  TypeVariableAssignments typeVariableAssignment) {
+    private InstanceGenerator(Class<SOURCE_INSTANCE> sourceInstanceClass,
+                              Type genericClassType,
+                              Supplier<? extends SOURCE_INSTANCE> instanceSupplier,
+                              TypeVariableAssignments typeVariableAssignment) {
         this.invocationSensor = new InvocationSensor<>(sourceInstanceClass);
         this.instanceSupplier = instanceSupplier;
         setCalculatedNodeData(true,
@@ -75,17 +72,17 @@ public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SO
     }
 
     //TODO MMUCHA: reimplement
-//    public final <K> InstanceConfiguration<SOURCE_INSTANCE> referringToFieldUpContextPath(SpecificTypePropertySelector<SOURCE_INSTANCE, K> stringFieldSelector, int levelsUp) {
+//    public final <K> InstanceGenerator<SOURCE_INSTANCE> referringToFieldUpContextPath(SpecificTypePropertySelector<SOURCE_INSTANCE, K> stringFieldSelector, int levelsUp) {
 //        return this;
 //    }
 //
     //TODO MMUCHA: reimplement
-//    public final <K, L> InstanceConfiguration<SOURCE_INSTANCE> referringToFieldUpContextPath(SpecificTypePropertySelector<SOURCE_INSTANCE, K> stringFieldSelector, int levelsUp, Class<L> expectedTypeOfUpNode, SpecificTypePropertySelector<L, K> selector) {
+//    public final <K, L> InstanceGenerator<SOURCE_INSTANCE> referringToFieldUpContextPath(SpecificTypePropertySelector<SOURCE_INSTANCE, K> stringFieldSelector, int levelsUp, Class<L> expectedTypeOfUpNode, SpecificTypePropertySelector<L, K> selector) {
 //        return this;
 //    }
 
     //TODO MMUCHA: reimplement
-//    public final InstanceConfiguration<SOURCE_INSTANCE> withPathContext(BiConsumer<InstanceConfiguration<SOURCE_INSTANCE>, PathContext> withPathContext) {
+//    public final InstanceGenerator<SOURCE_INSTANCE> withPathContext(BiConsumer<InstanceGenerator<SOURCE_INSTANCE>, PathContext> withPathContext) {
 //        withPathContext.accept(this, new PathContext());
 //        return this;
 //    }
@@ -123,40 +120,40 @@ public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SO
     }
 
     @SafeVarargs
-    public final InstanceConfiguration<SOURCE_INSTANCE> skipProperty(SpecificTypePropertySelector<SOURCE_INSTANCE, ?> ... propertySelectors){
+    public final InstanceGenerator<SOURCE_INSTANCE> skipProperty(SpecificTypePropertySelector<SOURCE_INSTANCE, ?> ... propertySelectors){
         return skipProperties(Arrays.asList(propertySelectors));
     }
 
-    public final InstanceConfiguration<SOURCE_INSTANCE> skipProperties(List<SpecificTypePropertySelector<SOURCE_INSTANCE, ?>> propertySelectors){
+    public final InstanceGenerator<SOURCE_INSTANCE> skipProperties(List<SpecificTypePropertySelector<SOURCE_INSTANCE, ?>> propertySelectors){
         invocationSensor.getTouchedPropertyDescriptors(propertySelectors)
                 .forEach(this::addSkippingPropertyDescriptorInitialization);
         return this;
     }
 
     @SafeVarargs
-    public final InstanceConfiguration<SOURCE_INSTANCE> nullifyProperty(SpecificTypePropertySelector<SOURCE_INSTANCE, ?> ... propertySelectors){
+    public final InstanceGenerator<SOURCE_INSTANCE> nullifyProperty(SpecificTypePropertySelector<SOURCE_INSTANCE, ?> ... propertySelectors){
         return nullifyProperties(Arrays.asList(propertySelectors));
     }
 
-    public InstanceConfiguration<SOURCE_INSTANCE> nullifyProperties(List<SpecificTypePropertySelector<SOURCE_INSTANCE, ?>> propertySelectors) {
+    public InstanceGenerator<SOURCE_INSTANCE> nullifyProperties(List<SpecificTypePropertySelector<SOURCE_INSTANCE, ?>> propertySelectors) {
         Collection<PropertyDescriptor> propertyDescriptors = invocationSensor.getTouchedPropertyDescriptors(propertySelectors);
         propertyDescriptors.forEach(e -> addPropertyDescriptorInitialization(e, Generators.nullGenerator()));
         return this;
     }
 
-    public final InstanceConfiguration<SOURCE_INSTANCE> skipAllProperties(){
+    public final InstanceGenerator<SOURCE_INSTANCE> skipAllProperties(){
         findUninitializedProperties().forEach(this::addSkippingPropertyDescriptorInitialization);
         return this;
     }
 
-    public final InstanceConfiguration<SOURCE_INSTANCE> nullifyAllProperties(){
+    public final InstanceGenerator<SOURCE_INSTANCE> nullifyAllProperties(){
         List<PropertyDescriptor> missingPropertyDescriptors = findUninitializedProperties();
         DefaultValueGenerator<?> valueGenerator = Generators.defaultValue();
         missingPropertyDescriptors.forEach(pd -> addPropertyDescriptorInitialization(pd, valueGenerator));
         return this;
     }
 
-    public <PROPERTY_TYPE extends Enum<?>> EnumConfiguration<PROPERTY_TYPE, InstanceConfiguration<SOURCE_INSTANCE>>
+    public <PROPERTY_TYPE extends Enum<?>> EnumConfiguration<PROPERTY_TYPE, InstanceGenerator<SOURCE_INSTANCE>>
     setEnumProperty(SpecificTypePropertySelector<SOURCE_INSTANCE, PROPERTY_TYPE> propertySelector) {
         PropertyDescriptor propertyDescriptor = invocationSensor.getTouchedPropertyDescriptor(propertySelector);
 
@@ -166,7 +163,7 @@ public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SO
                 valueGenerator -> addPropertyDescriptorInitialization(propertyDescriptor, valueGenerator));
     }
 
-    public <PROPERTY_TYPE> PropertyConfiguration<PROPERTY_TYPE, InstanceConfiguration<SOURCE_INSTANCE>>
+    public <PROPERTY_TYPE> PropertyConfiguration<PROPERTY_TYPE, InstanceGenerator<SOURCE_INSTANCE>>
     setProperty(SpecificTypePropertySelector<SOURCE_INSTANCE, PROPERTY_TYPE> propertySelector){
         PropertyDescriptor propertyDescriptor = invocationSensor.getTouchedPropertyDescriptor(propertySelector);
 
@@ -177,34 +174,34 @@ public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SO
                 });
     }
 
-    public <PROPERTY_TYPE> InstanceConfiguration<SOURCE_INSTANCE> setPropertyTo(SpecificTypePropertySelector<SOURCE_INSTANCE, PROPERTY_TYPE> propertySelector, Generator<PROPERTY_TYPE> valueGenerator){
+    public <PROPERTY_TYPE> InstanceGenerator<SOURCE_INSTANCE> setPropertyTo(SpecificTypePropertySelector<SOURCE_INSTANCE, PROPERTY_TYPE> propertySelector, Generator<PROPERTY_TYPE> valueGenerator){
         PropertyDescriptor propertyDescriptor = invocationSensor.getTouchedPropertyDescriptor(propertySelector);
         addPropertyDescriptorInitialization(propertyDescriptor, valueGenerator);
         return this;
     }
 
-    public <PROPERTY_TYPE> InstanceConfiguration<SOURCE_INSTANCE> setPropertyToValue(SpecificTypePropertySelector<SOURCE_INSTANCE, PROPERTY_TYPE> propertySelector, PROPERTY_TYPE value){
+    public <PROPERTY_TYPE> InstanceGenerator<SOURCE_INSTANCE> setPropertyToValue(SpecificTypePropertySelector<SOURCE_INSTANCE, PROPERTY_TYPE> propertySelector, PROPERTY_TYPE value){
         return setPropertyTo(propertySelector, Generators.constantGenerator(value));
     }
 
-    public <PROPERTY_TYPE> InstanceConfiguration<SOURCE_INSTANCE> setPropertyToNull(SpecificTypePropertySelector<SOURCE_INSTANCE, PROPERTY_TYPE> propertySelector){
+    public <PROPERTY_TYPE> InstanceGenerator<SOURCE_INSTANCE> setPropertyToNull(SpecificTypePropertySelector<SOURCE_INSTANCE, PROPERTY_TYPE> propertySelector){
         return setPropertyTo(propertySelector, Generators.nullGenerator());
     }
 
-    public <K> PropertyConfiguration<K, InstanceConfiguration<SOURCE_INSTANCE>> setAllPropertiesHavingType(Class<K> classType) {
+    public <K> PropertyConfiguration<K, InstanceGenerator<SOURCE_INSTANCE>> setAllPropertiesHavingType(Class<K> classType) {
         Collection<PropertyDescriptor> propertyDescriptorsHavingType =
                 IntrospectorCache.INSTANCE.getPropertyDescriptorsComplyingToType(getSourceInstanceClass(), classType);
 
         return addGeneratorsToPropertyDescriptors(propertyDescriptorsHavingType);
     }
 
-    public <K> PropertyConfiguration<K, InstanceConfiguration<SOURCE_INSTANCE>> setUnsetPropertiesHavingType(Class<K> classType) {
+    public <K> PropertyConfiguration<K, InstanceGenerator<SOURCE_INSTANCE>> setUnsetPropertiesHavingType(Class<K> classType) {
         List<PropertyDescriptor> missingPropertyDescriptors = findUninitializedProperties(classType);
 
         return addGeneratorsToPropertyDescriptors(missingPropertyDescriptors);
     }
 
-    public InstanceConfiguration<SOURCE_INSTANCE> setUnsetPropertiesRandomlyUsingGuessedType() {
+    public InstanceGenerator<SOURCE_INSTANCE> setUnsetPropertiesRandomlyUsingGuessedType() {
         findUninitializedProperties().stream()
                 .map(pd -> new Pair<>(pd, Generators.randomForGuessedType(false, true)))
                 .filter(pair->pair.getSecond().canGenerateValue(pair.first, getCalculatedNodeData()))
@@ -244,7 +241,7 @@ public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SO
     }
 
 
-    private <K> PropertyConfiguration<K, InstanceConfiguration<SOURCE_INSTANCE>> addGeneratorsToPropertyDescriptors(
+    private <K> PropertyConfiguration<K, InstanceGenerator<SOURCE_INSTANCE>> addGeneratorsToPropertyDescriptors(
             Collection<PropertyDescriptor> propertyDescriptors) {
         return new PropertyConfiguration<>(this, valueGenerator ->
                 propertyDescriptors.forEach(pd -> addPropertyDescriptorInitialization(pd, valueGenerator)));

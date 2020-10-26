@@ -2,7 +2,6 @@ package com.gmail.alfonz19.util.initialize.generator;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.gmail.alfonz19.util.initialize.builder.CollectionConfiguration;
-import com.gmail.alfonz19.util.initialize.builder.InstanceConfiguration;
 import com.gmail.alfonz19.util.initialize.context.PathNode;
 import com.gmail.alfonz19.util.initialize.util.ReflectUtil;
 import com.gmail.alfonz19.util.initialize.util.TypeReferenceUtil;
@@ -110,21 +109,21 @@ public class Generators {
         return new ConstantGenerator<>(null);
     }
 
-    public static <T> InstanceConfiguration<T> instance(Supplier<T> instanceSupplier, TypeReference<T> typeReference) {
-        return new InstanceConfiguration<>(TypeReferenceUtil.getRawTypeClassType(typeReference), instanceSupplier, typeReference);
+    public static <T> InstanceGenerator<T> instance(Supplier<T> instanceSupplier, TypeReference<T> typeReference) {
+        return new InstanceGenerator<>(TypeReferenceUtil.getRawTypeClassType(typeReference), instanceSupplier, typeReference);
     }
 
-    public static <T> InstanceConfiguration<T> instance(TypeReference<T> typeReference) {
+    public static <T> InstanceGenerator<T> instance(TypeReference<T> typeReference) {
         Class<T> rawTypeClassType = TypeReferenceUtil.getRawTypeClassType(typeReference);
         Supplier<T> supplier = ReflectUtil.supplierFromClass(rawTypeClassType);
         return instance(supplier, typeReference);
     }
 
-    public static <T> InstanceConfiguration<T> instance(Supplier<T> instanceSupplier) {
+    public static <T> InstanceGenerator<T> instance(Supplier<T> instanceSupplier) {
         return instance(null, instanceSupplier);
     }
 
-    public static <T> InstanceConfiguration<T> instance(Class<T> instanceClass) {
+    public static <T> InstanceGenerator<T> instance(Class<T> instanceClass) {
         if (instanceClass.isInterface()) {
             throw new IllegalArgumentException("Cannot create generator from interface");
         }
@@ -132,8 +131,8 @@ public class Generators {
     }
 
     //an alternative to type Generators.<{TYPE}>instance({supplier})
-    public static <T, K extends T> InstanceConfiguration<T> instance(Class<T>classType, Supplier<K> instanceSupplier) {
-        return new InstanceConfiguration<>(classType, instanceSupplier);
+    public static <T, K extends T> InstanceGenerator<T> instance(Class<T>classType, Supplier<K> instanceSupplier) {
+        return new InstanceGenerator<>(classType, instanceSupplier);
     }
 
     public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, List<ITEM_TYPE>> list(Class<ITEM_TYPE>clazz, Generator<ITEM_TYPE> itemGenerator) {
