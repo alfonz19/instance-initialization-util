@@ -6,8 +6,8 @@ import com.gmail.alfonz19.util.example.to.GenericSubClass;
 import com.gmail.alfonz19.util.initialize.generator.Rules;
 import lombok.Data;
 
-import org.junit.ClassRule;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
 
 import static com.gmail.alfonz19.util.initialize.generator.Generators.instance;
@@ -16,8 +16,8 @@ import static com.gmail.alfonz19.util.initialize.generator.RuleBuilder.applyGene
 
 public class CyclicGenericInitializationWithDepthLimitationTest {
 
-    @ClassRule
-    public static InitializedInstanceLogger initializedInstanceLogger = new InitializedInstanceLogger();
+    @Rule
+    public InitializedInstanceLogger initializedInstanceLogger = new InitializedInstanceLogger();
 
     @Ignore
     @Test

@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.AssumptionViolatedException;
 import org.junit.runner.Description;
 
-@Slf4j(topic = "TESTS")
+@Slf4j(topic = "INITIALIZED_INSTANCE")
 public class InitializedInstanceLogger extends org.junit.rules.TestWatcher {
 
     private static final ObjectWriter objectWriter = new ObjectMapper().writerWithDefaultPrettyPrinter();

@@ -10,7 +10,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.hamcrest.CoreMatchers;
-import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 
 import static com.gmail.alfonz19.util.initialize.generator.Generators.instance;
@@ -24,8 +24,8 @@ import static org.junit.Assert.assertThat;
 
 public class TestInitAnywhereInTreeStringPropertyWhichNameContainsGivenTextTest {
 
-    @ClassRule
-    public static InitializedInstanceLogger initializedInstanceLogger = new InitializedInstanceLogger();
+    @Rule
+    public InitializedInstanceLogger initializedInstanceLogger = new InitializedInstanceLogger();
 
     @Test
     public void initAnywhereInTreeStringPropertyWhichNameContainsGivenText() {

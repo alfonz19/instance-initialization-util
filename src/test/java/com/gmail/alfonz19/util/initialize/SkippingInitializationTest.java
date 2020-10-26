@@ -1,13 +1,10 @@
 package com.gmail.alfonz19.util.initialize;
 
 import com.gmail.alfonz19.testsupport.InitializedInstanceLogger;
-import com.gmail.alfonz19.util.initialize.generator.Generators;
-import com.gmail.alfonz19.util.initialize.generator.Initialize;
 import lombok.Data;
 
-import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
-import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 
 import static com.gmail.alfonz19.util.initialize.generator.Generators.instance;
@@ -16,8 +13,8 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 
 public class SkippingInitializationTest {
-    @ClassRule
-    public static InitializedInstanceLogger initializedInstanceLogger = new InitializedInstanceLogger();
+    @Rule
+    public InitializedInstanceLogger initializedInstanceLogger = new InitializedInstanceLogger();
 
     @Test
     public void name() {

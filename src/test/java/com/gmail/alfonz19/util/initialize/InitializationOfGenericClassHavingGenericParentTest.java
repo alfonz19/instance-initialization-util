@@ -9,7 +9,7 @@ import com.gmail.alfonz19.util.initialize.generator.Rules;
 import java.util.List;
 
 import org.hamcrest.CoreMatchers;
-import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 
 import static com.gmail.alfonz19.util.initialize.generator.Generators.instance;
@@ -22,8 +22,8 @@ import static org.junit.Assert.assertThat;
 
 public class InitializationOfGenericClassHavingGenericParentTest {
 
-    @ClassRule
-    public static InitializedInstanceLogger initializedInstanceLogger = new InitializedInstanceLogger();
+    @Rule
+    public InitializedInstanceLogger initializedInstanceLogger = new InitializedInstanceLogger();
 
     /**
      * Creates generic GenericSubClass using given types `<Integer, String>`, automatically initializing any

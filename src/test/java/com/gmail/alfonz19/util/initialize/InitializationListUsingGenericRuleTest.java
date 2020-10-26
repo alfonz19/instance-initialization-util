@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 
 import static com.gmail.alfonz19.util.initialize.generator.Generators.list;
@@ -22,8 +22,8 @@ import static org.junit.Assert.assertThat;
 
 public class InitializationListUsingGenericRuleTest {
 
-    @ClassRule
-    public static InitializedInstanceLogger initializedInstanceLogger = new InitializedInstanceLogger();
+    @Rule
+    public InitializedInstanceLogger initializedInstanceLogger = new InitializedInstanceLogger();
 
     /**
      * Initialization using rule. Rule will create any List property it encounters with 5 items generated automatically.
