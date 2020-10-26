@@ -173,6 +173,17 @@ public class Generators {
         return new CollectionConfiguration<>(Set.class, listInstanceCreationFunction, itemGenerator);
     }
 
+    public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, Set<ITEM_TYPE>> set(TypeReference<Set<ITEM_TYPE>> typeReference) {
+        return set(HashSet::new, typeReference);
+    }
+
+    public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, Set<ITEM_TYPE>> set(
+            Function<Collection<? extends ITEM_TYPE>, Set<ITEM_TYPE>> setInstanceCreationFunction,
+            TypeReference<Set<ITEM_TYPE>> typeReference) {
+
+        return new CollectionConfiguration<>(setInstanceCreationFunction, typeReference);
+    }
+
     public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, Stream<ITEM_TYPE>> stream(Class<ITEM_TYPE>clazz, Generator<ITEM_TYPE> itemGenerator) {
         return stream(c -> new ArrayList<ITEM_TYPE>(c).stream(), itemGenerator);
     }
@@ -188,6 +199,17 @@ public class Generators {
     public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, Stream<ITEM_TYPE>> stream(Function<Collection<? extends ITEM_TYPE>, Stream<ITEM_TYPE>> listInstanceCreationFunction,
                                                                                            Generator<ITEM_TYPE> itemGenerator) {
         return new CollectionConfiguration<>(Stream.class, listInstanceCreationFunction, itemGenerator);
+    }
+
+    public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, Stream<ITEM_TYPE>> stream(TypeReference<Stream<ITEM_TYPE>> typeReference) {
+        return stream(c -> new ArrayList<ITEM_TYPE>(c).stream(), typeReference);
+    }
+
+    public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, Stream<ITEM_TYPE>> stream(
+            Function<Collection<? extends ITEM_TYPE>, Stream<ITEM_TYPE>> streamInstanceCreationFunction,
+            TypeReference<Stream<ITEM_TYPE>> typeReference) {
+
+        return new CollectionConfiguration<>(streamInstanceCreationFunction, typeReference);
     }
 
     public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, ITEM_TYPE[]> array(Class<ITEM_TYPE> arrayType, Generator<ITEM_TYPE> itemGenerator) {

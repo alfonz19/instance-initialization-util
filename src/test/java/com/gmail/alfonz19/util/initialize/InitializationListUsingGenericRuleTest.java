@@ -42,10 +42,6 @@ public class InitializationListUsingGenericRuleTest {
         initializedInstanceLogger.logInitializedInstance(instance);
 
         assertCreatedInstance(instance, LinkedList.class);
-
-        //TODO MMUCHA: missing methods for other collections. We have this:
-        // com.gmail.alfonz19.util.initialize.generator.Generators.list(java.util.function.Function<java.util.Collection<? extends ITEM_TYPE>,java.util.List<ITEM_TYPE>>, com.fasterxml.jackson.core.type.TypeReference<java.util.List<ITEM_TYPE>>)
-        //add same for set and stream.
     }
 
     @Test
