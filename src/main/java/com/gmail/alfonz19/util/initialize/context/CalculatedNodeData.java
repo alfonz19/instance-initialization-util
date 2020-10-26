@@ -10,7 +10,6 @@ public class CalculatedNodeData {
     @Getter
     private final Class<?> classType;
 
-    //TODO MMUCHA: not sure if this is worthy to keep. Lets see over time. This should represent (IIUC)
     @Getter
     private final Type genericClassType;
     @Getter
