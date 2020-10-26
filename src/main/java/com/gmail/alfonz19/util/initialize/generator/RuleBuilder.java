@@ -47,14 +47,14 @@ public class RuleBuilder {
         return rule;
     }
 
-    public static RuleBuilder applyGenerator(AbstractGenerator<?> generator) {
+    public static RuleBuilder applyGenerator(Generator<?> generator) {
         return new RuleBuilder(new RuleImpl(generator));
     }
 
     @AllArgsConstructor
     private static final class RuleImpl implements Rule {
 
-        private final AbstractGenerator<?> generator;
+        private final Generator<?> generator;
         private final List<Predicate<PathNode>> tests = new LinkedList<>();
 
         @Override
@@ -63,7 +63,7 @@ public class RuleBuilder {
         }
 
         @Override
-        public AbstractGenerator<?> getGenerator() {
+        public Generator<?> getGenerator() {
             return generator;
         }
 

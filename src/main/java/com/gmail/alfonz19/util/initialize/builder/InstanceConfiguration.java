@@ -6,6 +6,7 @@ import com.gmail.alfonz19.util.initialize.context.PathNode;
 import com.gmail.alfonz19.util.initialize.context.Rule;
 import com.gmail.alfonz19.util.initialize.exception.InitializeException;
 import com.gmail.alfonz19.util.initialize.generator.AbstractGenerator;
+import com.gmail.alfonz19.util.initialize.generator.Generator;
 import com.gmail.alfonz19.util.initialize.generator.DefaultValueGenerator;
 import com.gmail.alfonz19.util.initialize.generator.Generators;
 import com.gmail.alfonz19.util.initialize.generator.Initialize;
@@ -181,7 +182,7 @@ public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SO
                 });
     }
 
-    public <PROPERTY_TYPE> InstanceConfiguration<SOURCE_INSTANCE> setPropertyTo(SpecificTypePropertySelector<SOURCE_INSTANCE, PROPERTY_TYPE> propertySelector, AbstractGenerator<PROPERTY_TYPE> valueGenerator){
+    public <PROPERTY_TYPE> InstanceConfiguration<SOURCE_INSTANCE> setPropertyTo(SpecificTypePropertySelector<SOURCE_INSTANCE, PROPERTY_TYPE> propertySelector, Generator<PROPERTY_TYPE> valueGenerator){
         PropertyDescriptor propertyDescriptor = invocationSensor.getTouchedPropertyDescriptor(propertySelector);
         addPropertyDescriptorInitialization(propertyDescriptor, valueGenerator);
         return this;
@@ -255,7 +256,7 @@ public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SO
     }
 
     ////TODO MMUCHA: fix, was probably inlined. revert if possible.
-    private <K> Consumer<AbstractGenerator<K>> addPropertyDescriptorInitialization(PropertyDescriptor propertyDescriptor) {
+    private <K> Consumer<Generator<K>> addPropertyDescriptorInitialization(PropertyDescriptor propertyDescriptor) {
         return valueGenerator -> addPropertyDescriptorInitialization(propertyDescriptor, valueGenerator);
     }
 
@@ -263,7 +264,7 @@ public class InstanceConfiguration<SOURCE_INSTANCE> extends AbstractGenerator<SO
         return calculatedNodeData.getClassType();
     }
 
-    private void addPropertyDescriptorInitialization(PropertyDescriptor propertyDescriptor, AbstractGenerator<?> valueGenerator) {
+    private void addPropertyDescriptorInitialization(PropertyDescriptor propertyDescriptor, Generator<?> valueGenerator) {
         if (this.propertyDescriptorsInitializations.containsKey(propertyDescriptor)) {
             throw new InitializeException(String.format("Property %s is already configured.", propertyDescriptor));
         }

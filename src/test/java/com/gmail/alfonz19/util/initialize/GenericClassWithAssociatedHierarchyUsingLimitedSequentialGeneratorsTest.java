@@ -1,6 +1,6 @@
 package com.gmail.alfonz19.util.initialize;
 
-import com.gmail.alfonz19.util.initialize.generator.AbstractGenerator;
+import com.gmail.alfonz19.util.initialize.generator.Generator;
 import com.gmail.alfonz19.util.initialize.generator.Generators;
 import com.gmail.alfonz19.util.initialize.selector.SpecificTypePropertySelector;
 import lombok.Getter;
@@ -24,7 +24,7 @@ public class GenericClassWithAssociatedHierarchyUsingLimitedSequentialGenerators
     public static final String STRING_CONSTANT = "YES!";
 
     @Override
-    protected AbstractGenerator<TestInstance<List<ParentClass>>> createGenerator() {
+    protected Generator<TestInstance<List<ParentClass>>> createGenerator() {
         //This is a little bit complicated. What is done here is, that we create instance of TestInstance,
         //and set associated list of T instances to newly created ArrayList of entities, having size 2.
         //To init that list, we use sequential generator, which will generate all items from first generator until it

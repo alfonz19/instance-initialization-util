@@ -1,7 +1,7 @@
 package com.gmail.alfonz19.util.initialize;
 
 import com.gmail.alfonz19.util.initialize.builder.CollectionConfiguration;
-import com.gmail.alfonz19.util.initialize.generator.AbstractGenerator;
+import com.gmail.alfonz19.util.initialize.generator.Generator;
 import com.gmail.alfonz19.util.initialize.generator.Generators;
 import com.gmail.alfonz19.util.initialize.selector.SpecificTypePropertySelector;
 import lombok.Data;
@@ -19,7 +19,7 @@ import static org.junit.Assert.assertTrue;
 public class RandomEnumImplementingRunnableProperty extends AbstractTestSingleAndMultipleInstanceCreation<TestInstance> {
 
     @Override
-    protected AbstractGenerator<TestInstance> createGenerator() {
+    protected Generator<TestInstance> createGenerator() {
         return instance(TestInstance::new)
                 .setProperty(TestInstance::getListOfEnumItemsExposedAsRunnable)
                 .to(Generators.list(Generators.enumeratedType(TestEnum.class).random()));

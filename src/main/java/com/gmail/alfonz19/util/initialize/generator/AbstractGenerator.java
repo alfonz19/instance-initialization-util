@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public abstract class AbstractGenerator<T> {
+public abstract class AbstractGenerator<T> implements Generator<T>{
     protected abstract T create(PathNode pathNode);
 
     protected List<T> create(int number, PathNode pathNode) {
@@ -16,5 +16,5 @@ public abstract class AbstractGenerator<T> {
     }
 
     //todo hide, implement here, make final. return optional?
-    public abstract CalculatedNodeData getCalculatedNodeData();
+    protected abstract CalculatedNodeData getCalculatedNodeData();
 }

@@ -9,10 +9,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class LimitedGenerator<T> extends AbstractGenerator<T> {
-    private final AbstractGenerator<T> generator;
+    private final Generator<T> generator;
     private int remainingNumberOfItems;
 
-    public LimitedGenerator(int numberOfItems, AbstractGenerator<T> generator) {
+    public LimitedGenerator(int numberOfItems, Generator<T> generator) {
         if (numberOfItems < 1) {
             throw new IllegalArgumentException();
         }
@@ -32,7 +32,7 @@ public class LimitedGenerator<T> extends AbstractGenerator<T> {
         }
 
         remainingNumberOfItems--;
-        return generator.create(pathNode);
+        return GeneratorAccessor.create(generator, pathNode);
     }
 
     @Override
@@ -44,6 +44,6 @@ public class LimitedGenerator<T> extends AbstractGenerator<T> {
 
     @Override
     public CalculatedNodeData getCalculatedNodeData() {
-        return generator.getCalculatedNodeData();
+        return GeneratorAccessor.getCalculatedNodeData(generator);
     }
 }

@@ -1,6 +1,6 @@
 package com.gmail.alfonz19.util.initialize.builder;
 
-import com.gmail.alfonz19.util.initialize.generator.AbstractGenerator;
+import com.gmail.alfonz19.util.initialize.generator.Generator;
 import com.gmail.alfonz19.util.initialize.generator.EnumInstanceGenerator;
 
 import java.util.function.Consumer;
@@ -9,11 +9,11 @@ import java.util.function.Consumer;
 public class EnumConfiguration<T, PARENT_BUILDER> extends BuilderWithParentBuilderReference<PARENT_BUILDER> {
 
     private final EnumInstanceGenerator<T, T> enumInstanceGenerator;
-    private final Consumer<AbstractGenerator<T>> generatorSetCallback;
+    private final Consumer<Generator<T>> generatorSetCallback;
 
     public EnumConfiguration(Class<T> classType,
                              PARENT_BUILDER parentBuilder,
-                             Consumer<AbstractGenerator<T>> generatorSetCallback) {
+                             Consumer<Generator<T>> generatorSetCallback) {
         super(parentBuilder);
         enumInstanceGenerator = new EnumInstanceGenerator<>(classType, classType);
         this.generatorSetCallback = generatorSetCallback;

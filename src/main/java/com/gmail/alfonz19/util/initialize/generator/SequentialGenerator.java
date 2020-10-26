@@ -5,7 +5,7 @@ import com.gmail.alfonz19.util.initialize.context.CalculatedNodeData;
 import java.util.List;
 
 public class SequentialGenerator<T> extends CompositeGenerator<T> {
-    public SequentialGenerator(List<AbstractGenerator<? extends T>> generators) {
+    public SequentialGenerator(List<Generator<? extends T>> generators) {
         super(generators);
     }
 

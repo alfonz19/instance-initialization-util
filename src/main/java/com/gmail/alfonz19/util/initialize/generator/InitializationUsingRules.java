@@ -14,11 +14,11 @@ public class InitializationUsingRules {
         return new InitializationUsingRules(rules);
     }
 
-    public <T> T initialize(AbstractGenerator<T> generator) {
-        return generator.create(new PathNode.RootPathNode(rules));
+    public <T> T initialize(Generator<T> generator) {
+        return GeneratorAccessor.create(generator, new PathNode.RootPathNode(rules));
     }
 
-    public <T> List<T> initializeList(AbstractGenerator<T> generator, int number) {
-        return generator.create(number, new PathNode.RootPathNode(rules));
+    public <T> List<T> initializeList(Generator<T> generator, int number) {
+        return GeneratorAccessor.create(generator, number, new PathNode.RootPathNode(rules));
     }
 }

@@ -1,6 +1,6 @@
 package com.gmail.alfonz19.util.initialize;
 
-import com.gmail.alfonz19.util.initialize.generator.AbstractGenerator;
+import com.gmail.alfonz19.util.initialize.generator.Generator;
 import com.gmail.alfonz19.util.initialize.generator.Generators;
 import lombok.Data;
 
@@ -15,7 +15,7 @@ import static com.gmail.alfonz19.util.initialize.generator.Generators.*;
 public class SettingRandomValueWithContextViaPropertyTest extends AbstractTestSingleAndMultipleInstanceCreation<TopLevelTestInstance>{
 
     @Override
-    protected AbstractGenerator<TopLevelTestInstance> createGenerator() {
+    protected Generator<TopLevelTestInstance> createGenerator() {
         return instance(TopLevelTestInstance::new)
                 .setPropertyTo(
                         TopLevelTestInstance::getAList,

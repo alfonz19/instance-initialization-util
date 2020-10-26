@@ -7,6 +7,8 @@ import com.gmail.alfonz19.util.initialize.context.PathNode;
 import com.gmail.alfonz19.util.initialize.context.Rule;
 import com.gmail.alfonz19.util.initialize.exception.InitializeException;
 import com.gmail.alfonz19.util.initialize.generator.AbstractGenerator;
+import com.gmail.alfonz19.util.initialize.generator.Generator;
+import com.gmail.alfonz19.util.initialize.generator.GeneratorAccessor;
 import com.gmail.alfonz19.util.initialize.generator.Generators;
 import com.gmail.alfonz19.util.initialize.generator.Initialize;
 import com.gmail.alfonz19.util.initialize.generator.SizeSpecification;
@@ -32,7 +34,7 @@ public class CollectionConfiguration<ITEM_TYPE, GENERATES> extends AbstractGener
     public static final int UNCONFIGURED_COLLECTION_SIZE = 5;
 
     private final Function<Collection<? extends ITEM_TYPE>, GENERATES> listInstanceSupplier;
-    private final AbstractGenerator<? extends ITEM_TYPE> itemGenerator;
+    private final Generator<? extends ITEM_TYPE> itemGenerator;
     private final SizeSpecification sizeSpecification =
             new SizeSpecification(0, MAX_COLLECTION_LENGTH, UNCONFIGURED_COLLECTION_SIZE);
     private boolean shuffled;
@@ -53,7 +55,7 @@ public class CollectionConfiguration<ITEM_TYPE, GENERATES> extends AbstractGener
 
     public CollectionConfiguration(Class<?> classType,
                                    Function<Collection<? extends ITEM_TYPE>, GENERATES> listInstanceSupplier,
-                                   AbstractGenerator<? extends ITEM_TYPE> itemGenerator) {
+                                   Generator<? extends ITEM_TYPE> itemGenerator) {
         this.listInstanceSupplier = listInstanceSupplier;
         this.itemGenerator = itemGenerator;
 
@@ -93,13 +95,13 @@ public class CollectionConfiguration<ITEM_TYPE, GENERATES> extends AbstractGener
 
         int numberOfItemsToBeGenerated = sizeSpecification.getRandomSizeAccordingToSpecification();
 
-        AbstractGenerator<? extends ITEM_TYPE> itemGeneratorToUse = getGeneratorToUse(pathNode);
+        Generator<? extends ITEM_TYPE> itemGeneratorToUse = getGeneratorToUse(pathNode);
 
         CalculatedNodeData itemsCalculatedNodeData = (pathNode.getCalculatedNodeData().representsParameterizedType())
                 ? ReflectUtil.unwrapParameterizedType(pathNode.getCalculatedNodeData())
-                : itemGeneratorToUse.getCalculatedNodeData() == null
+                : GeneratorAccessor.getCalculatedNodeData(itemGeneratorToUse) == null
                         ? new CalculatedNodeData(Object.class, Object.class, NO_TYPE_VARIABLE_ASSIGNMENTS)
-                        : itemGeneratorToUse.getCalculatedNodeData();
+                        : GeneratorAccessor.getCalculatedNodeData(itemGeneratorToUse);
 
         if (!shuffled) {
             List<? extends ITEM_TYPE> items = IntStream.range(0, numberOfItemsToBeGenerated).boxed()
@@ -146,14 +148,14 @@ public class CollectionConfiguration<ITEM_TYPE, GENERATES> extends AbstractGener
         return listInstanceSupplier.apply(shuffledItems);
     }
 
-    private AbstractGenerator<? extends ITEM_TYPE> getGeneratorToUse(PathNode pathNode) {
+    private Generator<? extends ITEM_TYPE> getGeneratorToUse(PathNode pathNode) {
         if (this.itemGenerator != null) {
             return itemGenerator;
         }
 
         //noinspection unchecked
-        AbstractGenerator<? extends ITEM_TYPE> itemGeneratorToUse =
-                (AbstractGenerator<? extends ITEM_TYPE>) pathNode.findFirstApplicableRule()
+        Generator<? extends ITEM_TYPE> itemGeneratorToUse =
+                (Generator<? extends ITEM_TYPE>) pathNode.findFirstApplicableRule()
                         .map(Rule::getGenerator)
                         .orElse(null);
         if (itemGeneratorToUse == null) {

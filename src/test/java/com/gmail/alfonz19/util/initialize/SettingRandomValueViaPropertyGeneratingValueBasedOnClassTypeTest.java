@@ -1,6 +1,6 @@
 package com.gmail.alfonz19.util.initialize;
 
-import com.gmail.alfonz19.util.initialize.generator.AbstractGenerator;
+import com.gmail.alfonz19.util.initialize.generator.Generator;
 import lombok.Data;
 
 import java.util.Date;
@@ -15,7 +15,7 @@ import static com.gmail.alfonz19.util.initialize.SettingRandomValueViaPropertyGe
 public class SettingRandomValueViaPropertyGeneratingValueBasedOnClassTypeTest extends AbstractTestSingleAndMultipleInstanceCreation<TestInstance>{
 
     @Override
-    protected AbstractGenerator<TestInstance> createGenerator() {
+    protected Generator<TestInstance> createGenerator() {
         return instance(TestInstance::new).setUnsetPropertiesRandomlyUsingGuessedType();
     }
 

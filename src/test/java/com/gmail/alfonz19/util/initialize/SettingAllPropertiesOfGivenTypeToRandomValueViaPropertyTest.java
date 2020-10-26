@@ -3,7 +3,7 @@ package com.gmail.alfonz19.util.initialize;
 import com.gmail.alfonz19.util.example.to.AssociatedClass;
 import com.gmail.alfonz19.util.example.to.RootDto;
 import com.gmail.alfonz19.util.example.to.TestingInterface;
-import com.gmail.alfonz19.util.initialize.generator.AbstractGenerator;
+import com.gmail.alfonz19.util.initialize.generator.Generator;
 import com.gmail.alfonz19.util.initialize.generator.Generators;
 import com.gmail.alfonz19.util.initialize.selector.SpecificTypePropertySelector;
 import lombok.Data;
@@ -24,7 +24,7 @@ import static org.junit.Assert.assertThat;
 public class SettingAllPropertiesOfGivenTypeToRandomValueViaPropertyTest extends AbstractTestSingleAndMultipleInstanceCreation<TestInstance>{
 
     @Override
-    protected AbstractGenerator<TestInstance> createGenerator() {
+    protected Generator<TestInstance> createGenerator() {
         return Generators.instance(TestInstance::new)
                 .setAllPropertiesHavingType(String.class).to(Generators.randomString().withSize(10).addPrefix("abc"));
     }

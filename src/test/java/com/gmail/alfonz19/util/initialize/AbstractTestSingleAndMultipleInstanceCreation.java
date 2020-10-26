@@ -2,7 +2,7 @@ package com.gmail.alfonz19.util.initialize;
 
 import com.gmail.alfonz19.testsupport.RepeatTest;
 import com.gmail.alfonz19.testsupport.RepeatedTestRule;
-import com.gmail.alfonz19.util.initialize.generator.AbstractGenerator;
+import com.gmail.alfonz19.util.initialize.generator.Generator;
 import com.gmail.alfonz19.util.initialize.generator.Initialize;
 
 import java.util.List;
@@ -35,7 +35,7 @@ public abstract class AbstractTestSingleAndMultipleInstanceCreation<T> {
         assertCollectionSizeAndEachItem(testInstances, this::assertCreatedInstance);
     }
 
-    protected abstract AbstractGenerator<T> createGenerator();
+    protected abstract Generator<T> createGenerator();
 
     protected abstract void assertCreatedInstance(T t);
 

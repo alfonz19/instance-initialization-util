@@ -1,6 +1,6 @@
 package com.gmail.alfonz19.util.initialize;
 
-import com.gmail.alfonz19.util.initialize.generator.AbstractGenerator;
+import com.gmail.alfonz19.util.initialize.generator.Generator;
 import com.gmail.alfonz19.util.initialize.generator.Generators;
 import lombok.Data;
 
@@ -16,7 +16,7 @@ public class NullCollectionItemsTest extends AbstractTestSingleAndMultipleInstan
 
     public static final int NUMBER_OF_ITEMS = 10;
 
-    protected AbstractGenerator<TestInstance> createGenerator() {
+    protected Generator<TestInstance> createGenerator() {
         return Generators.instance(TestInstance::new)
                 .setProperty(TestInstance::getListWithNullValuedItems).to(
                         Generators.listWithNullItems(String.class).withSize(NUMBER_OF_ITEMS)

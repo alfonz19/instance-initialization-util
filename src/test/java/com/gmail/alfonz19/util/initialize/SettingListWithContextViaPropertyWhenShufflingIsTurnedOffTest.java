@@ -3,6 +3,7 @@ package com.gmail.alfonz19.util.initialize;
 import com.gmail.alfonz19.util.initialize.context.CalculatedNodeData;
 import com.gmail.alfonz19.util.initialize.context.PathNode;
 import com.gmail.alfonz19.util.initialize.generator.AbstractGenerator;
+import com.gmail.alfonz19.util.initialize.generator.Generator;
 import com.gmail.alfonz19.util.initialize.generator.Generators;
 import lombok.Data;
 
@@ -39,7 +40,7 @@ public class SettingListWithContextViaPropertyWhenShufflingIsTurnedOffTest exten
     }
 
     @Override
-    protected AbstractGenerator<TestInstance> createGenerator() {
+    protected Generator<TestInstance> createGenerator() {
         AtomicInteger atomicInteger = new AtomicInteger(0);
         return instance(TestInstance::new)
                 .setPropertyTo(

@@ -1,7 +1,7 @@
 package com.gmail.alfonz19.util.initialize;
 
 import com.gmail.alfonz19.util.initialize.exception.SpecificTypePropertySelectorDoesNotDenoteProperty;
-import com.gmail.alfonz19.util.initialize.generator.AbstractGenerator;
+import com.gmail.alfonz19.util.initialize.generator.Generator;
 import com.gmail.alfonz19.util.initialize.generator.Generators;
 import com.gmail.alfonz19.util.initialize.generator.Initialize;
 import com.gmail.alfonz19.util.initialize.selector.SpecificTypePropertySelector;
@@ -29,7 +29,7 @@ public class NullifyingPropertyTest extends AbstractTestSingleAndMultipleInstanc
             TestInstance::getInitializedIntegerValue);
 
     @Override
-    protected AbstractGenerator<TestInstance> createGenerator() {
+    protected Generator<TestInstance> createGenerator() {
         return Generators.instance(TestInstance::new).nullifyProperties(PROPERTY_SELECTORS);
     }
 

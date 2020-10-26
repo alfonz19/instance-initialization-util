@@ -75,21 +75,21 @@ public class Generators {
     }
 
     @SafeVarargs
-    public static <T> AbstractGenerator<T> roundRobinGenerator(AbstractGenerator<T> ... generators) {
+    public static <T> Generator<T> roundRobinGenerator(Generator<T> ... generators) {
         return new RoundRobinGenerator<>(Arrays.asList(generators));
     }
 
     @SafeVarargs
-    public static <T> AbstractGenerator<T> sequentialGenerator(AbstractGenerator<? extends T> ... generators) {
+    public static <T> Generator<T> sequentialGenerator(Generator<? extends T> ... generators) {
         return new SequentialGenerator<>(Arrays.asList(generators));
     }
 
     @SafeVarargs
-    public static <T> AbstractGenerator<T> randomlySelectedGenerator(AbstractGenerator<T> ... generators) {
+    public static <T> Generator<T> randomlySelectedGenerator(Generator<T> ... generators) {
         return new RandomlySelectedGenerator<>(Arrays.asList(generators));
     }
 
-    public static <T> AbstractGenerator<T> limitedGenerator(int numberOfItems, AbstractGenerator<T> generator) {
+    public static <T> Generator<T> limitedGenerator(int numberOfItems, Generator<T> generator) {
         return new LimitedGenerator<>(numberOfItems, generator);
     }
 
@@ -127,11 +127,11 @@ public class Generators {
         return new InstanceConfiguration<>(classType, instanceSupplier);
     }
 
-    public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, List<ITEM_TYPE>> list(Class<ITEM_TYPE>clazz, AbstractGenerator<ITEM_TYPE> itemGenerator) {
+    public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, List<ITEM_TYPE>> list(Class<ITEM_TYPE>clazz, Generator<ITEM_TYPE> itemGenerator) {
         return list(ArrayList::new, itemGenerator);
     }
 
-    public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, List<ITEM_TYPE>> list(AbstractGenerator<? extends ITEM_TYPE> itemGenerator) {
+    public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, List<ITEM_TYPE>> list(Generator<? extends ITEM_TYPE> itemGenerator) {
         return list(ArrayList::new, itemGenerator);
     }
 
@@ -140,7 +140,7 @@ public class Generators {
     }
 
     public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, List<ITEM_TYPE>> list(Function<Collection<? extends ITEM_TYPE>, List<ITEM_TYPE>> listInstanceCreationFunction,
-                                                                                       AbstractGenerator<? extends ITEM_TYPE> itemGenerator) {
+                                                                                       Generator<? extends ITEM_TYPE> itemGenerator) {
         return new CollectionConfiguration<>(List.class, listInstanceCreationFunction, itemGenerator);
     }
 
@@ -151,11 +151,11 @@ public class Generators {
         return new CollectionConfiguration<>(listInstanceCreationFunction, typeReference);
     }
 
-    public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, Set<ITEM_TYPE>> set(Class<ITEM_TYPE>clazz, AbstractGenerator<ITEM_TYPE> itemGenerator) {
+    public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, Set<ITEM_TYPE>> set(Class<ITEM_TYPE>clazz, Generator<ITEM_TYPE> itemGenerator) {
         return set(HashSet::new, itemGenerator);
     }
 
-    public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, Set<ITEM_TYPE>> set(AbstractGenerator<ITEM_TYPE> itemGenerator) {
+    public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, Set<ITEM_TYPE>> set(Generator<ITEM_TYPE> itemGenerator) {
         return set(HashSet::new, itemGenerator);
     }
 
@@ -164,15 +164,15 @@ public class Generators {
     }
 
     public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, Set<ITEM_TYPE>> set(Function<Collection<? extends ITEM_TYPE>, Set<ITEM_TYPE>> listInstanceCreationFunction,
-                                                                                     AbstractGenerator<ITEM_TYPE> itemGenerator) {
+                                                                                     Generator<ITEM_TYPE> itemGenerator) {
         return new CollectionConfiguration<>(Set.class, listInstanceCreationFunction, itemGenerator);
     }
 
-    public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, Stream<ITEM_TYPE>> stream(Class<ITEM_TYPE>clazz, AbstractGenerator<ITEM_TYPE> itemGenerator) {
+    public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, Stream<ITEM_TYPE>> stream(Class<ITEM_TYPE>clazz, Generator<ITEM_TYPE> itemGenerator) {
         return stream(c -> new ArrayList<ITEM_TYPE>(c).stream(), itemGenerator);
     }
 
-    public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, Stream<ITEM_TYPE>> stream(AbstractGenerator<ITEM_TYPE> itemGenerator) {
+    public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, Stream<ITEM_TYPE>> stream(Generator<ITEM_TYPE> itemGenerator) {
         return stream(c -> new ArrayList<ITEM_TYPE>(c).stream(), itemGenerator);
     }
 
@@ -181,17 +181,17 @@ public class Generators {
     }
 
     public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, Stream<ITEM_TYPE>> stream(Function<Collection<? extends ITEM_TYPE>, Stream<ITEM_TYPE>> listInstanceCreationFunction,
-                                                                                           AbstractGenerator<ITEM_TYPE> itemGenerator) {
+                                                                                           Generator<ITEM_TYPE> itemGenerator) {
         return new CollectionConfiguration<>(Stream.class, listInstanceCreationFunction, itemGenerator);
     }
 
-    public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, ITEM_TYPE[]> array(Class<ITEM_TYPE> arrayType, AbstractGenerator<ITEM_TYPE> itemGenerator) {
+    public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, ITEM_TYPE[]> array(Class<ITEM_TYPE> arrayType, Generator<ITEM_TYPE> itemGenerator) {
         return new CollectionConfiguration<>(arrayType, items -> ReflectUtil.createArray(arrayType, items), itemGenerator);
     }
 
-    public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, ITEM_TYPE[]> array(AbstractGenerator<ITEM_TYPE> itemGenerator) {
+    public static <ITEM_TYPE> CollectionConfiguration<ITEM_TYPE, ITEM_TYPE[]> array(Generator<ITEM_TYPE> itemGenerator) {
         //noinspection unchecked
-        Class<ITEM_TYPE> arrayType = (Class<ITEM_TYPE>) itemGenerator.getCalculatedNodeData().getClassType();
+        Class<ITEM_TYPE> arrayType = (Class<ITEM_TYPE>) GeneratorAccessor.getCalculatedNodeData(itemGenerator).getClassType();
         return array(arrayType, itemGenerator);
     }
 
