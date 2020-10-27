@@ -25,6 +25,6 @@ public class RootDto {
     private Map<List<AssociatedClass>, Set<TestingInterface>> complicatedMap;
 
     public enum Enumerated {
-        A,B
+        A,B,C
     }
 }

@@ -41,7 +41,7 @@ public class InitializationOfGenericClassHavingGenericParentTest {
 //                or with one created from TypeReference.
 
                 .initialize(instance(new TypeReference<GenericSubClass<Integer, String>>() {})
-                        .setUnsetPropertiesRandomlyUsingGuessedType());
+                        .setUnsetPropertiesRandomly());
 
         initializedInstanceLogger.logInitializedInstance(instance);
 

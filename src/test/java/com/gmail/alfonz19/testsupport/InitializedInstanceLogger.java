@@ -19,6 +19,7 @@ public class InitializedInstanceLogger extends org.junit.rules.TestWatcher {
 
     protected void starting(Description description) {
         this.description = description;
+        log.debug("Testing {}: ", description.getTestClass().getSimpleName()+"#"+description.getMethodName());
     }
 
     @Override
@@ -35,11 +36,12 @@ public class InitializedInstanceLogger extends org.junit.rules.TestWatcher {
 
     @Override
     protected void finished(Description description) {
+        log.debug("—————————— end of test ——————————————————————————");
     }
 
     public void logInitializedInstance(Object testInstance) {
         try {
-            log.debug("Instance initialized in test {}:\n{}", description.getClassName()+"#"+description.getMethodName(), objectWriter.writeValueAsString(testInstance));
+            log.debug("Initialized instance:\n{}", objectWriter.writeValueAsString(testInstance));
         } catch (JsonProcessingException e) {
             throw new InitializeException(e);
         }

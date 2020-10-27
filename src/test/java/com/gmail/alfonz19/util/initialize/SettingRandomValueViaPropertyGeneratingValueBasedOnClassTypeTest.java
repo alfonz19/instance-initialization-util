@@ -18,7 +18,7 @@ public class SettingRandomValueViaPropertyGeneratingValueBasedOnClassTypeTest ex
 
     @Override
     protected Generator<TestInstance> createGenerator() {
-        return instance(TestInstance::new).setUnsetPropertiesRandomlyUsingGuessedType();
+        return instance(TestInstance::new).setUnsetPropertiesRandomly();
     }
 
     @Override

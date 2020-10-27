@@ -20,7 +20,7 @@ public class SkippingInitializationTest {
     public void name() {
         TestInstance instance = initialize(instance(TestInstance.class)
                 .skipProperty(TestInstance::getB)
-                .setUnsetPropertiesRandomlyUsingGuessedType()
+                .setUnsetPropertiesRandomly()
         );
 
         initializedInstanceLogger.logInitializedInstance(instance);

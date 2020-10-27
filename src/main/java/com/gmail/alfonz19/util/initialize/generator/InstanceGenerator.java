@@ -202,7 +202,7 @@ public class InstanceGenerator<SOURCE_INSTANCE> extends AbstractGenerator<SOURCE
         return addGeneratorsToPropertyDescriptors(missingPropertyDescriptors);
     }
 
-    public InstanceGenerator<SOURCE_INSTANCE> setUnsetPropertiesRandomlyUsingGuessedType() {
+    public InstanceGenerator<SOURCE_INSTANCE> setUnsetPropertiesRandomly() {
         findUninitializedProperties().stream()
                 .map(pd -> new Pair<>(pd, Generators.randomForGuessedType(false, true)))
                 .filter(pair->pair.getSecond().canGenerateValue(pair.first, getCalculatedNodeData()))

@@ -81,8 +81,9 @@ public class Generators {
         return new DefaultValueGenerator<>();
     }
 
+    //TODO MMUCHA: what if no generators is passed in?
     @SafeVarargs
-    public static <T> Generator<T> roundRobinGenerator(Generator<T> ... generators) {
+    public static <T> Generator<T> roundRobinGenerator(Generator<? extends T> ... generators) {
         return new RoundRobinGenerator<>(Arrays.asList(generators));
     }
 
