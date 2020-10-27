@@ -19,6 +19,7 @@ public class CyclicGenericInitializationWithDepthLimitationTest {
     @Rule
     public InitializedInstanceLogger initializedInstanceLogger = new InitializedInstanceLogger();
 
+    //TODO MMUCHA: implement and uncomment.
     @Ignore
     @Test
     public void crazyCyclicGenericInitializationWithDepthLimitation() {
