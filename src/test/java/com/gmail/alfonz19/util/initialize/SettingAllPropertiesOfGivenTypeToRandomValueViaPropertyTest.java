@@ -1,5 +1,6 @@
 package com.gmail.alfonz19.util.initialize;
 
+import com.gmail.alfonz19.testsupport.AbstractTestSingleAndMultipleInstanceCreation;
 import com.gmail.alfonz19.util.example.to.AssociatedClass;
 import com.gmail.alfonz19.util.example.to.RootDto;
 import com.gmail.alfonz19.util.example.to.TestingInterface;
@@ -21,7 +22,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
-public class SettingAllPropertiesOfGivenTypeToRandomValueViaPropertyTest extends AbstractTestSingleAndMultipleInstanceCreation<TestInstance>{
+public class SettingAllPropertiesOfGivenTypeToRandomValueViaPropertyTest extends
+        AbstractTestSingleAndMultipleInstanceCreation<TestInstance> {
 
     @Override
     protected Generator<TestInstance> createGenerator() {

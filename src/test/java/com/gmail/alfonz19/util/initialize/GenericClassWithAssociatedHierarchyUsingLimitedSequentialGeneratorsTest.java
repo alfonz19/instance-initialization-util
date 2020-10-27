@@ -1,5 +1,6 @@
 package com.gmail.alfonz19.util.initialize;
 
+import com.gmail.alfonz19.testsupport.AbstractTestSingleAndMultipleInstanceCreation;
 import com.gmail.alfonz19.util.initialize.generator.Generator;
 import com.gmail.alfonz19.util.initialize.generator.Generators;
 import com.gmail.alfonz19.util.initialize.selector.SpecificTypePropertySelector;
@@ -17,7 +18,8 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public class GenericClassWithAssociatedHierarchyUsingLimitedSequentialGeneratorsTest extends AbstractTestSingleAndMultipleInstanceCreation<TestInstance<List<ParentClass>>> {
+public class GenericClassWithAssociatedHierarchyUsingLimitedSequentialGeneratorsTest extends
+        AbstractTestSingleAndMultipleInstanceCreation<TestInstance<List<ParentClass>>> {
 
     public static final SpecificTypePropertySelector<TestInstance<List<ParentClass>>, List<ParentClass>>
             PROPERTY_SELECTOR = TestInstance::getGenericProperty;

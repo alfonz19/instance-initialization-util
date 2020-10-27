@@ -1,7 +1,6 @@
-package com.gmail.alfonz19.util.initialize;
+package com.gmail.alfonz19.testsupport;
 
-import com.gmail.alfonz19.testsupport.RepeatTest;
-import com.gmail.alfonz19.testsupport.RepeatedTestRule;
+import com.gmail.alfonz19.util.initialize.Initialize;
 import com.gmail.alfonz19.util.initialize.generator.Generator;
 
 import java.util.List;

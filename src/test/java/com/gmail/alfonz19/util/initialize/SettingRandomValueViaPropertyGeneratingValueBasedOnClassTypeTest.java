@@ -1,18 +1,20 @@
 package com.gmail.alfonz19.util.initialize;
 
+import com.gmail.alfonz19.testsupport.AbstractTestSingleAndMultipleInstanceCreation;
 import com.gmail.alfonz19.util.initialize.generator.Generator;
 import lombok.Data;
 
 import java.util.Date;
 import java.util.UUID;
 
+import static com.gmail.alfonz19.util.initialize.SettingRandomValueViaPropertyGeneratingValueBasedOnClassTypeTest.TestInstance;
 import static com.gmail.alfonz19.util.initialize.generator.Generators.instance;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
-import static com.gmail.alfonz19.util.initialize.SettingRandomValueViaPropertyGeneratingValueBasedOnClassTypeTest.TestInstance;
 
-public class SettingRandomValueViaPropertyGeneratingValueBasedOnClassTypeTest extends AbstractTestSingleAndMultipleInstanceCreation<TestInstance>{
+public class SettingRandomValueViaPropertyGeneratingValueBasedOnClassTypeTest extends
+        AbstractTestSingleAndMultipleInstanceCreation<TestInstance> {
 
     @Override
     protected Generator<TestInstance> createGenerator() {

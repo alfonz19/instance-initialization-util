@@ -1,5 +1,6 @@
 package com.gmail.alfonz19.util.initialize;
 
+import com.gmail.alfonz19.testsupport.AbstractTestSingleAndMultipleInstanceCreation;
 import com.gmail.alfonz19.util.initialize.generator.Generator;
 import com.gmail.alfonz19.util.initialize.generator.Generators;
 import lombok.Data;
@@ -19,7 +20,8 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Parameterized.class)
-public class SettingListWithContextViaPropertyWhenShufflingIsTurnedOffTest extends AbstractTestSingleAndMultipleInstanceCreation<TestInstance>{
+public class SettingListWithContextViaPropertyWhenShufflingIsTurnedOffTest extends
+        AbstractTestSingleAndMultipleInstanceCreation<TestInstance> {
 
     //the number must be bigger to avoid randomly sorted values.
     public static final int SIZE_OF_LIST = 50;

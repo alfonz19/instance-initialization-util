@@ -1,5 +1,6 @@
 package com.gmail.alfonz19.util.initialize;
 
+import com.gmail.alfonz19.testsupport.AbstractTestSingleAndMultipleInstanceCreation;
 import com.gmail.alfonz19.util.example.to.AssociatedClass;
 import com.gmail.alfonz19.util.initialize.generator.Generator;
 import com.gmail.alfonz19.util.initialize.generator.Generators;
@@ -16,7 +17,7 @@ import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.junit.Assert.assertThat;
 
-public class SettingRandomValueViaPropertyHavingListTypeTest extends AbstractTestSingleAndMultipleInstanceCreation<RootDto>{
+public class SettingRandomValueViaPropertyHavingListTypeTest extends AbstractTestSingleAndMultipleInstanceCreation<RootDto> {
 
     public static final SpecificTypePropertySelector<RootDto, List<AssociatedClass>> PROPERTY_SELECTOR =
             RootDto::getListOfAssociatedClasses;

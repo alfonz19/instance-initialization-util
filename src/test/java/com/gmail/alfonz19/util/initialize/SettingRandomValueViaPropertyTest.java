@@ -1,5 +1,6 @@
 package com.gmail.alfonz19.util.initialize;
 
+import com.gmail.alfonz19.testsupport.AbstractTestSingleAndMultipleInstanceCreation;
 import com.gmail.alfonz19.util.initialize.generator.Generator;
 import com.gmail.alfonz19.util.initialize.generator.Generators;
 import com.gmail.alfonz19.util.initialize.selector.SpecificTypePropertySelector;
@@ -11,7 +12,7 @@ import static com.gmail.alfonz19.util.initialize.SettingRandomValueViaPropertyTe
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
-public class SettingRandomValueViaPropertyTest extends AbstractTestSingleAndMultipleInstanceCreation<TestInstance>{
+public class SettingRandomValueViaPropertyTest extends AbstractTestSingleAndMultipleInstanceCreation<TestInstance> {
 
     public static final SpecificTypePropertySelector<TestInstance, String> PROPERTY_SELECTOR = TestInstance::getSomeStringValue;
 
