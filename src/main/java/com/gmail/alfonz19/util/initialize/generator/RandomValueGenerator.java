@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Slf4j
-@SuppressWarnings({"squid:S119", "squid:S1172", "unused"})//type variables, unused method parameters, unused constructs.
+@SuppressWarnings({"squid:S119"})//type variables
 public class RandomValueGenerator extends AbstractGenerator<Object> {
 
     private GuessTypeResult guessTypeResultToReuse;
@@ -40,39 +40,6 @@ public class RandomValueGenerator extends AbstractGenerator<Object> {
                 ReflectUtil.substituteTypeVariables(propertyDescriptor, calculatedNodeData.getTypeVariableAssignment());
 
         return guessType(substitutedType);
-
-
-//        Type genericClassType = propertyDescriptor.getReadMethod().getGenericReturnType();
-//        Class<?> classType = propertyDescriptor.getPropertyType();
-//
-//        boolean justAClass = genericClassType instanceof Class<?>;
-//        if (justAClass) {
-//            return new GuessTypeResult(classType, supportsType(classType));
-//        }
-//
-//        Class<?> declaringClass = propertyDescriptor.getReadMethod().getDeclaringClass();
-//        boolean isTypeVariable = genericClassType instanceof TypeVariable;
-//        if (isTypeVariable) {
-//            TypeVariable<?> typeVariable = (TypeVariable<?>) genericClassType;
-//            TypeVariableAssignments typeVariableAssignment = calculatedNodeData.getTypeVariableAssignment();
-//            boolean hasAssignment = typeVariableAssignment.containsAssignmentInfoFor(declaringClass, typeVariable);
-//
-//            if (!hasAssignment) {
-//                log.debug("Unable to instantiate generic type {} because I have no info about actual implementation.", typeVariable);
-//                return GuessTypeResult.cannotGenerate();
-//            } else {
-//                Type type = typeVariableAssignment.getAssignmentFor(declaringClass, typeVariable);
-//                if (type instanceof Class) {
-//                    return new GuessTypeResult((Class<?>)type, supportsType((Class<?>)type));
-//                } else {
-//                    log.debug("Unable to instantiate generic type {} after substitution, because I have no idea what it is.", typeVariable);
-//                    return GuessTypeResult.cannotGenerate();
-//                }
-//            }
-//        } else {
-//            log.debug("I have no idea what this class ({}) is, cannot instantiate.", classType);
-//            return GuessTypeResult.cannotGenerate();
-//        }
     }
 
     private GuessTypeResult guessType(Type substitutedType) {
@@ -85,55 +52,6 @@ public class RandomValueGenerator extends AbstractGenerator<Object> {
 
     private GuessTypeResult guessType(PathNode pathNode) {
         return guessType(pathNode.getCalculatedNodeData().getGenericClassType());
-//        if (pathNode instanceof PathNode.PropertyDescriptorBasedPathNode) {
-//            PathNode.PropertyDescriptorBasedPathNode pdbpn = (PathNode.PropertyDescriptorBasedPathNode) pathNode;
-//            return guessType(pdbpn.getPropertyDescriptor(), pathNode.getCalculatedNodeData());
-//        } else {
-//            return GuessTypeResult.cannotGenerate();
-//        }
-
-//---------------------
-
-
-//        if (!(pathNode instanceof PathNode.PropertyDescriptorBasedPathNode)) {
-//            throw new IllegalStateException("");
-//        }
-//
-//        PathNode.PropertyDescriptorBasedPathNode pdpn = (PathNode.PropertyDescriptorBasedPathNode) pathNode;
-//        Class<?> declaringClass = pdpn.getDeclaringClass();
-//
-//        CalculatedNodeData calculatedNodeData = pdpn.getCalculatedNodeData();
-//        Type genericClassType = calculatedNodeData.getGenericClassType();
-//        Class<?> classType = calculatedNodeData.getClassType();
-//
-//        boolean justAClass = genericClassType instanceof Class<?>;
-//        if (justAClass) {
-//            return new GuessTypeResult(classType, supportsType(classType));
-//        }
-//
-//        boolean isTypeVariable = genericClassType instanceof TypeVariable;
-//        if (isTypeVariable) {
-//            TypeVariable<?> typeVariable = (TypeVariable<?>) genericClassType;
-//            TypeVariableAssignments typeVariableAssignment = calculatedNodeData.getTypeVariableAssignment();
-//            boolean hasAssignment = typeVariableAssignment.containsAssignmentInfoFor(declaringClass, typeVariable);
-//
-//            if (!hasAssignment) {
-//                log.debug("Unable to instantiate generic type {} because I have no info about actual implementation.", typeVariable);
-//                return GuessTypeResult.cannotGenerate();
-//            } else {
-//                Type type = typeVariableAssignment.getAssignmentFor(declaringClass, typeVariable);
-//                if (type instanceof Class) {
-//                    return new GuessTypeResult((Class<?>)type, supportsType((Class<?>)type));
-//                } else {
-//                    log.debug("Unable to instantiate generic type {} after substitution, because I have no idea what it is.", typeVariable);
-//                    return GuessTypeResult.cannotGenerate();
-//                }
-//            }
-//        } else {
-//            log.debug("I have no idea what this class ({}) is, cannot instantiate.", classType);
-//            return GuessTypeResult.cannotGenerate();
-//        }
-
     }
 
     private boolean supportsType(Class<?> classType) {
