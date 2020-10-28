@@ -1,7 +1,6 @@
 package com.gmail.alfonz19.util.initialize;
 
 import com.gmail.alfonz19.testsupport.AbstractTestSingleAndMultipleInstanceCreation;
-import com.gmail.alfonz19.util.initialize.generator.CollectionGenerator;
 import com.gmail.alfonz19.util.initialize.generator.Generator;
 import com.gmail.alfonz19.util.initialize.generator.Generators;
 import com.gmail.alfonz19.util.initialize.selector.SpecificTypePropertySelector;
@@ -38,7 +37,7 @@ public class RandomEnumImplementingCallableProperty extends AbstractTestSingleAn
                                         TestInstance testInstance) {
         assertThat(testInstance, notNullValue());
         List<Callable<String>> list = propertySelector.select(testInstance);
-        assertThat(list.size(), is(CollectionGenerator.UNCONFIGURED_COLLECTION_SIZE));
+        assertThat(list.size(), is(Config.UNCONFIGURED_COLLECTION_SIZE));
         list.forEach(e-> {
             assertThat(e, notNullValue());
             assertTrue(e instanceof TestEnum);

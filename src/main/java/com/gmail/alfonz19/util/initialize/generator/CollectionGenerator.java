@@ -1,6 +1,7 @@
 package com.gmail.alfonz19.util.initialize.generator;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.gmail.alfonz19.util.initialize.Config;
 import com.gmail.alfonz19.util.initialize.Initialize;
 import com.gmail.alfonz19.util.initialize.context.CalculatedNodeData;
 import com.gmail.alfonz19.util.initialize.context.PathComponent;
@@ -24,15 +25,11 @@ import static com.gmail.alfonz19.util.initialize.util.TypeVariableAssignments.NO
 @SuppressWarnings({"java:S119", "squid:S1172", "unused", "squid:S1068", "FieldCanBeLocal"})
 //type variables, unused method parameters, unused constructs, field can be converted to local variable, same
 public class CollectionGenerator<ITEM_TYPE, GENERATES> extends AbstractGenerator<GENERATES> {
-    //TODO MMUCHA: externalize.
-    private static final int MAX_COLLECTION_LENGTH = 100;
-    //TODO MMUCHA: externalize.
-    public static final int UNCONFIGURED_COLLECTION_SIZE = 5;
 
     private final Function<Collection<? extends ITEM_TYPE>, GENERATES> listInstanceSupplier;
     private final Generator<? extends ITEM_TYPE> itemGenerator;
     private final SizeSpecification sizeSpecification =
-            new SizeSpecification(0, MAX_COLLECTION_LENGTH, UNCONFIGURED_COLLECTION_SIZE);
+            new SizeSpecification(0, Config.MAX_COLLECTION_LENGTH, Config.UNCONFIGURED_COLLECTION_SIZE);
     private boolean shuffled;
     //this states, whether it's probable, that we have more specific information about type than one passed via PathNode.
     private final boolean overwriteCalculatedNodeData;

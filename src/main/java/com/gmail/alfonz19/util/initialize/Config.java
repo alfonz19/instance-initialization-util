@@ -4,4 +4,6 @@ package com.gmail.alfonz19.util.initialize;
 public class Config {
     public static final int MAX_STRING_LENGTH = 100_000;
     public static final int UNCONFIGURED_STRING_SIZE = 20;
+    public static final int MAX_COLLECTION_LENGTH = 100;
+    public static final int UNCONFIGURED_COLLECTION_SIZE = 5;
 }
