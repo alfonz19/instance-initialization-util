@@ -93,7 +93,7 @@ public interface PathNode {
         }
 
         public Optional<Rule> findFirstApplicableRule(PathNode pathNode) {
-            return getRules().stream().filter(rule->rule.appliesForPathAndType(pathNode)).findFirst();
+            return getRules().stream().filter(rule->rule.applies(pathNode)).findFirst();
         }
     }
 

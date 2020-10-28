@@ -58,7 +58,7 @@ public class RuleBuilder {
         private final List<Predicate<PathNode>> tests = new LinkedList<>();
 
         @Override
-        public boolean appliesForPathAndType(PathNode pathNode) {
+        public boolean applies(PathNode pathNode) {
             return tests.stream().map(e -> e.test(pathNode)).filter(e -> !e).findFirst().orElse(true);
         }
 
