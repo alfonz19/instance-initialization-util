@@ -50,7 +50,6 @@ public class SizeSpecification {
 
     private void validateSizeSpecification() {
         if (requestedSize != null && (requestedMinSize != null || requestedMaxSize != null)) {
-            //TODO MMUCHA: better message using path.
             throw new InitializeException("Specified both min-max size bounds and exact size size.");
         }
     }
