@@ -73,6 +73,10 @@ public class Generators {
         return new EnumInstanceGenerator<>(classType, interfaceEnumImplements);
     }
 
+    public static RandomValueGenerator randomForGuessedType(boolean useDefaultValueAsFallback) {
+        return new RandomValueGenerator(useDefaultValueAsFallback, false);
+    }
+
     public static RandomValueGenerator randomForGuessedType(boolean useDefaultValueAsFallback, boolean reusingGuessedType) {
         return new RandomValueGenerator(useDefaultValueAsFallback, reusingGuessedType);
     }

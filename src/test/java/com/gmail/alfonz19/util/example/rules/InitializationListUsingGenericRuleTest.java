@@ -1,13 +1,15 @@
-package com.gmail.alfonz19.util.initialize;
+package com.gmail.alfonz19.util.example.rules;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.gmail.alfonz19.testsupport.InitializedInstanceLogger;
+import com.gmail.alfonz19.util.initialize.InitializationUsingRules;
 import com.gmail.alfonz19.util.initialize.generator.Rules;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -54,6 +56,20 @@ public class InitializationListUsingGenericRuleTest {
                         .initialize(list(new TypeReference<List<List<String>>>() {}));
         initializedInstanceLogger.logInitializedInstance(instance);
         assertCreatedInstance(instance, ArrayList.class);
+    }
+
+    @Ignore //TODO MMUCHA: implement.
+    @Test
+    public void testInitializationGenericListUsingRule() {
+//        Rules rules = new Rules()
+//                .addRule(applyGenerator(list(randomForGuessedType(true, false)).withSize(5))
+//                        .ifPropertyClassTypeIsEqualTo(List.class));
+//
+//        List<List<String>> instance =
+//                InitializationUsingRules.withConfiguration(rules)
+//                        .initialize(Generators.randomForGuessedType(true));
+//        initializedInstanceLogger.logInitializedInstance(instance);
+//        assertCreatedInstance(instance, ArrayList.class);
     }
 
     public void assertCreatedInstance(List<List<String>> instance, Class<?> topLevelInstanceClassType) {

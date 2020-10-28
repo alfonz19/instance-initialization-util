@@ -1,8 +1,9 @@
-package com.gmail.alfonz19.util.initialize;
+package com.gmail.alfonz19.util.example.rules;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.gmail.alfonz19.testsupport.InitializedInstanceLogger;
 import com.gmail.alfonz19.util.example.to.GenericSubClass;
+import com.gmail.alfonz19.util.initialize.InitializationUsingRules;
 import com.gmail.alfonz19.util.initialize.generator.Rules;
 
 import java.util.List;

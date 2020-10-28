@@ -3,9 +3,7 @@ package com.gmail.alfonz19.testsupport;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.gmail.alfonz19.util.initialize.TestInitAnywhereInTreeStringPropertyWhichNameContainsGivenTextTest;
 import com.gmail.alfonz19.util.initialize.exception.InitializeException;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import org.junit.AssumptionViolatedException;

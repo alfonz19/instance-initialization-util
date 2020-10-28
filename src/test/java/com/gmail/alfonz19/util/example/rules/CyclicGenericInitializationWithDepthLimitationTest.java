@@ -1,4 +1,4 @@
-package com.gmail.alfonz19.util.initialize;
+package com.gmail.alfonz19.util.example.rules;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.gmail.alfonz19.testsupport.InitializedInstanceLogger;

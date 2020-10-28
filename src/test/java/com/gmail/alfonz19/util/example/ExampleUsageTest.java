@@ -11,6 +11,7 @@ import com.gmail.alfonz19.util.example.to.ClassWithOneStringProperty;
 import com.gmail.alfonz19.util.example.to.ClassWithSupplierProperty;
 import com.gmail.alfonz19.util.example.to.EnumImplementingInterface;
 import com.gmail.alfonz19.util.example.to.GenericClass;
+import com.gmail.alfonz19.util.example.to.GenericSubClass;
 import com.gmail.alfonz19.util.example.to.RootDto;
 import com.gmail.alfonz19.util.example.to.TestingInterface;
 import com.gmail.alfonz19.util.initialize.generator.Generators;
@@ -592,7 +593,6 @@ public class ExampleUsageTest {
     //</editor-fold>
 
     //———————————————————————————————————————————————————————————————
-
     //<editor-fold desc="Generic Types">
     @Test
     public void testRandomInitializationOfGenericClassWithCustomSupplier() {
@@ -618,6 +618,26 @@ public class ExampleUsageTest {
         assertThat(initialized, notNullValue());
         assertThat(initialized.getT(), notNullValue());
         assertThat(initialized.getT(), isA(Integer.class));
+    }
+
+    /**
+     * Creates generic GenericSubClass using given types `<Integer, String>`, automatically initializing any
+     * List property with 5 items. In this case the List contains items of generic type.
+     */
+    @Test
+    public void testInitializationOfGenericClassHavingGenericParent() {
+        GenericSubClass<Integer, String> instance =
+                initialize(instance(new TypeReference<GenericSubClass<Integer, String>>() {})
+                        .setUnsetPropertiesRandomly());
+
+        initializedInstanceLogger.logInitializedInstance(instance);
+
+        assertThat(instance, isA(GenericSubClass.class));
+        assertThat(instance.getTlist(), nullValue());
+        assertThat(instance.getK(), notNullValue());
+        assertThat(instance.getK(), isA(String.class));
+
+        assertThat(instance.getT(), notNullValue());
     }
     //</editor-fold>
 }

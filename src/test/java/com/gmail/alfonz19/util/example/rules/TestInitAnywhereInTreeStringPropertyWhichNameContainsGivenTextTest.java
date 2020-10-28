@@ -1,4 +1,4 @@
-package com.gmail.alfonz19.util.initialize;
+package com.gmail.alfonz19.util.example.rules;
 
 import com.gmail.alfonz19.testsupport.InitializedInstanceLogger;
 import com.gmail.alfonz19.util.initialize.context.PathMatcherBuilder;
@@ -82,40 +82,4 @@ public class TestInitAnywhereInTreeStringPropertyWhichNameContainsGivenTextTest 
     public enum UnrelatedEnum {
         UNRELATED
     }
-
-    /*generated value:
-    {
-        "unrelated" : 0,
-            "unrelated2" : null,
-            "unrelated3" : 1603725754946,
-            "unrelated4" : null,
-            "unrelatedEnum" : null,
-            "associatedInstances" : [ {
-        "unrelated" : 0,
-                "unrelated2" : null,
-                "unrelated3" : 1603725754965,
-                "unrelated4" : null,
-                "unrelatedEnum" : null,
-                "associatedInstances" : null,
-                "thisShouldBeSetAsItMatchesRule" : "success6538566517",
-                "thisShouldBeSetAsItMatchesRuleAlso" : "success8270141943",
-                "butNotThis" : "originalValue"
-    }, {
-        "unrelated" : 0,
-                "unrelated2" : null,
-                "unrelated3" : 1603725754968,
-                "unrelated4" : null,
-                "unrelatedEnum" : null,
-                "associatedInstances" : null,
-                "thisShouldBeSetAsItMatchesRule" : "success1436849865",
-                "thisShouldBeSetAsItMatchesRuleAlso" : "success3862815812",
-                "butNotThis" : "originalValue"
-    } ],
-        "thisShouldBeSetAsItMatchesRule" : "success3374736603",
-            "thisShouldBeSetAsItMatchesRuleAlso" : "success5657429222",
-            "butNotThis" : "originalValue"
-    }
-    */
-
-
 }
