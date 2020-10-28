@@ -10,10 +10,10 @@ import static com.gmail.alfonz19.util.initialize.util.GenericUtil.nvl;
 public class SizeSpecification {
     private final int minSize;
     private final int maxSize;
+    private final int sizeToUseWhenSpecificationIsNotConfigured;
     private Integer requestedMinSize;
     private Integer requestedMaxSize;
     private Integer requestedSize;
-    private int sizeToUseWhenSpecificationIsNotConfigured;
 
     public SizeSpecification(int minSize, int maxSize, int sizeToUseWhenSpecificationIsNotConfigured) {
         this.minSize = minSize;
