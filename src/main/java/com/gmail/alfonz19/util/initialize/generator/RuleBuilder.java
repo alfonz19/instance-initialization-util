@@ -7,9 +7,11 @@ import com.gmail.alfonz19.util.initialize.context.PathNode;
 import com.gmail.alfonz19.util.initialize.context.Rule;
 import lombok.AllArgsConstructor;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 public class RuleBuilder {
 
@@ -33,18 +35,52 @@ public class RuleBuilder {
         return this;
     }
 
+    public RuleBuilder addTest(Predicate<PathNode> test) {
+        rule.addTest(test);
+        return this;
+    }
+
     public RuleBuilder ifClassTypeIsEqualTo(Class<?> requestedClassType) {
-        rule.addTest((pathNode) -> requestedClassType.equals(pathNode.getCalculatedNodeData().getClassType()));
+        addTest(classTypeIsEqualTo(requestedClassType));
         return this;
     }
 
     public RuleBuilder ifClassTypeIsAssignableFrom(Class<?> requestedClassType) {
-        rule.addTest((pathNode) -> requestedClassType.isAssignableFrom(pathNode.getCalculatedNodeData().getClassType()));
+        addTest(classTypeIsAssignableFrom(requestedClassType));
         return this;
     }
 
     public Rule build() {
         return rule;
+    }
+
+    public static Predicate<PathNode> classTypeIsAssignableFrom(Class<?> requestedClassType) {
+        return (pathNode) -> requestedClassType.isAssignableFrom(pathNode.getCalculatedNodeData().getClassType());
+    }
+
+    public static Predicate<PathNode> classTypeIsEqualTo(Class<?> requestedClassType) {
+        return (pathNode) -> requestedClassType.equals(pathNode.getCalculatedNodeData().getClassType());
+    }
+
+    private static Boolean applyAndOperation(Stream<Predicate<PathNode>> predicatesStream, PathNode pathNode) {
+        return predicatesStream.map(e -> e.test(pathNode)).filter(e -> !e).findFirst().orElse(true);
+    }
+
+    @SafeVarargs
+    public static Predicate<PathNode> and(Predicate<PathNode> first, Predicate<PathNode> ... others) {
+        Stream<Predicate<PathNode>> predicateStream = Stream.concat(Stream.of(first), Arrays.stream(others));
+        return node ->  applyAndOperation(predicateStream, node);
+    }
+
+    @SafeVarargs
+    public static Predicate<PathNode> or(Predicate<PathNode> first, Predicate<PathNode> ... others) {
+        Stream<Predicate<PathNode>> predicateStream = Stream.concat(Stream.of(first), Arrays.stream(others));
+        return node -> predicateStream
+                .map(e->e.test(node))
+
+                //keep only true values
+                .filter(e-> e)
+                .findFirst().orElse(false);
     }
 
     public static RuleBuilder applyGenerator(Generator<?> generator) {
@@ -59,7 +95,8 @@ public class RuleBuilder {
 
         @Override
         public boolean applies(PathNode pathNode) {
-            return tests.stream().map(e -> e.test(pathNode)).filter(e -> !e).findFirst().orElse(true);
+            //apply all rules with AND evaluation: apply all, find first false resolution, return it or return false if there is not false resolution.
+            return applyAndOperation(tests.stream(), pathNode);
         }
 
         @Override
