@@ -122,6 +122,10 @@ public class PathComponents {
         return components.get(size - 1);
     }
 
+    public int getNumberOfComponents() {
+        return this.components.size();
+    }
+
     public PathComponents append(PathComponent pathComponent) {
         return new PathComponents(this, pathComponent);
     }

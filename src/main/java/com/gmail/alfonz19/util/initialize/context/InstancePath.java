@@ -42,6 +42,11 @@ public class InstancePath implements Path {
     }
 
     @Override
+    public int getPathLength() {
+        return getPathComponents().getNumberOfComponents();
+    }
+
+    @Override
     public Path createSubPathTraversingProperty(PropertyDescriptor propertyDescriptor) {
         String propertyName = Objects.requireNonNull(propertyDescriptor).getName();
         if (Objects.requireNonNull(propertyName).contains(PATH_SEPARATOR_AS_STRING)) {

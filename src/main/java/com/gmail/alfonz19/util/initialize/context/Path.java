@@ -12,6 +12,7 @@ public interface Path {
 
     boolean isRootPath();
     String getPathAsString();
+    int getPathLength();
     PathComponents getPathComponents();
 
     Path createSubPathTraversingProperty(PropertyDescriptor propertyDescriptor);
