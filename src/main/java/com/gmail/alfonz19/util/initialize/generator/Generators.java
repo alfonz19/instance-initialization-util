@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -89,19 +90,27 @@ public class Generators {
         return new DefaultValueGenerator<>();
     }
 
-    //TODO MMUCHA: what if no generators is passed in?
     @SafeVarargs
     public static <T> Generator<T> roundRobinGenerator(Generator<? extends T> ... generators) {
+        if (generators == null || generators.length == 0) {
+            throw new IllegalArgumentException();
+        }
         return new RoundRobinGenerator<>(Arrays.asList(generators));
     }
 
     @SafeVarargs
     public static <T> Generator<T> sequentialGenerator(Generator<? extends T> ... generators) {
+        if (generators == null || generators.length == 0) {
+            throw new IllegalArgumentException();
+        }
         return new SequentialGenerator<>(Arrays.asList(generators));
     }
 
     @SafeVarargs
     public static <T> Generator<T> randomlySelectedGenerator(Generator<T> ... generators) {
+        if (generators == null || generators.length == 0) {
+            throw new IllegalArgumentException();
+        }
         return new RandomlySelectedGenerator<>(Arrays.asList(generators));
     }
 
