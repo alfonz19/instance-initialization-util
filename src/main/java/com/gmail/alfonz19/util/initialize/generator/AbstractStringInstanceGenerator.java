@@ -26,7 +26,6 @@ public abstract class AbstractStringInstanceGenerator extends AbstractGenerator<
         return this;
     }
 
-    //TODO MMUCHA: add updatedWithPath method.
     public AbstractStringInstanceGenerator updatedWithContext(BiFunction<String, PathNode, String> updatingFunction) {
         transformations.add(updatingFunction);
         return this;
