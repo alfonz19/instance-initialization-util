@@ -25,7 +25,7 @@ public class CyclicGenericInitializationWithDepthLimitationTest {
     public void crazyCyclicGenericInitializationWithDepthLimitation() {
         Rules rules = new Rules()
                 .addRule(applyGenerator(instance(new TypeReference<GenericSubClass<Integer, GenericSubClassUsedInDepths.A>>() {}))
-                        .ifPropertyClassTypeIsEqualTo(GenericSubClass.class));
+                        .ifClassTypeIsEqualTo(GenericSubClass.class));
 
         GenericSubClassUsedInDepths instance = withConfiguration(rules)
                 .initialize(instance(GenericSubClassUsedInDepths.class));

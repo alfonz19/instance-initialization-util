@@ -33,12 +33,12 @@ public class RuleBuilder {
         return this;
     }
 
-    public RuleBuilder ifPropertyClassTypeIsEqualTo(Class<?> requestedClassType) {
+    public RuleBuilder ifClassTypeIsEqualTo(Class<?> requestedClassType) {
         rule.addTest((pathNode) -> requestedClassType.equals(pathNode.getCalculatedNodeData().getClassType()));
         return this;
     }
 
-    public RuleBuilder ifPropertyClassTypeIsAssignableFrom(Class<?> requestedClassType) {
+    public RuleBuilder ifClassTypeIsAssignableFrom(Class<?> requestedClassType) {
         rule.addTest((pathNode) -> requestedClassType.isAssignableFrom(pathNode.getCalculatedNodeData().getClassType()));
         return this;
     }

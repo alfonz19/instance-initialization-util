@@ -31,7 +31,7 @@ public class TestInitAnywhereInTreeStringPropertyWhichNameContainsGivenTextTest 
     public void initAnywhereInTreeStringPropertyWhichNameContainsGivenText() {
         TestInstance testInstance = withConfiguration(new Rules()
                 .addRule(applyGenerator(Generators.randomString().withSize(10).addPrefix("success"))
-                        .ifPropertyClassTypeIsEqualTo(String.class)
+                        .ifClassTypeIsEqualTo(String.class)
                         .ifPathMatches(PathMatcherBuilder.root().addAnySubPath().addPropertyRegex("thisShouldBeSet.*?"))
                 ))
                 .initialize(instance(TestInstance.class)

@@ -33,7 +33,7 @@ public class InitializationOfGenericClassHavingGenericParentTest {
     public void automaticInitializationOfGenericClassHavingGenericParent() {
         Rules rules = new Rules()
                 .addRule(applyGenerator(list(randomForGuessedType(true, false)).withSize(5))
-                        .ifPropertyClassTypeIsEqualTo(List.class));
+                        .ifClassTypeIsEqualTo(List.class));
 
         GenericSubClass<Integer, String> instance = InitializationUsingRules.withConfiguration(rules)
 

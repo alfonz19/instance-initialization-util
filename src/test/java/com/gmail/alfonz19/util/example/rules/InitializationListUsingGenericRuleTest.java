@@ -35,7 +35,7 @@ public class InitializationListUsingGenericRuleTest {
     public void automaticInitializationListUsingGenericRule() {
         Rules rules = new Rules()
                 .addRule(applyGenerator(list(randomForGuessedType(true, false)).withSize(5))
-                        .ifPropertyClassTypeIsEqualTo(List.class));
+                        .ifClassTypeIsEqualTo(List.class));
 
         List<List<String>> instance =
                 InitializationUsingRules.withConfiguration(rules)
@@ -49,7 +49,7 @@ public class InitializationListUsingGenericRuleTest {
     public void automaticInitializationListUsingGenericRule2() {
         Rules rules = new Rules()
                 .addRule(applyGenerator(list(randomForGuessedType(true, false)).withSize(5))
-                        .ifPropertyClassTypeIsEqualTo(List.class));
+                        .ifClassTypeIsEqualTo(List.class));
 
         List<List<String>> instance =
                 InitializationUsingRules.withConfiguration(rules)
