@@ -53,7 +53,7 @@ public class Generators {
         return new ShortInstanceGenerator().biggerThan(min).smallerThan(max);
     }
 
-    public static ByteInstanceGenerator randomByte(byte min, byte max) {
+    public static ByteInstanceGenerator randomByte() {
         return new ByteInstanceGenerator();
     }
 
