@@ -8,18 +8,20 @@ import com.gmail.alfonz19.util.initialize.context.Rule;
 import com.gmail.alfonz19.util.initialize.util.PredicatesBooleanOperations;
 import lombok.AllArgsConstructor;
 
+import java.lang.reflect.Type;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import static com.gmail.alfonz19.util.initialize.generator.PathNodePredicates.*;
 
 public class RuleBuilder {
 
-    private final RuleImpl rule;
+    private final AbstractRule rule;
 
-    public RuleBuilder(RuleImpl rule) {
+    public RuleBuilder(AbstractRule rule) {
         this.rule = rule;
     }
 
@@ -68,6 +70,11 @@ public class RuleBuilder {
         return this;
     }
 
+    public RuleBuilder ifType(Predicate<Type> predicate) {
+        addTest(typePredicate(predicate));
+        return this;
+    }
+
     public RuleBuilder ifClassTypeIsAssignableFrom(Class<?> requestedClassType) {
         addTest(classTypeIsAssignableFrom(requestedClassType));
         return this;
@@ -77,14 +84,16 @@ public class RuleBuilder {
         return rule;
     }
 
+    public static RuleBuilder createNewGeneratorAndApply(Supplier<Generator<?>> generator) {
+        return new RuleBuilder(new SupplierRule(generator));
+    }
+
     public static RuleBuilder applyGenerator(Generator<?> generator) {
-        return new RuleBuilder(new RuleImpl(generator));
+        return new RuleBuilder(new RuleReturningConstant(generator));
     }
 
     @AllArgsConstructor
-    private static final class RuleImpl implements Rule {
-
-        private final Generator<?> generator;
+    public static abstract class AbstractRule implements Rule {
         private final List<BiPredicate<Object, PathNode>> tests = new LinkedList<>();
 
         @Override
@@ -93,13 +102,30 @@ public class RuleBuilder {
             return PredicatesBooleanOperations.applyAndOperation(tests.stream(), instance, pathNode);
         }
 
+        public void addTest(BiPredicate<Object, PathNode> test) {
+            tests.add(test);
+        }
+    }
+
+    @AllArgsConstructor
+    private static final class RuleReturningConstant extends AbstractRule  {
+
+        private final Generator<?> generator;
+
         @Override
         public Generator<?> getGenerator() {
             return generator;
         }
+    }
 
-        public void addTest(BiPredicate<Object, PathNode> test) {
-            tests.add(test);
+    @AllArgsConstructor
+    private static final class SupplierRule extends AbstractRule  {
+
+        private final Supplier<Generator<?>> generatorSupplier;
+
+        @Override
+        public Generator<?> getGenerator() {
+            return generatorSupplier.get();
         }
     }
 }

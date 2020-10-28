@@ -4,9 +4,11 @@ import com.gmail.alfonz19.util.initialize.context.Path;
 import com.gmail.alfonz19.util.initialize.context.PathMatcher;
 import com.gmail.alfonz19.util.initialize.context.PathMatcherBuilder;
 import com.gmail.alfonz19.util.initialize.context.PathNode;
+import com.gmail.alfonz19.util.initialize.util.ReflectUtil;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.lang.reflect.Type;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
@@ -22,15 +24,19 @@ public class PathNodePredicates {
     }
 
     public static BiPredicate<Object, PathNode> classTypeIsAssignableFrom(Class<?> requestedClassType) {
-        return (instance, pathNode) -> requestedClassType.isAssignableFrom(pathNode.getCalculatedNodeData().getClassType());
+        return (instance, pathNode) -> requestedClassType.isAssignableFrom(ReflectUtil.getRawType(pathNode.getCalculatedNodeData().getGenericClassType()));
     }
 
     public static BiPredicate<Object, PathNode> classTypeIsEqualTo(Class<?> requestedClassType) {
-        return (instance, pathNode) -> requestedClassType.equals(pathNode.getCalculatedNodeData().getClassType());
+        return (instance, pathNode) -> requestedClassType.equals(ReflectUtil.getRawType(pathNode.getCalculatedNodeData().getGenericClassType()));
     }
 
     public static BiPredicate<Object, PathNode> classPredicate(Predicate<Class<?>> classPredicate) {
         return (instance, pathNode) -> classPredicate.test(pathNode.getCalculatedNodeData().getClassType());
+    }
+
+    public static BiPredicate<Object, PathNode> typePredicate(Predicate<Type> classPredicate) {
+        return (instance, pathNode) -> classPredicate.test(pathNode.getCalculatedNodeData().getGenericClassType());
     }
 
     public static BiPredicate<Object, PathNode> pathIsEqual(Path path) {

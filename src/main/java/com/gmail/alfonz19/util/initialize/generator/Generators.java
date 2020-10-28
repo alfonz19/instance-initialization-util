@@ -254,4 +254,12 @@ public class Generators {
             }
         };
     }
+
+    public static Generator<?> newInstanceViaNoArgConstructor(Class<?> classType) {
+        return new NewInstanceGenerator(classType);
+    }
+
+    public static Generator<?> newInstanceViaNoArgConstructor() {
+        return new NewInstanceGenerator();  //TODO MMUCHA: why is this in full auto test called multiple times??
+    }
 }

@@ -17,14 +17,13 @@ public class PredicatesBooleanOperations {
 
     @SafeVarargs
     public static BiPredicate<Object, PathNode> and(BiPredicate<Object, PathNode> first, BiPredicate<Object, PathNode>... others) {
-        Stream<BiPredicate<Object, PathNode>> predicateStream = Stream.concat(Stream.of(first), Arrays.stream(others));
-        return (instance, node) -> applyAndOperation(predicateStream, instance, node);
+        return (instance, node) -> applyAndOperation(Stream.concat(Stream.of(first), Arrays.stream(others)), instance, node);
     }
 
     @SafeVarargs
     public static BiPredicate<Object, PathNode> or(BiPredicate<Object, PathNode> first, BiPredicate<Object, PathNode>... others) {
-        Stream<BiPredicate<Object, PathNode>> predicateStream = Stream.concat(Stream.of(first), Arrays.stream(others));
-        return (instance, node) -> predicateStream
+
+        return (instance, node) -> Stream.concat(Stream.of(first), Arrays.stream(others))
                 .map(e -> e.test(instance, node))
 
                 //keep only true values

@@ -11,10 +11,14 @@ import com.gmail.alfonz19.util.example.to.ClassWithOneStringProperty;
 import com.gmail.alfonz19.util.example.to.ClassWithSupplierProperty;
 import com.gmail.alfonz19.util.example.to.EnumImplementingInterface;
 import com.gmail.alfonz19.util.example.to.GenericClass;
+import com.gmail.alfonz19.util.example.to.ClassReferencingGenericSubSubClass;
 import com.gmail.alfonz19.util.example.to.GenericSubClass;
 import com.gmail.alfonz19.util.example.to.RootDto;
 import com.gmail.alfonz19.util.example.to.TestingInterface;
+import com.gmail.alfonz19.util.initialize.InitializationUsingRules;
 import com.gmail.alfonz19.util.initialize.generator.Generators;
+import com.gmail.alfonz19.util.initialize.generator.PredefinedRules;
+import com.gmail.alfonz19.util.initialize.generator.Rules;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -636,6 +640,17 @@ public class ExampleUsageTest {
         assertThat(instance.getK(), isA(String.class));
 
         assertThat(instance.getT(), notNullValue());
+    }
+
+    @Test
+    public void testFullAutoRandomInitialization() {
+        ClassReferencingGenericSubSubClass initialized =
+                InitializationUsingRules.withConfiguration(new Rules().addRules(PredefinedRules.ALL_RULES))
+                        .initialize(instance(ClassReferencingGenericSubSubClass::new));
+
+        initializedInstanceLogger.logInitializedInstance(initialized);
+
+        assertThat(initialized, notNullValue());
     }
     //</editor-fold>
 }

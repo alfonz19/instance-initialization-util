@@ -62,7 +62,7 @@ public class InstanceGenerator<SOURCE_INSTANCE> extends AbstractGenerator<SOURCE
 
     }
 
-    private InstanceGenerator(Class<SOURCE_INSTANCE> sourceInstanceClass,
+    public InstanceGenerator(Class<SOURCE_INSTANCE> sourceInstanceClass,
                               Type genericClassType,
                               Supplier<? extends SOURCE_INSTANCE> instanceSupplier,
                               TypeVariableAssignments typeVariableAssignment) {
@@ -71,6 +71,12 @@ public class InstanceGenerator<SOURCE_INSTANCE> extends AbstractGenerator<SOURCE
         setCalculatedNodeData(true,
                 new CalculatedNodeData(sourceInstanceClass, genericClassType, typeVariableAssignment));
     }
+
+//    public InstanceGenerator(Supplier<? extends SOURCE_INSTANCE> instanceSupplier, CalculatedNodeData calculatedNodeData) {
+//        this.invocationSensor = null;
+//        this.instanceSupplier = instanceSupplier;
+//        setCalculatedNodeData(true, calculatedNodeData);
+//    }
 
     //TODO MMUCHA: reimplement
 //    public final <K> InstanceGenerator<SOURCE_INSTANCE> referringToFieldUpContextPath(SpecificTypePropertySelector<SOURCE_INSTANCE, K> stringFieldSelector, int levelsUp) {
