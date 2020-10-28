@@ -65,6 +65,10 @@ public class Generators {
         return new EnumInstanceGenerator<>(classType, classType);
     }
 
+    public static <T> EnumInstanceGenerator<T, T> enumeratedType() {
+        return new EnumInstanceGenerator<>();
+    }
+
     public static <T extends K, K> EnumInstanceGenerator<T, K> enumeratedType(Class<T> classType, Class<K> interfaceEnumImplements) {
         return new EnumInstanceGenerator<>(classType, interfaceEnumImplements);
     }
