@@ -1,7 +1,9 @@
 package com.gmail.alfonz19.util.initialize.util;
 
+import jdk.internal.dynalink.support.AutoDiscovery;
 import lombok.extern.slf4j.Slf4j;
 
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -48,6 +50,21 @@ public enum RandomUtil {
 
 //        return getRandom().nextInt(max - min + 1) + min;
         return (int) longFromClosedRange(min, max);
+    }
+
+    public float floatFromClosedRange(float min, float max) {
+        //TODO MMUCHA: implement
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
+
+    public double doubleFromClosedRange(double min, double max) {
+        //TODO MMUCHA: implement
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
+
+    public BigInteger bigIntegerFromClosedRange(BigInteger min, BigInteger max) {
+        //TODO MMUCHA: implement
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     public <T> T randomFromList(List<T> list) {

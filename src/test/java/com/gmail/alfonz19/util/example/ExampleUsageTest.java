@@ -45,9 +45,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.isA;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -505,8 +503,8 @@ public class ExampleUsageTest {
         initializedInstanceLogger.logInitializedInstance(initialized);
 
         assertThat(initialized, notNullValue());
-        assertThat(initialized.getIntegerProperty(), allOf(notNullValue(), greaterThan(10), lessThan(20)));
-        assertThat(initialized.getIntProperty(), allOf(notNullValue(), greaterThan(10), lessThan(20)));
+        assertThat(initialized.getIntegerProperty(), allOf(notNullValue(), greaterThanOrEqualTo(10), lessThanOrEqualTo(20)));
+        assertThat(initialized.getIntProperty(), allOf(notNullValue(), greaterThanOrEqualTo(10), lessThanOrEqualTo(20)));
     }
 
     @Test

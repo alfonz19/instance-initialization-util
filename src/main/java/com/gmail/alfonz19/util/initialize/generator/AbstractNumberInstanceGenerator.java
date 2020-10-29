@@ -1,30 +1,32 @@
 package com.gmail.alfonz19.util.initialize.generator;
 
 import com.gmail.alfonz19.util.initialize.context.CalculatedNodeData;
+import com.gmail.alfonz19.util.initialize.context.PathNode;
 
 @SuppressWarnings("java:S119")
 abstract class AbstractNumberInstanceGenerator<T extends Number, SELF_TYPE extends AbstractNumberInstanceGenerator<T, SELF_TYPE>> extends AbstractGenerator<T>{
 
-    protected T typeMin;
-    protected T typeMax;
-    protected T min;
-    protected T max;
+    private final MinMaxSpecification<T> minMaxSpecification;
 
-    protected AbstractNumberInstanceGenerator(Class<T> classType, T typeMin, T typeMax) {
+    protected AbstractNumberInstanceGenerator(Class<T> classType, MinMaxSpecification<T> minMaxSpecification) {
         super(true, new CalculatedNodeData(classType));
-        this.typeMin = typeMin;
-        this.typeMax = typeMax;
+        this.minMaxSpecification = minMaxSpecification;
     }
 
     protected abstract SELF_TYPE getSelf();
 
     public SELF_TYPE biggerThan(T min) {
-        this.min = min;
+        this.minMaxSpecification.setRequestedMin(min);
         return getSelf();
     }
 
     public SELF_TYPE smallerThan(T max) {
-        this.max = max;
+        this.minMaxSpecification.setRequestedMax(max);
         return getSelf();
+    }
+
+    @Override
+    public final T create(PathNode pathNode) {
+        return minMaxSpecification.getRandomValueAccordingToSpecification();
     }
 }

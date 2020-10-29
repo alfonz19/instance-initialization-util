@@ -28,8 +28,8 @@ public class CollectionGenerator<ITEM_TYPE, GENERATES> extends AbstractGenerator
 
     private final Function<Collection<? extends ITEM_TYPE>, GENERATES> listInstanceSupplier;
     private final Generator<? extends ITEM_TYPE> itemGenerator;
-    private final SizeSpecification sizeSpecification =
-            new SizeSpecification(0, Config.MAX_COLLECTION_LENGTH, Config.UNCONFIGURED_COLLECTION_SIZE);
+    private final MinMaxSpecification<Integer> sizeSpecification =
+            MinMaxSpecification.intMinMaxSpecification(0, Config.MAX_COLLECTION_LENGTH, Config.UNCONFIGURED_COLLECTION_SIZE);
     private boolean shuffled;
     //this states, whether it's probable, that we have more specific information about type than one passed via PathNode.
     private final boolean overwriteCalculatedNodeData;
@@ -56,17 +56,17 @@ public class CollectionGenerator<ITEM_TYPE, GENERATES> extends AbstractGenerator
     }
 
     public CollectionGenerator<ITEM_TYPE, GENERATES> withMinSize(int minSize) {
-        sizeSpecification.setRequestedMinSize(minSize);
+        sizeSpecification.setRequestedMin(minSize);
         return this;
     }
 
     public CollectionGenerator<ITEM_TYPE, GENERATES> withMaxSize(int maxSize) {
-        sizeSpecification.setRequestedMaxSize(maxSize);
+        sizeSpecification.setRequestedMax(maxSize);
         return this;
     }
 
     public CollectionGenerator<ITEM_TYPE, GENERATES> withSize(int size) {
-        sizeSpecification.setRequestedSize(size);
+        sizeSpecification.setRequestedValue(size);
         return this;
     }
 
@@ -85,7 +85,7 @@ public class CollectionGenerator<ITEM_TYPE, GENERATES> extends AbstractGenerator
             pathNode.setCalculatedNodeData(getCalculatedNodeData());
         }
 
-        int numberOfItemsToBeGenerated = sizeSpecification.getRandomSizeAccordingToSpecification();
+        int numberOfItemsToBeGenerated = sizeSpecification.getRandomValueAccordingToSpecification();
 
         Generator<? extends ITEM_TYPE> itemGeneratorToUse = getGeneratorToUse(pathNode);
 

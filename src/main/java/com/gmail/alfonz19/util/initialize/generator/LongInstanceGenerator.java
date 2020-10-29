@@ -1,20 +1,17 @@
 package com.gmail.alfonz19.util.initialize.generator;
 
-import com.gmail.alfonz19.util.initialize.context.PathNode;
-import com.gmail.alfonz19.util.initialize.util.RandomUtil;
+import com.gmail.alfonz19.util.initialize.Config;
 
 public class LongInstanceGenerator extends AbstractNumberInstanceGenerator<Long, LongInstanceGenerator> {
     public LongInstanceGenerator() {
-        super(Long.class, Long.MIN_VALUE, Long.MAX_VALUE);
+        super(Long.class,
+                MinMaxSpecification.longMinMaxSpecification(Long.MIN_VALUE, Long.MAX_VALUE, null)
+                        .setRequestedMin((long) Config.UNCONFIGURED_NUMBER_MIN)
+                        .setRequestedMax((long) Config.UNCONFIGURED_NUMBER_MAX));
     }
 
     @Override
     protected LongInstanceGenerator getSelf() {
         return this;
-    }
-
-    @Override
-    public Long create(PathNode pathNode) {
-        return RandomUtil.INSTANCE.longFromRange(min, max);
     }
 }
