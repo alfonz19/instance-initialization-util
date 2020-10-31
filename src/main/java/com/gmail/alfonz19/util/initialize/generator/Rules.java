@@ -5,6 +5,7 @@ import com.gmail.alfonz19.util.initialize.context.Rule;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 public class Rules {
     public static final Rules NO_RULES = new Rules();
@@ -19,8 +20,13 @@ public class Rules {
         return addRule(ruleBuilder.build());
     }
 
-    public Rules addRule(Rule build) {
-        ruleList.add(build);
+    public Rules addRule(Rule rule) {
+        ruleList.add(rule);
+        return this;
+    }
+
+    public Rules addRules(List<Rule> rules) {
+        ruleList.addAll(Objects.requireNonNull(rules));
         return this;
     }
 

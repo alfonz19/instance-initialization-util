@@ -7,37 +7,41 @@ import com.gmail.alfonz19.util.initialize.context.PathNode;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class PathNodePredicates {
 
-    public static Predicate<PathNode> pathMatches(PathMatcher pathMatcher) {
-        return (pathNode) -> pathMatcher.matches(pathNode.getPath());
+    public static BiPredicate<Object, PathNode> pathMatches(PathMatcher pathMatcher) {
+        return (instance, pathNode) -> pathMatcher.matches(pathNode.getPath());
     }
 
-    public static Predicate<PathNode> pathMatches(PathMatcherBuilder pathMatcherBuilder) {
+    public static BiPredicate<Object, PathNode> pathMatches(PathMatcherBuilder pathMatcherBuilder) {
         return pathMatches(pathMatcherBuilder.build());
     }
 
-    public static Predicate<PathNode> classTypeIsAssignableFrom(Class<?> requestedClassType) {
-        return (pathNode) -> requestedClassType.isAssignableFrom(pathNode.getCalculatedNodeData().getClassType());
+    public static BiPredicate<Object, PathNode> classTypeIsAssignableFrom(Class<?> requestedClassType) {
+        return (instance, pathNode) -> requestedClassType.isAssignableFrom(pathNode.getCalculatedNodeData().getClassType());
     }
 
-    public static Predicate<PathNode> classTypeIsEqualTo(Class<?> requestedClassType) {
-        return (pathNode) -> requestedClassType.equals(pathNode.getCalculatedNodeData().getClassType());
+    public static BiPredicate<Object, PathNode> classTypeIsEqualTo(Class<?> requestedClassType) {
+        return (instance, pathNode) -> requestedClassType.equals(pathNode.getCalculatedNodeData().getClassType());
     }
 
-    public static Predicate<PathNode> pathIsEqual(Path path) {
-        return (pathNode) -> pathNode.getPath().equals(path);
+    public static BiPredicate<Object, PathNode> classPredicate(Predicate<Class<?>> classPredicate) {
+        return (instance, pathNode) -> classPredicate.test(pathNode.getCalculatedNodeData().getClassType());
     }
 
-    public static Predicate<PathNode> pathLengthIsEqual(int length) {
-        return (pathNode) -> pathNode.getPath().getPathLength() == length;
+    public static BiPredicate<Object, PathNode> pathIsEqual(Path path) {
+        return (instance, pathNode) -> pathNode.getPath().equals(path);
     }
 
-    public static Predicate<PathNode> pathLengthIsLessThan(int length) {
-        return (pathNode) -> pathNode.getPath().getPathLength() < length;
+    public static BiPredicate<Object, PathNode> pathLengthIsEqual(int length) {
+        return (instance, pathNode) -> pathNode.getPath().getPathLength() == length;
+    }
 
+    public static BiPredicate<Object, PathNode> pathLengthIsLessThan(int length) {
+        return (instance, pathNode) -> pathNode.getPath().getPathLength() < length;
     }
 }

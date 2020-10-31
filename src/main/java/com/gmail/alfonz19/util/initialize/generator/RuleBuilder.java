@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
 import static com.gmail.alfonz19.util.initialize.generator.PathNodePredicates.*;
@@ -47,13 +48,23 @@ public class RuleBuilder {
         return this;
     }
 
-    public RuleBuilder addTest(Predicate<PathNode> test) {
+    public RuleBuilder addTest(BiPredicate<Object, PathNode> test) {
         rule.addTest(test);
         return this;
     }
 
     public RuleBuilder ifClassTypeIsEqualTo(Class<?> requestedClassType) {
         addTest(classTypeIsEqualTo(requestedClassType));
+        return this;
+    }
+
+    public RuleBuilder ifPathNode(BiPredicate<Object, PathNode> predicate) {
+        addTest(predicate);
+        return this;
+    }
+
+    public RuleBuilder ifClass(Predicate<Class<?>> predicate) {
+        addTest(classPredicate(predicate));
         return this;
     }
 
@@ -74,12 +85,12 @@ public class RuleBuilder {
     private static final class RuleImpl implements Rule {
 
         private final Generator<?> generator;
-        private final List<Predicate<PathNode>> tests = new LinkedList<>();
+        private final List<BiPredicate<Object, PathNode>> tests = new LinkedList<>();
 
         @Override
-        public boolean applies(PathNode pathNode) {
+        public boolean applies(Object instance, PathNode pathNode) {
             //apply all rules with AND evaluation: apply all, find first false resolution, return it or return false if there is not false resolution.
-            return PredicatesBooleanOperations.applyAndOperation(tests.stream(), pathNode);
+            return PredicatesBooleanOperations.applyAndOperation(tests.stream(), instance, pathNode);
         }
 
         @Override
@@ -87,7 +98,7 @@ public class RuleBuilder {
             return generator;
         }
 
-        public void addTest(Predicate<PathNode> test) {
+        public void addTest(BiPredicate<Object, PathNode> test) {
             tests.add(test);
         }
     }

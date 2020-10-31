@@ -99,7 +99,7 @@ public class InstanceGenerator<SOURCE_INSTANCE> extends AbstractGenerator<SOURCE
 
         SOURCE_INSTANCE instance = this.instanceSupplier.get();
 
-        applyRulesFromPathContext(pathNode);
+        applyRulesFromPathContext(pathNode, instance);
 
         applyAllInitializations(instance, pathNode);
         return instance;
@@ -110,12 +110,12 @@ public class InstanceGenerator<SOURCE_INSTANCE> extends AbstractGenerator<SOURCE
                 .forEach(initializations -> initializations.init(instance, pathNode));
     }
 
-    private void applyRulesFromPathContext(PathNode pathNode) {
+    private void applyRulesFromPathContext(PathNode pathNode, SOURCE_INSTANCE instance) {
         List<PropertyDescriptor> unsetProperties = findUninitializedProperties();
         unsetProperties.forEach(propertyDescriptor -> {
             PathNode subPathNode = new PathNode.PropertyDescriptorBasedPathNode(pathNode, propertyDescriptor);
 
-            subPathNode.findFirstApplicableRule()
+            subPathNode.findFirstApplicableRule(instance)
                     .ifPresent(rule -> addPropertyDescriptorInitialization(propertyDescriptor, rule.getGenerator()));
         });
     }

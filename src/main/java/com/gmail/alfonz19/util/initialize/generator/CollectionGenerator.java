@@ -146,7 +146,7 @@ public class CollectionGenerator<ITEM_TYPE, GENERATES> extends AbstractGenerator
 
         //noinspection unchecked
         Generator<? extends ITEM_TYPE> itemGeneratorToUse =
-                (Generator<? extends ITEM_TYPE>) pathNode.findFirstApplicableRule()
+                (Generator<? extends ITEM_TYPE>) pathNode.findFirstApplicableRule(null)
                         .map(Rule::getGenerator)
                         .orElse(null);
         if (itemGeneratorToUse == null) {

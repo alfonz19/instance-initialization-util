@@ -19,7 +19,7 @@ public interface PathNode {
     void setCalculatedNodeData(CalculatedNodeData calculatedNodeData);
     Path getPath();
     PathNode getParent();
-    Optional<Rule> findFirstApplicableRule();
+    Optional<Rule> findFirstApplicableRule(Object instance);
 
     abstract class AbstractPathNode implements PathNode {
         protected CalculatedNodeData calculatedNodeData;
@@ -84,16 +84,16 @@ public interface PathNode {
         }
 
         @Override
-        public Optional<Rule> findFirstApplicableRule() {
-            return findFirstApplicableRule(this);
+        public Optional<Rule> findFirstApplicableRule(Object instance) {
+            return findFirstApplicableRule(instance, this);
         }
 
         public List<Rule> getRules() {
             return rules;
         }
 
-        public Optional<Rule> findFirstApplicableRule(PathNode pathNode) {
-            return getRules().stream().filter(rule->rule.applies(pathNode)).findFirst();
+        public Optional<Rule> findFirstApplicableRule(Object instance, PathNode pathNode) {
+            return getRules().stream().filter(rule->rule.applies(instance, pathNode)).findFirst();
         }
     }
 
@@ -123,8 +123,8 @@ public interface PathNode {
         }
 
         @Override
-        public Optional<Rule> findFirstApplicableRule() {
-            return getRootNode().findFirstApplicableRule(this);
+        public Optional<Rule> findFirstApplicableRule(Object instance) {
+            return getRootNode().findFirstApplicableRule(instance, this);
         }
 
         private RootPathNode getRootNode() {
