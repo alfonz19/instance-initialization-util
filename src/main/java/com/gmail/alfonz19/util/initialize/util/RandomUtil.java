@@ -1,8 +1,8 @@
 package com.gmail.alfonz19.util.initialize.util;
 
-import jdk.internal.dynalink.support.AutoDiscovery;
 import lombok.extern.slf4j.Slf4j;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
@@ -18,7 +18,6 @@ public enum RandomUtil {
             throw new IllegalArgumentException();
         }
 
-//        return getRandom().nextLong(max - min) + min;
         return getRandom().nextLong(min, max);
     }
 
@@ -27,11 +26,7 @@ public enum RandomUtil {
             throw new IllegalArgumentException();
         }
 
-//        return getRandom().nextLong(max - min + 1) + min;
-
-        //overflow detection
-        long maxToUse = max + 1 < 0 ? max : max + 1;
-        return getRandom().nextLong(min, maxToUse);
+        return min + (long)(getRandom().nextDouble() * (max - min));
     }
 
     public int intFromRange(int min, int max) {
@@ -39,7 +34,6 @@ public enum RandomUtil {
             throw new IllegalArgumentException();
         }
 
-//        return getRandom().nextInt((int)((long) max - (long) min)) + min;
         return (int) longFromRange(min, max);
     }
 
@@ -48,23 +42,24 @@ public enum RandomUtil {
             throw new IllegalArgumentException();
         }
 
-//        return getRandom().nextInt(max - min + 1) + min;
         return (int) longFromClosedRange(min, max);
     }
 
     public float floatFromClosedRange(float min, float max) {
-        //TODO MMUCHA: implement
-        throw new UnsupportedOperationException("Not implemented yet");
+        return min + (float)(getRandom().nextDouble() * (max - min));
     }
 
     public double doubleFromClosedRange(double min, double max) {
-        //TODO MMUCHA: implement
-        throw new UnsupportedOperationException("Not implemented yet");
+        return min + (getRandom().nextDouble() * (max - min));
     }
 
     public BigInteger bigIntegerFromClosedRange(BigInteger min, BigInteger max) {
-        //TODO MMUCHA: implement
-        throw new UnsupportedOperationException("Not implemented yet");
+        BigInteger maxMinusMin = max.subtract(min);
+        BigDecimal rnd = BigDecimal.valueOf(getRandom().nextDouble());
+        BigDecimal rndTimesMaxMinusMin = rnd.multiply(new BigDecimal(maxMinusMin));
+        BigDecimal minPlusRndTimesMaxMinusMin = rndTimesMaxMinusMin.add(new BigDecimal(min));
+
+        return minPlusRndTimesMaxMinusMin.toBigInteger();
     }
 
     public <T> T randomFromList(List<T> list) {
