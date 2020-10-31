@@ -33,9 +33,10 @@ import java.util.stream.Collectors;
 public class InstanceGenerator<SOURCE_INSTANCE> extends AbstractGenerator<SOURCE_INSTANCE> {
 
     private final Supplier<? extends SOURCE_INSTANCE> instanceSupplier;
-    private final InvocationSensor<SOURCE_INSTANCE> invocationSensor;
+    private InvocationSensor<SOURCE_INSTANCE> invocationSensor;
 //    private final List<PropertyDescriptorInitialization> propertyDescriptorsInitializations = new LinkedList<>();
     private final Map<PropertyDescriptor, PropertyDescriptorInitialization> propertyDescriptorsInitializations = new LinkedHashMap<>();
+    private final Class<SOURCE_INSTANCE> invocationSensorInstanceClass;
 
     public InstanceGenerator(Class<SOURCE_INSTANCE> sourceInstanceClass,
                              Supplier<? extends SOURCE_INSTANCE> instanceSupplier,
@@ -54,7 +55,7 @@ public class InstanceGenerator<SOURCE_INSTANCE> extends AbstractGenerator<SOURCE
                 ? (Class<SOURCE_INSTANCE>) instanceSupplier.get().getClass()
                 : sourceInstanceClass;
 
-        this.invocationSensor = new InvocationSensor<>(instanceClassToUse);
+        this.invocationSensorInstanceClass = instanceClassToUse;
         this.instanceSupplier = instanceSupplier;
         setCalculatedNodeData(true, new CalculatedNodeData(instanceClassToUse,
                 instanceClassToUse,
@@ -66,7 +67,7 @@ public class InstanceGenerator<SOURCE_INSTANCE> extends AbstractGenerator<SOURCE
                               Type genericClassType,
                               Supplier<? extends SOURCE_INSTANCE> instanceSupplier,
                               TypeVariableAssignments typeVariableAssignment) {
-        this.invocationSensor = new InvocationSensor<>(sourceInstanceClass);
+        this.invocationSensorInstanceClass = sourceInstanceClass;
         this.instanceSupplier = instanceSupplier;
         setCalculatedNodeData(true,
                 new CalculatedNodeData(sourceInstanceClass, genericClassType, typeVariableAssignment));
@@ -132,7 +133,7 @@ public class InstanceGenerator<SOURCE_INSTANCE> extends AbstractGenerator<SOURCE
     }
 
     public final InstanceGenerator<SOURCE_INSTANCE> skipProperties(List<SpecificTypePropertySelector<SOURCE_INSTANCE, ?>> propertySelectors){
-        invocationSensor.getTouchedPropertyDescriptors(propertySelectors)
+        getInvocationSensor().getTouchedPropertyDescriptors(propertySelectors)
                 .forEach(this::addSkippingPropertyDescriptorInitialization);
         return this;
     }
@@ -143,7 +144,7 @@ public class InstanceGenerator<SOURCE_INSTANCE> extends AbstractGenerator<SOURCE
     }
 
     public InstanceGenerator<SOURCE_INSTANCE> nullifyProperties(List<SpecificTypePropertySelector<SOURCE_INSTANCE, ?>> propertySelectors) {
-        Collection<PropertyDescriptor> propertyDescriptors = invocationSensor.getTouchedPropertyDescriptors(propertySelectors);
+        Collection<PropertyDescriptor> propertyDescriptors = getInvocationSensor().getTouchedPropertyDescriptors(propertySelectors);
         propertyDescriptors.forEach(e -> addPropertyDescriptorInitialization(e, Generators.nullGenerator()));
         return this;
     }
@@ -162,7 +163,7 @@ public class InstanceGenerator<SOURCE_INSTANCE> extends AbstractGenerator<SOURCE
 
     public <PROPERTY_TYPE extends Enum<?>> EnumConfiguration<PROPERTY_TYPE, InstanceGenerator<SOURCE_INSTANCE>>
     setEnumProperty(SpecificTypePropertySelector<SOURCE_INSTANCE, PROPERTY_TYPE> propertySelector) {
-        PropertyDescriptor propertyDescriptor = invocationSensor.getTouchedPropertyDescriptor(propertySelector);
+        PropertyDescriptor propertyDescriptor = getInvocationSensor().getTouchedPropertyDescriptor(propertySelector);
 
         //noinspection unchecked   //should be fine.
         Class<PROPERTY_TYPE> propertyType = (Class<PROPERTY_TYPE>) propertyDescriptor.getPropertyType();
@@ -172,7 +173,7 @@ public class InstanceGenerator<SOURCE_INSTANCE> extends AbstractGenerator<SOURCE
 
     public <PROPERTY_TYPE> PropertyConfiguration<PROPERTY_TYPE, InstanceGenerator<SOURCE_INSTANCE>>
     setProperty(SpecificTypePropertySelector<SOURCE_INSTANCE, PROPERTY_TYPE> propertySelector){
-        PropertyDescriptor propertyDescriptor = invocationSensor.getTouchedPropertyDescriptor(propertySelector);
+        PropertyDescriptor propertyDescriptor = getInvocationSensor().getTouchedPropertyDescriptor(propertySelector);
 
         return new PropertyConfiguration<>(this,
                 valueGenerator -> {
@@ -182,7 +183,7 @@ public class InstanceGenerator<SOURCE_INSTANCE> extends AbstractGenerator<SOURCE
     }
 
     public <PROPERTY_TYPE> InstanceGenerator<SOURCE_INSTANCE> setPropertyTo(SpecificTypePropertySelector<SOURCE_INSTANCE, PROPERTY_TYPE> propertySelector, Generator<PROPERTY_TYPE> valueGenerator){
-        PropertyDescriptor propertyDescriptor = invocationSensor.getTouchedPropertyDescriptor(propertySelector);
+        PropertyDescriptor propertyDescriptor = getInvocationSensor().getTouchedPropertyDescriptor(propertySelector);
         addPropertyDescriptorInitialization(propertyDescriptor, valueGenerator);
         return this;
     }
@@ -215,6 +216,13 @@ public class InstanceGenerator<SOURCE_INSTANCE> extends AbstractGenerator<SOURCE
                 .forEach(pair -> addPropertyDescriptorInitialization(pair.first, pair.second));
 
         return this;
+    }
+
+    private InvocationSensor<SOURCE_INSTANCE> getInvocationSensor() {
+        if (invocationSensor == null) {
+            this.invocationSensor = new InvocationSensor<>(invocationSensorInstanceClass);
+        }
+        return invocationSensor;
     }
 
     @AllArgsConstructor
