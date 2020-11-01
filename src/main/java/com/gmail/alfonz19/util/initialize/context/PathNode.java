@@ -170,7 +170,7 @@ public interface PathNode {
         public void setValue(Object instance, Object value) {
             try {
                 propertyDescriptor.getWriteMethod().invoke(instance, value);
-            } catch (IllegalAccessException| InvocationTargetException e) {
+            } catch (IllegalAccessException| InvocationTargetException|IllegalArgumentException e) {
                 throw new InitializeException("Unable to use PropertyDescriptor write method", e);
             }
         }
