@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import static com.gmail.alfonz19.util.initialize.util.TypeVariableAssignments.NO_TYPE_VARIABLE_ASSIGNMENTS;
 
@@ -164,6 +165,11 @@ public class ReflectUtil {
             @Override
             public Type getOwnerType() {
                 return null;
+            }
+
+            @Override
+            public String toString() {
+                return rawType+"<"+Arrays.stream(actualTypeArguments).map(Type::getTypeName).collect(Collectors.joining(","))+">";
             }
         };
     }

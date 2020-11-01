@@ -172,6 +172,12 @@ public class PathMatcherBuilder {
         public boolean matches(Path path) {
             return this.matches(path.getPathAsString());
         }
+
+        @Override
+        public String describe() {
+            //TODO MMUCHA: implement.
+            return "Unimplemented: description of path matcher content.";
+        }
     }
 
 }

@@ -1,6 +1,8 @@
 package com.gmail.alfonz19.util.initialize.context;
 
 import com.gmail.alfonz19.util.initialize.exception.InitializeException;
+import com.gmail.alfonz19.util.initialize.generator.FindFirstApplicableRule;
+import com.gmail.alfonz19.util.initialize.generator.Generator;
 import com.gmail.alfonz19.util.initialize.generator.Rules;
 import com.gmail.alfonz19.util.initialize.util.ReflectUtil;
 
@@ -19,7 +21,7 @@ public interface PathNode {
     void setCalculatedNodeData(CalculatedNodeData calculatedNodeData);
     Path getPath();
     PathNode getParent();
-    Optional<Rule> findFirstApplicableRule(Object instance);
+    Optional<Generator<?>> getGeneratorFromFirstApplicableRule(Object instance);
 
     abstract class AbstractPathNode implements PathNode {
         protected CalculatedNodeData calculatedNodeData;
@@ -84,16 +86,16 @@ public interface PathNode {
         }
 
         @Override
-        public Optional<Rule> findFirstApplicableRule(Object instance) {
-            return findFirstApplicableRule(instance, this);
+        public Optional<Generator<?>> getGeneratorFromFirstApplicableRule(Object instance) {
+            return getGeneratorFromFirstApplicableRule(instance, this);
         }
 
         public List<Rule> getRules() {
             return rules;
         }
 
-        public Optional<Rule> findFirstApplicableRule(Object instance, PathNode pathNode) {
-            return getRules().stream().filter(rule->rule.applies(instance, pathNode)).findFirst();
+        public Optional<Generator<?>> getGeneratorFromFirstApplicableRule(Object instance, PathNode pathNode) {
+            return FindFirstApplicableRule.getGeneratorFromFirstApplicableRule(this.getRules(), instance, pathNode);
         }
     }
 
@@ -123,8 +125,8 @@ public interface PathNode {
         }
 
         @Override
-        public Optional<Rule> findFirstApplicableRule(Object instance) {
-            return getRootNode().findFirstApplicableRule(instance, this);
+        public Optional<Generator<?>> getGeneratorFromFirstApplicableRule(Object instance) {
+            return getRootNode().getGeneratorFromFirstApplicableRule(instance, this);
         }
 
         private RootPathNode getRootNode() {

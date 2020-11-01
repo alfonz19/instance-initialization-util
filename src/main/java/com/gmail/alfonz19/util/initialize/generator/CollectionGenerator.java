@@ -6,10 +6,10 @@ import com.gmail.alfonz19.util.initialize.Initialize;
 import com.gmail.alfonz19.util.initialize.context.CalculatedNodeData;
 import com.gmail.alfonz19.util.initialize.context.PathComponent;
 import com.gmail.alfonz19.util.initialize.context.PathNode;
-import com.gmail.alfonz19.util.initialize.context.Rule;
 import com.gmail.alfonz19.util.initialize.exception.InitializeException;
 import com.gmail.alfonz19.util.initialize.util.ReflectUtil;
 import com.gmail.alfonz19.util.initialize.util.TypeReferenceUtil;
+import com.gmail.alfonz19.util.initialize.util.TypeVariableAssignments;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -18,7 +18,6 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import com.gmail.alfonz19.util.initialize.util.TypeVariableAssignments;
 
 import static com.gmail.alfonz19.util.initialize.util.TypeVariableAssignments.NO_TYPE_VARIABLE_ASSIGNMENTS;
 
@@ -146,9 +145,7 @@ public class CollectionGenerator<ITEM_TYPE, GENERATES> extends AbstractGenerator
 
         //noinspection unchecked
         Generator<? extends ITEM_TYPE> itemGeneratorToUse =
-                (Generator<? extends ITEM_TYPE>) pathNode.findFirstApplicableRule(null)
-                        .map(Rule::getGenerator)
-                        .orElse(null);
+                (Generator<? extends ITEM_TYPE>) pathNode.getGeneratorFromFirstApplicableRule(null).orElse(null);
         if (itemGeneratorToUse == null) {
             itemGeneratorToUse = Generators.defaultValue();
         }

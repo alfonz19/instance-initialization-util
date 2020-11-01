@@ -7,15 +7,26 @@ import com.gmail.alfonz19.util.initialize.context.PathNode;
 import com.gmail.alfonz19.util.initialize.context.Rule;
 import com.gmail.alfonz19.util.initialize.util.PredicatesBooleanOperations;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.lang.reflect.Type;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
-import static com.gmail.alfonz19.util.initialize.generator.PathNodePredicates.*;
+import org.slf4j.Logger;
+
+import static com.gmail.alfonz19.util.initialize.generator.PathNodePredicates.classPredicate;
+import static com.gmail.alfonz19.util.initialize.generator.PathNodePredicates.classTypeIsAssignableFrom;
+import static com.gmail.alfonz19.util.initialize.generator.PathNodePredicates.classTypeIsEqualTo;
+import static com.gmail.alfonz19.util.initialize.generator.PathNodePredicates.pathIsEqual;
+import static com.gmail.alfonz19.util.initialize.generator.PathNodePredicates.pathMatches;
+import static com.gmail.alfonz19.util.initialize.generator.PathNodePredicates.typePredicate;
 
 public class RuleBuilder {
 
@@ -50,7 +61,7 @@ public class RuleBuilder {
         return this;
     }
 
-    public RuleBuilder addTest(BiPredicate<Object, PathNode> test) {
+    public RuleBuilder addTest(RuleTest test) {
         rule.addTest(test);
         return this;
     }
@@ -60,13 +71,23 @@ public class RuleBuilder {
         return this;
     }
 
+    public RuleBuilder ifPathNode(String testDescription, BiPredicate<Object, PathNode> predicate) {
+        addTest(new RuleTest(testDescription, predicate));
+        return this;
+    }
+
     public RuleBuilder ifPathNode(BiPredicate<Object, PathNode> predicate) {
-        addTest(predicate);
+        addTest(new RuleTest(predicate));
         return this;
     }
 
     public RuleBuilder ifClass(Predicate<Class<?>> predicate) {
         addTest(classPredicate(predicate));
+        return this;
+    }
+
+    public RuleBuilder ifType(String testDescription, Predicate<Type> predicate) {
+        addTest(typePredicate(testDescription, predicate));
         return this;
     }
 
@@ -77,6 +98,11 @@ public class RuleBuilder {
 
     public RuleBuilder ifClassTypeIsAssignableFrom(Class<?> requestedClassType) {
         addTest(classTypeIsAssignableFrom(requestedClassType));
+        return this;
+    }
+
+    public RuleBuilder toCreateRule(String description) {
+        rule.setRuleDescription(description);
         return this;
     }
 
@@ -92,18 +118,59 @@ public class RuleBuilder {
         return new RuleBuilder(new RuleReturningConstant(generator));
     }
 
-    @AllArgsConstructor
+    @NoArgsConstructor
     public static abstract class AbstractRule implements Rule {
-        private final List<BiPredicate<Object, PathNode>> tests = new LinkedList<>();
+        private static final Logger RULES_DEBUGGING_LOGGER = org.slf4j.LoggerFactory.getLogger("RULES_DEBUGGING");
+        private final List<RuleTest> tests = new LinkedList<>();
+        private String ruleDescription = null;
 
         @Override
         public boolean applies(Object instance, PathNode pathNode) {
+            if (RULES_DEBUGGING_LOGGER.isTraceEnabled()) {
+                if (ruleDescription == null) {
+                    this.ruleDescription = "<no rule description provided>, classType=" + this.getClass().getName();
+                }
+                RULES_DEBUGGING_LOGGER.trace("Path='{}',classType='{}' genericClassType='{}',\nVerifying rule '{}':\nEvaluating tests: {}\n",
+                        pathNode.getPath(),
+                        pathNode.getCalculatedNodeData().getClassType(),
+                        pathNode.getCalculatedNodeData().getGenericClassType(),
+
+                        ruleDescription,
+                        PredicatesBooleanOperations.rulesDescriptionJoinedUsingPrefixNotation(tests.stream(), "and"));
+
+            }
             //apply all rules with AND evaluation: apply all, find first false resolution, return it or return false if there is not false resolution.
-            return PredicatesBooleanOperations.applyAndOperation(tests.stream(), instance, pathNode);
+            Boolean result = PredicatesBooleanOperations.applyAndOperation(tests.stream(), instance, pathNode);
+            RULES_DEBUGGING_LOGGER.trace("Rule evaluation: {}\n", result);
+            return result;
         }
 
-        public void addTest(BiPredicate<Object, PathNode> test) {
+        public void addTest(RuleTest test) {
             tests.add(test);
+        }
+
+        public void addTest(String testDescription, BiPredicate<Object, PathNode> test) {
+            tests.add(new RuleTest(testDescription, test));
+        }
+
+        @Override
+        public String getRuleDescription() {
+            return ruleDescription;
+        }
+
+        public void setRuleDescription(String ruleDescription) {
+            this.ruleDescription = Objects.requireNonNull(ruleDescription);
+        }
+    }
+
+    @Getter
+    @AllArgsConstructor
+    public static class RuleTest {
+        private final String description;
+        private final BiPredicate<Object, PathNode> predicate;
+
+        public RuleTest(BiPredicate<Object, PathNode> predicate) {
+            this("<unexplained test>", predicate);
         }
     }
 

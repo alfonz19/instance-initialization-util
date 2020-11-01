@@ -16,7 +16,7 @@
   </appender>
 
   <logger name="INITIALIZED_INSTANCE" level="debug" />
-
+<!--  <logger name="RULES_DEBUGGING" level="trace" />-->
   <root level="info">
     <appender-ref ref="STDOUT"/>
   </root>

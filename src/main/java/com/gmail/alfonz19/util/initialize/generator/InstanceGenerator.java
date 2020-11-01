@@ -122,8 +122,8 @@ public class InstanceGenerator<SOURCE_INSTANCE> extends AbstractGenerator<SOURCE
         unsetProperties.forEach(propertyDescriptor -> {
             PathNode subPathNode = new PathNode.PropertyDescriptorBasedPathNode(pathNode, propertyDescriptor);
 
-            subPathNode.findFirstApplicableRule(instance)
-                    .ifPresent(rule -> addPropertyDescriptorInitialization(propertyDescriptor, rule.getGenerator()));
+            subPathNode.getGeneratorFromFirstApplicableRule(instance)
+                    .ifPresent(generator -> addPropertyDescriptorInitialization(propertyDescriptor, generator));
         });
     }
 
