@@ -1,6 +1,7 @@
 package com.gmail.alfonz19.util.initialize.generator;
 
 import com.gmail.alfonz19.util.initialize.context.CalculatedNodeData;
+import com.gmail.alfonz19.util.initialize.context.InitializationContext;
 import com.gmail.alfonz19.util.initialize.context.path.PathNode;
 
 public class ConstantGenerator<T> extends AbstractGenerator<T> {
@@ -13,7 +14,7 @@ public class ConstantGenerator<T> extends AbstractGenerator<T> {
     }
 
     @Override
-    protected T create(PathNode pathNode) {
+    protected T create(InitializationContext initializationContext, PathNode pathNode) {
         return value;
     }
 }

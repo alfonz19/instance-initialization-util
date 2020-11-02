@@ -1,5 +1,6 @@
 package com.gmail.alfonz19.util.initialize;
 
+import com.gmail.alfonz19.util.initialize.context.InitializationContext;
 import com.gmail.alfonz19.util.initialize.context.path.PathNode;
 import com.gmail.alfonz19.util.initialize.generator.Generator;
 import com.gmail.alfonz19.util.initialize.generator.GeneratorAccessor;
@@ -11,17 +12,21 @@ import java.util.List;
 @AllArgsConstructor
 public class InitializationUsingRules {
 
-    private final Rules rules;
+    private final InitializationContext initializationContext;
 
     public static InitializationUsingRules withConfiguration(Rules rules) {
-        return new InitializationUsingRules(rules);
+        return withConfiguration(new InitializationContext(rules));
+    }
+
+    public static InitializationUsingRules withConfiguration(InitializationContext initializationContext) {
+        return new InitializationUsingRules(initializationContext);
     }
 
     public <T> T initialize(Generator<T> generator) {
-        return GeneratorAccessor.create(generator, new PathNode.RootPathNode(rules));
+        return GeneratorAccessor.create(generator, initializationContext, new PathNode.RootPathNode());
     }
 
     public <T> List<T> initializeList(Generator<T> generator, int number) {
-        return GeneratorAccessor.create(generator, number, new PathNode.RootPathNode(rules));
+        return GeneratorAccessor.create(generator, number, initializationContext, new PathNode.RootPathNode());
     }
 }

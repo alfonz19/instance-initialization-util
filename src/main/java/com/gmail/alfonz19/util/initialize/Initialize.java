@@ -1,5 +1,6 @@
 package com.gmail.alfonz19.util.initialize;
 
+import com.gmail.alfonz19.util.initialize.context.InitializationContext;
 import com.gmail.alfonz19.util.initialize.context.path.PathNode;
 import com.gmail.alfonz19.util.initialize.generator.Generator;
 import com.gmail.alfonz19.util.initialize.generator.GeneratorAccessor;
@@ -12,18 +13,17 @@ import java.util.List;
 public class Initialize {
 
     public static <T> T initialize(Generator<T> generator) {
-        return initialize(generator, new PathNode.RootPathNode());
+        return initialize(generator, new InitializationContext(), new PathNode.RootPathNode());
     }
 
-    public static <T> T initialize(Generator<T> generator, PathNode pathNode) {
-        return GeneratorAccessor.create(generator, pathNode);
+    //TODO MMUCHA: inline.
+    public static <T> T initialize(Generator<T> generator,
+                                   InitializationContext initializationContext,
+                                   PathNode pathNode) {
+        return GeneratorAccessor.create(generator, initializationContext, pathNode);
     }
 
     public static <T> List<T> initializeList(Generator<T> generator, int number) {
-        return GeneratorAccessor.create(generator, number, new PathNode.RootPathNode());
-    }
-
-    public static <T> List<T> initializeList(Generator<T> generator, int number, PathNode pathNode) {
-        return GeneratorAccessor.create(generator, number, pathNode);
+        return GeneratorAccessor.create(generator, number, new InitializationContext(), new PathNode.RootPathNode());
     }
 }

@@ -2,6 +2,7 @@ package com.gmail.alfonz19.util.initialize.generator;
 
 
 import com.gmail.alfonz19.util.initialize.context.CalculatedNodeData;
+import com.gmail.alfonz19.util.initialize.context.InitializationContext;
 import com.gmail.alfonz19.util.initialize.context.path.PathNode;
 
 import java.util.LinkedList;
@@ -32,7 +33,7 @@ public abstract class AbstractStringInstanceGenerator extends AbstractGenerator<
     }
 
     @Override
-    public String create(PathNode pathNode) {
+    public String create(InitializationContext initializationContext, PathNode pathNode) {
         String result = null;
         for (BiFunction<String, PathNode, String> transformation : transformations) {
             result = transformation.apply(result, pathNode);

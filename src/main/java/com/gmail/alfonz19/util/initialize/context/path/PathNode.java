@@ -2,18 +2,11 @@ package com.gmail.alfonz19.util.initialize.context.path;
 
 import com.gmail.alfonz19.util.initialize.context.CalculatedNodeData;
 import com.gmail.alfonz19.util.initialize.exception.InitializeException;
-import com.gmail.alfonz19.util.initialize.generator.Generator;
-import com.gmail.alfonz19.util.initialize.rules.FindFirstApplicableRule;
-import com.gmail.alfonz19.util.initialize.rules.Rule;
-import com.gmail.alfonz19.util.initialize.rules.Rules;
 import com.gmail.alfonz19.util.initialize.util.ReflectUtil;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 public interface PathNode {
     boolean isRoot();
@@ -23,7 +16,6 @@ public interface PathNode {
     void setCalculatedNodeData(CalculatedNodeData calculatedNodeData);
     Path getPath();
     PathNode getParent();
-    Optional<Generator<?>> getGeneratorFromFirstApplicableRule(Object instance);
 
     abstract class AbstractPathNode implements PathNode {
         protected CalculatedNodeData calculatedNodeData;
@@ -48,20 +40,6 @@ public interface PathNode {
 
     class RootPathNode extends AbstractPathNode {
 
-        private final List<Rule> rules;
-
-        public RootPathNode() {
-            this(Collections.emptyList());
-        }
-
-        public RootPathNode(Rules rules) {
-            this(rules.getRuleList());
-        }
-
-        public RootPathNode(List<Rule> rules) {
-            this.rules = rules;
-        }
-
         @Override
         public boolean isRoot() {
             return true;
@@ -84,20 +62,7 @@ public interface PathNode {
 
         @Override
         public Path getPath() {
-            return new InstancePath();
-        }
-
-        @Override
-        public Optional<Generator<?>> getGeneratorFromFirstApplicableRule(Object instance) {
-            return getGeneratorFromFirstApplicableRule(instance, this);
-        }
-
-        public List<Rule> getRules() {
-            return rules;
-        }
-
-        public Optional<Generator<?>> getGeneratorFromFirstApplicableRule(Object instance, PathNode pathNode) {
-            return FindFirstApplicableRule.getGeneratorFromFirstApplicableRule(this.getRules(), instance, pathNode);
+            return InstancePath.ROOT_PATH;
         }
     }
 
@@ -125,22 +90,6 @@ public interface PathNode {
         public PathNode getParent() {
             return parent;
         }
-
-        @Override
-        public Optional<Generator<?>> getGeneratorFromFirstApplicableRule(Object instance) {
-            return getRootNode().getGeneratorFromFirstApplicableRule(instance, this);
-        }
-
-        private RootPathNode getRootNode() {
-            PathNode node = this;
-            while (!node.isRoot()) {
-                node = node.getParent();
-            }
-
-            return (RootPathNode) node;
-        }
-
-
     }
 
     class PropertyDescriptorBasedPathNode extends AbstractNonRootNode {

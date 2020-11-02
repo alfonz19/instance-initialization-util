@@ -4,9 +4,11 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.gmail.alfonz19.util.initialize.Config;
 import com.gmail.alfonz19.util.initialize.Initialize;
 import com.gmail.alfonz19.util.initialize.context.CalculatedNodeData;
+import com.gmail.alfonz19.util.initialize.context.InitializationContext;
 import com.gmail.alfonz19.util.initialize.context.path.PathComponent;
 import com.gmail.alfonz19.util.initialize.context.path.PathNode;
 import com.gmail.alfonz19.util.initialize.exception.InitializeException;
+import com.gmail.alfonz19.util.initialize.rules.FindFirstApplicableRule;
 import com.gmail.alfonz19.util.initialize.util.ReflectUtil;
 import com.gmail.alfonz19.util.initialize.util.TypeReferenceUtil;
 import com.gmail.alfonz19.util.initialize.util.TypeVariableAssignments;
@@ -79,14 +81,14 @@ public class CollectionGenerator<ITEM_TYPE, GENERATES> extends AbstractGenerator
     }
 
     @Override
-    protected GENERATES create(PathNode pathNode) {
+    protected GENERATES create(InitializationContext initializationContext, PathNode pathNode) {
         if (overwriteCalculatedNodeData || pathNode.getCalculatedNodeData() == null) {
             pathNode.setCalculatedNodeData(getCalculatedNodeData());
         }
 
         int numberOfItemsToBeGenerated = sizeSpecification.getRandomValueAccordingToSpecification();
 
-        Generator<? extends ITEM_TYPE> itemGeneratorToUse = getGeneratorToUse(pathNode);
+        Generator<? extends ITEM_TYPE> itemGeneratorToUse = getGeneratorToUse(initializationContext, pathNode);
 
         CalculatedNodeData itemsCalculatedNodeData = (pathNode.getCalculatedNodeData().representsParameterizedType())
                 ? ReflectUtil.unwrapParameterizedType(pathNode.getCalculatedNodeData())
@@ -98,7 +100,9 @@ public class CollectionGenerator<ITEM_TYPE, GENERATES> extends AbstractGenerator
             List<? extends ITEM_TYPE> items = IntStream.range(0, numberOfItemsToBeGenerated).boxed()
                     //create array-like subPaths using index.
                     .map(index -> new PathNode.CollectionItemNode(pathNode, index, itemsCalculatedNodeData))
-                    .map((Function<PathNode, ITEM_TYPE>) pt -> Initialize.initialize(itemGeneratorToUse, pt))
+                    .map((Function<PathNode, ITEM_TYPE>) pt -> Initialize.initialize(itemGeneratorToUse,
+                            initializationContext,
+                            pt))
                     .collect(Collectors.toList());
             return listInstanceSupplier.apply(items);
         }
@@ -119,7 +123,9 @@ public class CollectionGenerator<ITEM_TYPE, GENERATES> extends AbstractGenerator
         Map<PathNode, ? extends ITEM_TYPE> instancePathToGeneratedValue = indices.stream()
                 .map(index -> new PathNode.CollectionItemNode(pathNode, index, itemsCalculatedNodeData))
                 .collect(Collectors.toMap(Function.identity(),
-                        (Function<PathNode, ITEM_TYPE>) pt -> Initialize.initialize(itemGeneratorToUse, pt)));
+                        (Function<PathNode, ITEM_TYPE>) pt -> Initialize.initialize(itemGeneratorToUse,
+                                initializationContext,
+                                pt)));
 
         List<? extends ITEM_TYPE> shuffledItems = instancePathToGeneratedValue.keySet().stream()
                 .sorted((o1, o2) -> {
@@ -138,14 +144,18 @@ public class CollectionGenerator<ITEM_TYPE, GENERATES> extends AbstractGenerator
         return listInstanceSupplier.apply(shuffledItems);
     }
 
-    private Generator<? extends ITEM_TYPE> getGeneratorToUse(PathNode pathNode) {
+    private Generator<? extends ITEM_TYPE> getGeneratorToUse(InitializationContext initializationContext,
+                                                             PathNode pathNode) {
         if (this.itemGenerator != null) {
             return itemGenerator;
         }
 
         //noinspection unchecked
         Generator<? extends ITEM_TYPE> itemGeneratorToUse =
-                (Generator<? extends ITEM_TYPE>) pathNode.getGeneratorFromFirstApplicableRule(null).orElse(null);
+                (Generator<? extends ITEM_TYPE>) FindFirstApplicableRule.getGeneratorFromFirstApplicableRule(null,
+                        initializationContext,
+                        pathNode).orElse(null);
+
         if (itemGeneratorToUse == null) {
             itemGeneratorToUse = Generators.defaultValue();
         }

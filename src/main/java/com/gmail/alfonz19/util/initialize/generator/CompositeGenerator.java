@@ -1,5 +1,6 @@
 package com.gmail.alfonz19.util.initialize.generator;
 
+import com.gmail.alfonz19.util.initialize.context.InitializationContext;
 import com.gmail.alfonz19.util.initialize.context.path.PathNode;
 import com.gmail.alfonz19.util.initialize.exception.InitializeException;
 
@@ -19,14 +20,14 @@ public abstract class CompositeGenerator<T> extends AbstractGenerator<T> {
     protected abstract int selectGenerator();
 
     @Override
-    public T create(PathNode pathNode) {
+    public T create(InitializationContext initializationContext, PathNode pathNode) {
         if (generators.isEmpty()) {
             throw new InitializeException("No generators to use");
         }
 
         int generatorIndex = selectGenerator();
         Generator<? extends T> selectedGenerator = generators.get(generatorIndex);
-        T result = GeneratorAccessor.create(selectedGenerator, pathNode);
+        T result = GeneratorAccessor.create(selectedGenerator, initializationContext, pathNode);
 
         if (selectedGenerator instanceof LimitedGenerator &&
                 ((LimitedGenerator<?>) selectedGenerator).canGenerateNItems() == 0) {

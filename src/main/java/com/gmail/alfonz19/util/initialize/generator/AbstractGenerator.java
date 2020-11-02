@@ -2,6 +2,7 @@ package com.gmail.alfonz19.util.initialize.generator;
 
 
 import com.gmail.alfonz19.util.initialize.context.CalculatedNodeData;
+import com.gmail.alfonz19.util.initialize.context.InitializationContext;
 import com.gmail.alfonz19.util.initialize.context.path.PathNode;
 
 import java.util.List;
@@ -22,10 +23,12 @@ public abstract class AbstractGenerator<T> implements Generator<T>{
         setCalculatedNodeData(hasSingleCalculatedNodeData, calculatedNodeData);
     }
 
-    protected abstract T create(PathNode pathNode);
+    protected abstract T create(InitializationContext initializationContext, PathNode pathNode);
 
-    protected List<T> create(int number, PathNode pathNode) {
-        return Stream.generate(() -> create(pathNode)).limit(number).collect(Collectors.toList());
+    protected List<T> create(int number,
+                             InitializationContext initializationContext,
+                             PathNode pathNode) {
+        return Stream.generate(() -> create(initializationContext, pathNode)).limit(number).collect(Collectors.toList());
     }
 
     protected final boolean hasSingleCalculatedNodeData() {

@@ -11,11 +11,12 @@ public class InstancePath implements Path {
 
     private final String path;
     private final PathComponents pathComponents;
+    public static final Path ROOT_PATH = new InstancePath();
 
     /**
      * Creates root path;
      */
-    public InstancePath() {
+    private InstancePath() {
         this(PATH_SEPARATOR_AS_STRING);
     }
 
