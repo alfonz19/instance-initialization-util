@@ -1,8 +1,7 @@
-package com.gmail.alfonz19.util.initialize.generator;
+package com.gmail.alfonz19.util.initialize.rules;
 
 import com.gmail.alfonz19.util.initialize.context.PathNode;
-import com.gmail.alfonz19.util.initialize.context.Rule;
-import com.gmail.alfonz19.util.initialize.util.PredicatesBooleanOperations;
+import com.gmail.alfonz19.util.initialize.generator.Generator;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

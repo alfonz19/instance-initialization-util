@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.gmail.alfonz19.testsupport.InitializedInstanceTestLogging;
 import com.gmail.alfonz19.util.example.to.GenericSubClass;
 import com.gmail.alfonz19.util.initialize.InitializationUsingRules;
-import com.gmail.alfonz19.util.initialize.generator.Rules;
+import com.gmail.alfonz19.util.initialize.rules.Rules;
 
 import java.util.List;
 
@@ -15,7 +15,7 @@ import org.junit.Test;
 import static com.gmail.alfonz19.util.initialize.generator.Generators.instance;
 import static com.gmail.alfonz19.util.initialize.generator.Generators.list;
 import static com.gmail.alfonz19.util.initialize.generator.Generators.randomForGuessedType;
-import static com.gmail.alfonz19.util.initialize.generator.RuleBuilder.applyGenerator;
+import static com.gmail.alfonz19.util.initialize.rules.RuleBuilder.applyGenerator;
 import static org.hamcrest.CoreMatchers.isA;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;

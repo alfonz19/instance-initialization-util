@@ -1,9 +1,10 @@
 package com.gmail.alfonz19.util.initialize.context;
 
 import com.gmail.alfonz19.util.initialize.exception.InitializeException;
-import com.gmail.alfonz19.util.initialize.generator.FindFirstApplicableRule;
 import com.gmail.alfonz19.util.initialize.generator.Generator;
-import com.gmail.alfonz19.util.initialize.generator.Rules;
+import com.gmail.alfonz19.util.initialize.rules.FindFirstApplicableRule;
+import com.gmail.alfonz19.util.initialize.rules.Rule;
+import com.gmail.alfonz19.util.initialize.rules.Rules;
 import com.gmail.alfonz19.util.initialize.util.ReflectUtil;
 
 import java.beans.PropertyDescriptor;

@@ -1,10 +1,11 @@
-package com.gmail.alfonz19.util.initialize.generator;
+package com.gmail.alfonz19.util.initialize.rules;
 
 import com.gmail.alfonz19.util.initialize.context.Path;
 import com.gmail.alfonz19.util.initialize.context.PathMatcher;
 import com.gmail.alfonz19.util.initialize.context.PathMatcherBuilder;
 import com.gmail.alfonz19.util.initialize.context.PathNode;
-import com.gmail.alfonz19.util.initialize.context.Rule;
+import com.gmail.alfonz19.util.initialize.generator.Generator;
+import com.gmail.alfonz19.util.initialize.generator.PathNodePredicates;
 import com.gmail.alfonz19.util.initialize.util.PredicatesBooleanOperations;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,7 +19,6 @@ import java.util.Objects;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 

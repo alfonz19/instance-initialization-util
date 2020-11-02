@@ -3,7 +3,7 @@ package com.gmail.alfonz19.util.example.rules;
 import com.gmail.alfonz19.testsupport.InitializedInstanceTestLogging;
 import com.gmail.alfonz19.util.initialize.context.PathMatcherBuilder;
 import com.gmail.alfonz19.util.initialize.generator.Generators;
-import com.gmail.alfonz19.util.initialize.generator.Rules;
+import com.gmail.alfonz19.util.initialize.rules.Rules;
 import lombok.Data;
 
 import java.util.Date;
@@ -13,10 +13,10 @@ import org.hamcrest.CoreMatchers;
 import org.junit.Rule;
 import org.junit.Test;
 
+import static com.gmail.alfonz19.util.initialize.InitializationUsingRules.withConfiguration;
 import static com.gmail.alfonz19.util.initialize.generator.Generators.instance;
 import static com.gmail.alfonz19.util.initialize.generator.Generators.list;
-import static com.gmail.alfonz19.util.initialize.InitializationUsingRules.withConfiguration;
-import static com.gmail.alfonz19.util.initialize.generator.RuleBuilder.applyGenerator;
+import static com.gmail.alfonz19.util.initialize.rules.RuleBuilder.applyGenerator;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;

@@ -1,8 +1,8 @@
-package com.gmail.alfonz19.util.initialize.generator;
+package com.gmail.alfonz19.util.initialize.rules;
 
 import com.gmail.alfonz19.util.initialize.Config;
-import com.gmail.alfonz19.util.initialize.context.Rule;
 import com.gmail.alfonz19.util.initialize.exception.InitializeException;
+import com.gmail.alfonz19.util.initialize.generator.Generators;
 import com.gmail.alfonz19.util.initialize.util.ClassDataCache;
 import com.gmail.alfonz19.util.initialize.util.RandomUtil;
 import com.gmail.alfonz19.util.initialize.util.ReflectUtil;
@@ -22,9 +22,9 @@ import static com.gmail.alfonz19.util.initialize.generator.Generators.list;
 import static com.gmail.alfonz19.util.initialize.generator.Generators.randomForGuessedType;
 import static com.gmail.alfonz19.util.initialize.generator.Generators.randomString;
 import static com.gmail.alfonz19.util.initialize.generator.Generators.set;
-import static com.gmail.alfonz19.util.initialize.generator.RuleBuilder.applyGenerator;
 import static com.gmail.alfonz19.util.initialize.generator.PathNodePredicates.classTypeIsEqualTo;
-import static com.gmail.alfonz19.util.initialize.generator.RuleBuilder.createNewGeneratorAndApply;
+import static com.gmail.alfonz19.util.initialize.rules.RuleBuilder.applyGenerator;
+import static com.gmail.alfonz19.util.initialize.rules.RuleBuilder.createNewGeneratorAndApply;
 import static com.gmail.alfonz19.util.initialize.util.PredicatesBooleanOperations.or;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)

@@ -1,14 +1,9 @@
-package com.gmail.alfonz19.util.initialize.generator;
-
-import com.gmail.alfonz19.util.initialize.context.Rule;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+package com.gmail.alfonz19.util.initialize.rules;
 
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 public class Rules {
     public static final Rules NO_RULES = new Rules();

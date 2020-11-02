@@ -3,16 +3,16 @@ package com.gmail.alfonz19.util.example.rules;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.gmail.alfonz19.testsupport.InitializedInstanceTestLogging;
 import com.gmail.alfonz19.util.example.to.GenericSubClass;
-import com.gmail.alfonz19.util.initialize.generator.Rules;
+import com.gmail.alfonz19.util.initialize.rules.Rules;
 import lombok.Data;
 
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
-import static com.gmail.alfonz19.util.initialize.generator.Generators.instance;
 import static com.gmail.alfonz19.util.initialize.InitializationUsingRules.withConfiguration;
-import static com.gmail.alfonz19.util.initialize.generator.RuleBuilder.applyGenerator;
+import static com.gmail.alfonz19.util.initialize.generator.Generators.instance;
+import static com.gmail.alfonz19.util.initialize.rules.RuleBuilder.applyGenerator;
 
 public class CyclicGenericInitializationWithDepthLimitationTest {
 

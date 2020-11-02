@@ -3,7 +3,7 @@ package com.gmail.alfonz19.util.initialize;
 import com.gmail.alfonz19.util.initialize.context.PathNode;
 import com.gmail.alfonz19.util.initialize.generator.Generator;
 import com.gmail.alfonz19.util.initialize.generator.GeneratorAccessor;
-import com.gmail.alfonz19.util.initialize.generator.Rules;
+import com.gmail.alfonz19.util.initialize.rules.Rules;
 import lombok.AllArgsConstructor;
 
 import java.util.List;
