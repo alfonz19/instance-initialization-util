@@ -1,6 +1,6 @@
 package com.gmail.alfonz19.util.example.rules;
 
-import com.gmail.alfonz19.testsupport.InitializedInstanceLogger;
+import com.gmail.alfonz19.testsupport.InitializedInstanceTestLogging;
 import com.gmail.alfonz19.util.initialize.context.PathMatcherBuilder;
 import com.gmail.alfonz19.util.initialize.generator.Generators;
 import com.gmail.alfonz19.util.initialize.generator.Rules;
@@ -25,7 +25,7 @@ import static org.junit.Assert.assertThat;
 public class TestInitAnywhereInTreeStringPropertyWhichNameContainsGivenTextTest {
 
     @Rule
-    public InitializedInstanceLogger initializedInstanceLogger = new InitializedInstanceLogger();
+    public InitializedInstanceTestLogging initializedInstanceLogger = new InitializedInstanceTestLogging();
 
     @Test
     public void initAnywhereInTreeStringPropertyWhichNameContainsGivenText() {

@@ -1,6 +1,6 @@
 package com.gmail.alfonz19.util.initialize;
 
-import com.gmail.alfonz19.testsupport.InitializedInstanceLogger;
+import com.gmail.alfonz19.testsupport.InitializedInstanceTestLogging;
 import lombok.Data;
 
 import org.junit.Assert;
@@ -14,7 +14,7 @@ import static org.hamcrest.CoreMatchers.nullValue;
 
 public class SkippingInitializationTest {
     @Rule
-    public InitializedInstanceLogger initializedInstanceLogger = new InitializedInstanceLogger();
+    public InitializedInstanceTestLogging initializedInstanceLogger = new InitializedInstanceTestLogging();
 
     @Test
     public void name() {

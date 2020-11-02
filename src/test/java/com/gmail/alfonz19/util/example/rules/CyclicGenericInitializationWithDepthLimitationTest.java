@@ -1,7 +1,7 @@
 package com.gmail.alfonz19.util.example.rules;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.gmail.alfonz19.testsupport.InitializedInstanceLogger;
+import com.gmail.alfonz19.testsupport.InitializedInstanceTestLogging;
 import com.gmail.alfonz19.util.example.to.GenericSubClass;
 import com.gmail.alfonz19.util.initialize.generator.Rules;
 import lombok.Data;
@@ -17,7 +17,7 @@ import static com.gmail.alfonz19.util.initialize.generator.RuleBuilder.applyGene
 public class CyclicGenericInitializationWithDepthLimitationTest {
 
     @Rule
-    public InitializedInstanceLogger initializedInstanceLogger = new InitializedInstanceLogger();
+    public InitializedInstanceTestLogging initializedInstanceLogger = new InitializedInstanceTestLogging();
 
     //TODO MMUCHA: implement and uncomment.
     @Ignore

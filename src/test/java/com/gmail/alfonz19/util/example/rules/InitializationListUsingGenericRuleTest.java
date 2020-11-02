@@ -1,7 +1,7 @@
 package com.gmail.alfonz19.util.example.rules;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.gmail.alfonz19.testsupport.InitializedInstanceLogger;
+import com.gmail.alfonz19.testsupport.InitializedInstanceTestLogging;
 import com.gmail.alfonz19.util.initialize.InitializationUsingRules;
 import com.gmail.alfonz19.util.initialize.generator.Rules;
 
@@ -24,7 +24,7 @@ import static org.junit.Assert.assertThat;
 public class InitializationListUsingGenericRuleTest {
 
     @Rule
-    public InitializedInstanceLogger initializedInstanceLogger = new InitializedInstanceLogger();
+    public InitializedInstanceTestLogging initializedInstanceLogger = new InitializedInstanceTestLogging();
 
     /**
      * Initialization using rule. Rule will create any List property it encounters with 5 items generated automatically.

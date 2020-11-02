@@ -1,7 +1,7 @@
 package com.gmail.alfonz19.util.example.rules;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.gmail.alfonz19.testsupport.InitializedInstanceLogger;
+import com.gmail.alfonz19.testsupport.InitializedInstanceTestLogging;
 import com.gmail.alfonz19.util.example.to.GenericSubClass;
 import com.gmail.alfonz19.util.initialize.InitializationUsingRules;
 import com.gmail.alfonz19.util.initialize.generator.Rules;
@@ -23,7 +23,7 @@ import static org.junit.Assert.assertThat;
 public class InitializationOfGenericClassHavingGenericParentTest {
 
     @Rule
-    public InitializedInstanceLogger initializedInstanceLogger = new InitializedInstanceLogger();
+    public InitializedInstanceTestLogging initializedInstanceLogger = new InitializedInstanceTestLogging();
 
     /**
      * Creates generic GenericSubClass using given types `<Integer, String>`, automatically initializing any

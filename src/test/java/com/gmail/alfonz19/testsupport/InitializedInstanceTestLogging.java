@@ -9,8 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.AssumptionViolatedException;
 import org.junit.runner.Description;
 
-@Slf4j(topic = "INITIALIZED_INSTANCE")
-public class InitializedInstanceLogger extends org.junit.rules.TestWatcher {
+@Slf4j(topic = "TEST_DEBUG")
+public class InitializedInstanceTestLogging extends org.junit.rules.TestWatcher {
 
     private static final ObjectWriter objectWriter = new ObjectMapper().writerWithDefaultPrettyPrinter();
     private Description description;
@@ -39,7 +39,7 @@ public class InitializedInstanceLogger extends org.junit.rules.TestWatcher {
 
     public void logInitializedInstance(Object testInstance) {
         try {
-            log.debug("instance as JSON:\n{}", objectWriter.writeValueAsString(testInstance));
+            log.debug("Initialized instance as JSON:\n{}", objectWriter.writeValueAsString(testInstance));
         } catch (JsonProcessingException e) {
             throw new InitializeException(e);
         }

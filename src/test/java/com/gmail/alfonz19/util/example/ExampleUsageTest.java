@@ -1,7 +1,7 @@
 package com.gmail.alfonz19.util.example;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.gmail.alfonz19.testsupport.InitializedInstanceLogger;
+import com.gmail.alfonz19.testsupport.InitializedInstanceTestLogging;
 import com.gmail.alfonz19.util.example.to.ClassImplementingInterfaceA;
 import com.gmail.alfonz19.util.example.to.ClassImplementingInterfaceB;
 import com.gmail.alfonz19.util.example.to.ClassWithIntegerProperties;
@@ -64,7 +64,7 @@ import static org.junit.Assert.assertTrue;
 public class ExampleUsageTest {
 
     @Rule
-    public InitializedInstanceLogger initializedInstanceLogger = new InitializedInstanceLogger();
+    public InitializedInstanceTestLogging initializedInstanceLogger = new InitializedInstanceTestLogging();
 
     //<editor-fold desc="Basic initializations">
     @Test
