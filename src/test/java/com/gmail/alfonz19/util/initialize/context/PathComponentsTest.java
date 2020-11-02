@@ -1,5 +1,8 @@
 package com.gmail.alfonz19.util.initialize.context;
 
+import com.gmail.alfonz19.util.initialize.context.path.PathComponent;
+import com.gmail.alfonz19.util.initialize.context.path.PathComponentType;
+import com.gmail.alfonz19.util.initialize.context.path.PathComponents;
 import com.gmail.alfonz19.util.initialize.exception.InitializeException;
 
 import org.hamcrest.Matchers;

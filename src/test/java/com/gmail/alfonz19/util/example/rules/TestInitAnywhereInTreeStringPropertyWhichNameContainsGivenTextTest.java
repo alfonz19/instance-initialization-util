@@ -1,7 +1,7 @@
 package com.gmail.alfonz19.util.example.rules;
 
 import com.gmail.alfonz19.testsupport.InitializedInstanceTestLogging;
-import com.gmail.alfonz19.util.initialize.context.PathMatcherBuilder;
+import com.gmail.alfonz19.util.initialize.context.path.matcher.PathMatcherBuilder;
 import com.gmail.alfonz19.util.initialize.generator.Generators;
 import com.gmail.alfonz19.util.initialize.rules.Rules;
 import lombok.Data;

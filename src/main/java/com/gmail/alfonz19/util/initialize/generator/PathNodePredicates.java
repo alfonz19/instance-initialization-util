@@ -1,8 +1,8 @@
 package com.gmail.alfonz19.util.initialize.generator;
 
-import com.gmail.alfonz19.util.initialize.context.Path;
-import com.gmail.alfonz19.util.initialize.context.PathMatcher;
-import com.gmail.alfonz19.util.initialize.context.PathMatcherBuilder;
+import com.gmail.alfonz19.util.initialize.context.path.Path;
+import com.gmail.alfonz19.util.initialize.context.path.matcher.PathMatcher;
+import com.gmail.alfonz19.util.initialize.context.path.matcher.PathMatcherBuilder;
 import com.gmail.alfonz19.util.initialize.rules.RuleBuilder.RuleTest;
 import com.gmail.alfonz19.util.initialize.util.ReflectUtil;
 import lombok.AccessLevel;

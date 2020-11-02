@@ -1,9 +1,9 @@
 package com.gmail.alfonz19.util.initialize.rules;
 
-import com.gmail.alfonz19.util.initialize.context.Path;
-import com.gmail.alfonz19.util.initialize.context.PathMatcher;
-import com.gmail.alfonz19.util.initialize.context.PathMatcherBuilder;
-import com.gmail.alfonz19.util.initialize.context.PathNode;
+import com.gmail.alfonz19.util.initialize.context.path.Path;
+import com.gmail.alfonz19.util.initialize.context.path.matcher.PathMatcher;
+import com.gmail.alfonz19.util.initialize.context.path.matcher.PathMatcherBuilder;
+import com.gmail.alfonz19.util.initialize.context.path.PathNode;
 import com.gmail.alfonz19.util.initialize.generator.Generator;
 import com.gmail.alfonz19.util.initialize.generator.PathNodePredicates;
 import com.gmail.alfonz19.util.initialize.util.PredicatesBooleanOperations;

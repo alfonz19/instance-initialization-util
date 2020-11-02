@@ -1,5 +1,6 @@
-package com.gmail.alfonz19.util.initialize.context;
+package com.gmail.alfonz19.util.initialize.context.path;
 
+import com.gmail.alfonz19.util.initialize.context.CalculatedNodeData;
 import com.gmail.alfonz19.util.initialize.exception.InitializeException;
 import com.gmail.alfonz19.util.initialize.generator.Generator;
 import com.gmail.alfonz19.util.initialize.rules.FindFirstApplicableRule;

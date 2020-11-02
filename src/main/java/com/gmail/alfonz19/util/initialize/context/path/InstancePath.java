@@ -1,5 +1,6 @@
-package com.gmail.alfonz19.util.initialize.context;
+package com.gmail.alfonz19.util.initialize.context.path;
 
+import com.gmail.alfonz19.util.initialize.context.path.builder.PathBuilder;
 import lombok.EqualsAndHashCode;
 
 import java.beans.PropertyDescriptor;

@@ -1,7 +1,7 @@
 package com.gmail.alfonz19.util.initialize.generator;
 
 import com.gmail.alfonz19.util.initialize.context.CalculatedNodeData;
-import com.gmail.alfonz19.util.initialize.context.PathNode;
+import com.gmail.alfonz19.util.initialize.context.path.PathNode;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

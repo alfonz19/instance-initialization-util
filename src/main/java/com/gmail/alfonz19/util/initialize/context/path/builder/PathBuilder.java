@@ -1,4 +1,6 @@
-package com.gmail.alfonz19.util.initialize.context;
+package com.gmail.alfonz19.util.initialize.context.path.builder;
+
+import com.gmail.alfonz19.util.initialize.context.path.Path;
 
 public class PathBuilder {
     private static final String SEPARATOR = Path.PATH_SEPARATOR_AS_STRING;

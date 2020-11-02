@@ -1,6 +1,6 @@
 package com.gmail.alfonz19.util.initialize.util;
 
-import com.gmail.alfonz19.util.initialize.context.PathNode;
+import com.gmail.alfonz19.util.initialize.context.path.PathNode;
 import com.gmail.alfonz19.util.initialize.rules.RuleBuilder.RuleTest;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

@@ -1,4 +1,4 @@
-package com.gmail.alfonz19.util.initialize.context;
+package com.gmail.alfonz19.util.initialize.context.path;
 
 public class ArrayIndexPathComponent extends AbstractPathComponent {
 
