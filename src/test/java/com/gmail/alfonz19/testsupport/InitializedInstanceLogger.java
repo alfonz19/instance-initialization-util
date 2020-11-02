@@ -39,7 +39,7 @@ public class InitializedInstanceLogger extends org.junit.rules.TestWatcher {
 
     public void logInitializedInstance(Object testInstance) {
         try {
-            log.debug("Initialized instance:\n{}", objectWriter.writeValueAsString(testInstance));
+            log.debug("instance as JSON:\n{}", objectWriter.writeValueAsString(testInstance));
         } catch (JsonProcessingException e) {
             throw new InitializeException(e);
         }

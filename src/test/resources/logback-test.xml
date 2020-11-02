@@ -5,7 +5,7 @@
   <property name="LOG_BASE_DIR" value="${logging.baseDir:-/tmp}"/>
   <property name="FULL_DATETIME" value="%d{yyyy-MM-dd HH:mm:ss.SSS}"/>
   <!--<property name="LOG_PATTERN" value="${FULL_DATETIME} [%thread] %-5level %logger{30} - %msg%n"/>-->
-  <property name="LOG_PATTERN" value="%msg%n"/>
+  <property name="LOG_PATTERN" value="%logger{30} - %msg%n"/>
 
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
     <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
@@ -16,7 +16,7 @@
   </appender>
 
   <logger name="INITIALIZED_INSTANCE" level="debug" />
-<!--  <logger name="RULES_DEBUGGING" level="trace" />-->
+  <logger name="RULES_DEBUGGING" level="trace" />
   <root level="info">
     <appender-ref ref="STDOUT"/>
   </root>

@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -130,18 +131,17 @@ public class RuleBuilder {
                 if (ruleDescription == null) {
                     this.ruleDescription = "<no rule description provided>, classType=" + this.getClass().getName();
                 }
-                RULES_DEBUGGING_LOGGER.trace("Path='{}',classType='{}' genericClassType='{}',\nVerifying rule '{}':\nEvaluating tests: {}\n",
-                        pathNode.getPath(),
-                        pathNode.getCalculatedNodeData().getClassType(),
-                        pathNode.getCalculatedNodeData().getGenericClassType(),
-
+                String msgToLog = String.format(
+                        "\t• Verifying rule '%s':\n\t\tEvaluating tests: %s\n",
                         ruleDescription,
                         PredicatesBooleanOperations.rulesDescriptionJoinedUsingPrefixNotation(tests.stream(), "and"));
+                Arrays.stream(msgToLog.split("\n")).forEach(RULES_DEBUGGING_LOGGER::trace);
 
             }
             //apply all rules with AND evaluation: apply all, find first false resolution, return it or return false if there is not false resolution.
             Boolean result = PredicatesBooleanOperations.applyAndOperation(tests.stream(), instance, pathNode);
-            RULES_DEBUGGING_LOGGER.trace("Rule evaluation: {}\n", result);
+            RULES_DEBUGGING_LOGGER.trace("\t\tRule evaluation: {}", result);
+            RULES_DEBUGGING_LOGGER.trace("");
             return result;
         }
 

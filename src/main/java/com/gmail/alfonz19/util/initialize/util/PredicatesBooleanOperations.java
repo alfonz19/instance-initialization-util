@@ -62,6 +62,6 @@ public class PredicatesBooleanOperations {
     }
 
     private static void logTestResult(RuleTest e, boolean testResult) {
-        RULES_DEBUGGING_LOGGER.trace("\t• Test '{}' evaluated as {}", e.getDescription(), testResult);
+        RULES_DEBUGGING_LOGGER.trace("\t\t\t◦ Test '{}' evaluated as {}", e.getDescription(), testResult);
     }
 }
