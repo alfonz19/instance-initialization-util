@@ -2,7 +2,6 @@ package com.gmail.alfonz19.util.initialize.generator;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.gmail.alfonz19.util.initialize.Config;
-import com.gmail.alfonz19.util.initialize.Initialize;
 import com.gmail.alfonz19.util.initialize.context.CalculatedNodeData;
 import com.gmail.alfonz19.util.initialize.context.InitializationContext;
 import com.gmail.alfonz19.util.initialize.context.path.PathComponent;
@@ -100,7 +99,7 @@ public class CollectionGenerator<ITEM_TYPE, GENERATES> extends AbstractGenerator
             List<? extends ITEM_TYPE> items = IntStream.range(0, numberOfItemsToBeGenerated).boxed()
                     //create array-like subPaths using index.
                     .map(index -> new PathNode.CollectionItemNode(pathNode, index, itemsCalculatedNodeData))
-                    .map((Function<PathNode, ITEM_TYPE>) pt -> Initialize.initialize(itemGeneratorToUse,
+                    .map((Function<PathNode, ITEM_TYPE>) pt -> GeneratorAccessor.create(itemGeneratorToUse,
                             initializationContext,
                             pt))
                     .collect(Collectors.toList());
@@ -123,7 +122,7 @@ public class CollectionGenerator<ITEM_TYPE, GENERATES> extends AbstractGenerator
         Map<PathNode, ? extends ITEM_TYPE> instancePathToGeneratedValue = indices.stream()
                 .map(index -> new PathNode.CollectionItemNode(pathNode, index, itemsCalculatedNodeData))
                 .collect(Collectors.toMap(Function.identity(),
-                        (Function<PathNode, ITEM_TYPE>) pt -> Initialize.initialize(itemGeneratorToUse,
+                        (Function<PathNode, ITEM_TYPE>) pt -> GeneratorAccessor.create(itemGeneratorToUse,
                                 initializationContext,
                                 pt)));
 

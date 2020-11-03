@@ -1,7 +1,6 @@
 package com.gmail.alfonz19.util.initialize.generator;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.gmail.alfonz19.util.initialize.Initialize;
 import com.gmail.alfonz19.util.initialize.builder.BuilderWithParentBuilderReference;
 import com.gmail.alfonz19.util.initialize.builder.EnumConfiguration;
 import com.gmail.alfonz19.util.initialize.context.CalculatedNodeData;
@@ -277,7 +276,7 @@ public class InstanceGenerator<SOURCE_INSTANCE> extends AbstractGenerator<SOURCE
         PropertyDescriptorInitialization pdi = (instance, initializationContext, pathNode) -> {
             PathNode.PropertyDescriptorBasedPathNode subNode =
                     new PathNode.PropertyDescriptorBasedPathNode(pathNode, propertyDescriptor);
-            subNode.setValue(instance, Initialize.initialize(valueGenerator, initializationContext, subNode));
+            subNode.setValue(instance, GeneratorAccessor.create(valueGenerator, initializationContext, subNode));
 
         };
 
