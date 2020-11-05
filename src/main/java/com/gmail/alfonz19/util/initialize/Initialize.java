@@ -2,9 +2,7 @@ package com.gmail.alfonz19.util.initialize;
 
 import com.gmail.alfonz19.util.initialize.builder.ConfigurationBuilder;
 import com.gmail.alfonz19.util.initialize.context.InitializationContext;
-import com.gmail.alfonz19.util.initialize.context.path.PathNode;
 import com.gmail.alfonz19.util.initialize.generator.Generator;
-import com.gmail.alfonz19.util.initialize.generator.GeneratorAccessor;
 import com.gmail.alfonz19.util.initialize.rules.Rules;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -16,11 +14,11 @@ import java.util.List;
 public class Initialize {
 
     public static <T> T initialize(Generator<T> generator) {
-        return new Initializer().create(generator);
+        return Initializer.create(generator);
     }
 
     public static <T> List<T> initializeList(Generator<T> generator, int number) {
-        return new Initializer().create(generator, number);
+        return Initializer.createListOfInstances(generator).withSize(number);
     }
 
     public static InitializationUsingRules withConfiguration(Rules rules) {
@@ -32,7 +30,7 @@ public class Initialize {
     }
 
     public static InitializationUsingRules withConfiguration(ConfigurationBuilder initializationContext) {
-        return new InitializationUsingRules(initializationContext);
+        return new InitializationUsingRules(initializationContext.getInitializationContext());
     }
 
     @AllArgsConstructor
@@ -41,11 +39,13 @@ public class Initialize {
         private final InitializationContext initializationContext;
 
         public <T> T initialize(Generator<T> generator) {
-            return GeneratorAccessor.create(generator, initializationContext, new PathNode.RootPathNode());
+            return Initializer.configureRules(initializationContext).andCreate(generator);
         }
 
         public <T> List<T> initializeList(Generator<T> generator, int number) {
-            return GeneratorAccessor.create(generator, number, initializationContext, new PathNode.RootPathNode());
+            return Initializer.configureRules(initializationContext)
+                    .andCreateListOfInstances(generator)
+                    .withSize(number);
         }
     }
 }
