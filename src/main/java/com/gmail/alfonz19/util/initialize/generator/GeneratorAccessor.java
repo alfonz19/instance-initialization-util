@@ -6,8 +6,6 @@ import com.gmail.alfonz19.util.initialize.context.path.PathNode;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class GeneratorAccessor {
 
@@ -33,13 +31,6 @@ public class GeneratorAccessor {
                                InitializationConfiguration initializationConfiguration,
                                PathNode pathNode) {
         return castGenerator(generator).create(initializationConfiguration, pathNode);
-    }
-
-    public static <T> List<T> create(Generator<T> generator,
-                                     int number,
-                                     InitializationConfiguration initializationConfiguration,
-                                     PathNode pathNode) {
-        return castGenerator(generator).create(number, initializationConfiguration, pathNode);
     }
 
     public static <T> AbstractGenerator<T> castGenerator(Generator<T> generator) {

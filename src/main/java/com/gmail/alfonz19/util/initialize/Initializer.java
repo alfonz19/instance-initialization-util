@@ -9,17 +9,11 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Initializer {
 
     public static <T> T create(Generator<T> generator) {
         return configureRules(new InitializationConfiguration()).andCreate(generator);
-    }
-
-    public static <T> SizeSelectionBuilder<T> createListOfInstances(Generator<T> generator) {
-        return configureRules(new InitializationConfiguration()).andCreateListOfInstances(generator);
     }
 
     public static CreationWithInitializationConfigBuilder configureRules(Rules rules) {
@@ -36,21 +30,6 @@ public class Initializer {
 
         public <T> T andCreate(Generator<T> generator) {
             return GeneratorAccessor.create(generator, initializationConfiguration, new PathNode.RootPathNode());
-        }
-
-        public <T> SizeSelectionBuilder<T> andCreateListOfInstances(Generator<T> generator) {
-            return new SizeSelectionBuilder<>(generator, initializationConfiguration);
-        }
-    }
-
-    @AllArgsConstructor(access = AccessLevel.PRIVATE)
-    public static class SizeSelectionBuilder<T> {
-        private final Generator<T> generator;
-        private final InitializationConfiguration initializationConfiguration;
-
-
-        public List<T> withSize(int size) {
-            return GeneratorAccessor.create(generator, size, initializationConfiguration, new PathNode.RootPathNode());
         }
     }
 }

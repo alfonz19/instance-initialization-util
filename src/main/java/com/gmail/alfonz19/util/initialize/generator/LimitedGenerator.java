@@ -4,10 +4,6 @@ import com.gmail.alfonz19.util.initialize.context.InitializationConfiguration;
 import com.gmail.alfonz19.util.initialize.context.path.PathNode;
 import com.gmail.alfonz19.util.initialize.exception.InitializeException;
 
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 public class LimitedGenerator<T> extends AbstractGenerator<T> {
     private final Generator<T> generator;
     private int remainingNumberOfItems;
@@ -36,14 +32,5 @@ public class LimitedGenerator<T> extends AbstractGenerator<T> {
 
         remainingNumberOfItems--;
         return GeneratorAccessor.create(generator, initializationConfiguration, pathNode);
-    }
-
-    @Override
-    protected List<T> create(int number,
-                             InitializationConfiguration initializationConfiguration,
-                             PathNode pathNode) {
-        return Stream.generate(()-> create(initializationConfiguration, pathNode))
-                .limit(Math.min(number, remainingNumberOfItems))
-                .collect(Collectors.toList());
     }
 }

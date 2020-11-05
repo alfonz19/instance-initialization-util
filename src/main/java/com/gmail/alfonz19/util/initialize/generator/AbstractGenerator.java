@@ -5,10 +5,6 @@ import com.gmail.alfonz19.util.initialize.context.CalculatedNodeData;
 import com.gmail.alfonz19.util.initialize.context.InitializationConfiguration;
 import com.gmail.alfonz19.util.initialize.context.path.PathNode;
 
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 public abstract class AbstractGenerator<T> implements Generator<T>{
     private boolean hasSingleCalculatedNodeData;
     private CalculatedNodeData calculatedNodeData;
@@ -24,12 +20,6 @@ public abstract class AbstractGenerator<T> implements Generator<T>{
     }
 
     protected abstract T create(InitializationConfiguration initializationConfiguration, PathNode pathNode);
-
-    protected List<T> create(int number,
-                             InitializationConfiguration initializationConfiguration,
-                             PathNode pathNode) {
-        return Stream.generate(() -> create(initializationConfiguration, pathNode)).limit(number).collect(Collectors.toList());
-    }
 
     protected final boolean hasSingleCalculatedNodeData() {
         return hasSingleCalculatedNodeData;
