@@ -10,7 +10,7 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
-import static com.gmail.alfonz19.util.initialize.Initialize.withConfiguration;
+import static com.gmail.alfonz19.util.initialize.Initializer.configureRules;
 import static com.gmail.alfonz19.util.initialize.generator.Generators.instance;
 import static com.gmail.alfonz19.util.initialize.rules.RuleBuilder.applyGenerator;
 
@@ -27,8 +27,8 @@ public class CyclicGenericInitializationWithDepthLimitationTest {
                 .addRule(applyGenerator(instance(new TypeReference<GenericSubClass<Integer, GenericSubClassUsedInDepths.A>>() {}))
                         .ifClassTypeIsEqualTo(GenericSubClass.class));
 
-        GenericSubClassUsedInDepths instance = withConfiguration(rules)
-                .initialize(instance(GenericSubClassUsedInDepths.class));
+        GenericSubClassUsedInDepths instance =
+                configureRules(rules).andCreate(instance(GenericSubClassUsedInDepths.class));
         initializedInstanceLogger.logInitializedInstance(instance);
     }
 

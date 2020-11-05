@@ -15,11 +15,9 @@ import com.gmail.alfonz19.util.example.to.GenericClass;
 import com.gmail.alfonz19.util.example.to.GenericSubClass;
 import com.gmail.alfonz19.util.example.to.RootDto;
 import com.gmail.alfonz19.util.example.to.TestingInterface;
-import com.gmail.alfonz19.util.initialize.Initialize;
 import com.gmail.alfonz19.util.initialize.Initializer;
 import com.gmail.alfonz19.util.initialize.generator.Generators;
 import com.gmail.alfonz19.util.initialize.rules.PredefinedRules;
-import com.gmail.alfonz19.util.initialize.rules.Rules;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,6 +32,7 @@ import java.util.stream.Stream;
 import org.junit.Rule;
 import org.junit.Test;
 
+import static com.gmail.alfonz19.util.initialize.Initializer.configureRules;
 import static com.gmail.alfonz19.util.initialize.Initializer.create;
 import static com.gmail.alfonz19.util.initialize.generator.Generators.array;
 import static com.gmail.alfonz19.util.initialize.generator.Generators.defaultValue;
@@ -660,8 +659,7 @@ public class ExampleUsageTest {
     @Test
     public void testFullAutoRandomInitialization() {
         ClassReferencingGenericSubSubClass initialized =
-                Initialize.withConfiguration(new Rules(PredefinedRules.LIST_OF_ALL_RULES))
-                        .initialize(instance(ClassReferencingGenericSubSubClass::new));
+                configureRules(PredefinedRules.ALL_RULES).andCreate(instance(ClassReferencingGenericSubSubClass::new));
 
         initializedInstanceLogger.logInitializedInstance(initialized);
 

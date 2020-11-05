@@ -3,7 +3,6 @@ package com.gmail.alfonz19.util.example.rules;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.gmail.alfonz19.testsupport.InitializedInstanceTestLogging;
 import com.gmail.alfonz19.util.example.to.GenericSubClass;
-import com.gmail.alfonz19.util.initialize.Initialize;
 import com.gmail.alfonz19.util.initialize.rules.Rules;
 
 import java.util.List;
@@ -12,6 +11,7 @@ import org.hamcrest.CoreMatchers;
 import org.junit.Rule;
 import org.junit.Test;
 
+import static com.gmail.alfonz19.util.initialize.Initializer.configureRules;
 import static com.gmail.alfonz19.util.initialize.generator.Generators.instance;
 import static com.gmail.alfonz19.util.initialize.generator.Generators.list;
 import static com.gmail.alfonz19.util.initialize.generator.Generators.randomForGuessedType;
@@ -35,13 +35,8 @@ public class InitializationOfGenericClassHavingGenericParentTest {
                 .addRule(applyGenerator(list(randomForGuessedType(true, false)).withSize(5))
                         .ifClassTypeIsEqualTo(List.class));
 
-        GenericSubClass<Integer, String> instance = Initialize.withConfiguration(rules)
-
-//                with provided instance supplier
-//                instance(GenericSubClass::new, new TypeReference<GenericSubClass<Integer, String>>() {})
-//                or with one created from TypeReference.
-
-                .initialize(instance(new TypeReference<GenericSubClass<Integer, String>>() {})
+        GenericSubClass<Integer, String> instance = configureRules(rules)
+                .andCreate(instance(new TypeReference<GenericSubClass<Integer, String>>() {})
                         .setUnsetPropertiesRandomly());
 
         initializedInstanceLogger.logInitializedInstance(instance);

@@ -2,7 +2,6 @@ package com.gmail.alfonz19.util.example.rules;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.gmail.alfonz19.testsupport.InitializedInstanceTestLogging;
-import com.gmail.alfonz19.util.initialize.Initialize;
 import com.gmail.alfonz19.util.initialize.rules.Rules;
 
 import java.util.ArrayList;
@@ -13,6 +12,7 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
+import static com.gmail.alfonz19.util.initialize.Initializer.configureRules;
 import static com.gmail.alfonz19.util.initialize.generator.Generators.list;
 import static com.gmail.alfonz19.util.initialize.generator.Generators.randomForGuessedType;
 import static com.gmail.alfonz19.util.initialize.rules.RuleBuilder.applyGenerator;
@@ -38,8 +38,7 @@ public class InitializationListUsingGenericRuleTest {
                         .ifClassTypeIsEqualTo(List.class));
 
         List<List<String>> instance =
-                Initialize.withConfiguration(rules)
-                        .initialize(list(LinkedList::new, new TypeReference<List<List<String>>>() {}));
+                configureRules(rules).andCreate(list(LinkedList::new, new TypeReference<List<List<String>>>() {}));
         initializedInstanceLogger.logInitializedInstance(instance);
 
         assertCreatedInstance(instance, LinkedList.class);
@@ -51,9 +50,8 @@ public class InitializationListUsingGenericRuleTest {
                 .addRule(applyGenerator(list(randomForGuessedType(true, false)).withSize(5))
                         .ifClassTypeIsEqualTo(List.class));
 
-        List<List<String>> instance =
-                Initialize.withConfiguration(rules)
-                        .initialize(list(new TypeReference<List<List<String>>>() {}));
+        List<List<String>> instance = configureRules(rules).andCreate(list(new TypeReference<List<List<String>>>() {}));
+
         initializedInstanceLogger.logInitializedInstance(instance);
         assertCreatedInstance(instance, ArrayList.class);
     }
@@ -63,11 +61,9 @@ public class InitializationListUsingGenericRuleTest {
     public void testInitializationGenericListUsingRule() {
 //        Rules rules = new Rules()
 //                .addRule(applyGenerator(list(randomForGuessedType(true, false)).withSize(5))
-//                        .ifPropertyClassTypeIsEqualTo(List.class));
+//                        /*.ifPropertyClassTypeIsEqualTo(List.class)*/);
 //
-//        List<List<String>> instance =
-//                InitializationUsingRules.withConfiguration(rules)
-//                        .initialize(Generators.randomForGuessedType(true));
+//        List<List<String>> instance = Initializer.configureRules(rules).andCreate(Generators.randomForGuessedType(true));
 //        initializedInstanceLogger.logInitializedInstance(instance);
 //        assertCreatedInstance(instance, ArrayList.class);
     }

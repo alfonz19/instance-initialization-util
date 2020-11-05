@@ -13,7 +13,7 @@ import org.hamcrest.CoreMatchers;
 import org.junit.Rule;
 import org.junit.Test;
 
-import static com.gmail.alfonz19.util.initialize.Initialize.withConfiguration;
+import static com.gmail.alfonz19.util.initialize.Initializer.configureRules;
 import static com.gmail.alfonz19.util.initialize.generator.Generators.instance;
 import static com.gmail.alfonz19.util.initialize.generator.Generators.list;
 import static com.gmail.alfonz19.util.initialize.rules.RuleBuilder.applyGenerator;
@@ -29,13 +29,16 @@ public class TestInitAnywhereInTreeStringPropertyWhichNameContainsGivenTextTest 
 
     @Test
     public void initAnywhereInTreeStringPropertyWhichNameContainsGivenText() {
-        TestInstance testInstance = withConfiguration(new Rules()
-                .addRule(applyGenerator(Generators.randomString().withSize(10).addPrefix("success"))
-                        .ifClassTypeIsEqualTo(String.class)
-                        .ifPathMatches(PathMatcherBuilder.root().addAnySubPath().addPropertyRegex("thisShouldBeSet.*?"))
-                ))
-                .initialize(instance(TestInstance.class)
-                        .setProperty(TestInstance::getAssociatedInstances).to(list(instance(TestInstance::new)).withSize(2)));
+        TestInstance testInstance = configureRules(
+                new Rules()
+                        .addRule(applyGenerator(Generators.randomString().withSize(10).addPrefix("success"))
+                                .ifClassTypeIsEqualTo(String.class)
+                                .ifPathMatches(PathMatcherBuilder.root()
+                                        .addAnySubPath()
+                                        .addPropertyRegex("thisShouldBeSet.*?"))))
+                .andCreate(instance(TestInstance.class)
+                        .setProperty(TestInstance::getAssociatedInstances)
+                        .to(list(instance(TestInstance::new)).withSize(2)));
 
         initializedInstanceLogger.logInitializedInstance(testInstance);
         assertTestInstance(testInstance);
