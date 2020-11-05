@@ -5,12 +5,13 @@ import com.gmail.alfonz19.util.initialize.context.path.PathNode;
 import com.gmail.alfonz19.util.initialize.generator.Generator;
 import com.gmail.alfonz19.util.initialize.generator.GeneratorAccessor;
 import com.gmail.alfonz19.util.initialize.rules.Rules;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-import static com.gmail.alfonz19.util.initialize.generator.Generators.instance;
-
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Initializer {
 
     public static <T> T create(Generator<T> generator) {
@@ -29,7 +30,7 @@ public class Initializer {
         return new CreationWithInitializationConfigBuilder(initializationConfiguration);
     }
 
-    @AllArgsConstructor
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
     public static class CreationWithInitializationConfigBuilder {
         private final InitializationConfiguration initializationConfiguration;
 
@@ -42,7 +43,7 @@ public class Initializer {
         }
     }
 
-    @AllArgsConstructor
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
     public static class SizeSelectionBuilder<T> {
         private final Generator<T> generator;
         private final InitializationConfiguration initializationConfiguration;
@@ -51,12 +52,5 @@ public class Initializer {
         public List<T> withSize(int size) {
             return GeneratorAccessor.create(generator, size, initializationConfiguration, new PathNode.RootPathNode());
         }
-    }
-
-    public static void main(String[] args) {
-        String instance = Initializer.create(instance(String.class));
-        List<String> instances = Initializer.createListOfInstances(instance(String.class)).withSize(5);
-        String instance2 = Initializer.configureRules(Rules.NO_RULES).andCreate(instance(String.class));
-        List<String> instances2 = Initializer.configureRules(Rules.NO_RULES).andCreateListOfInstances(instance(String.class)).withSize(10);
     }
 }
