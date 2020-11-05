@@ -1,7 +1,7 @@
 package com.gmail.alfonz19.util.initialize.generator;
 
 import com.gmail.alfonz19.util.initialize.context.CalculatedNodeData;
-import com.gmail.alfonz19.util.initialize.context.InitializationContext;
+import com.gmail.alfonz19.util.initialize.context.InitializationConfiguration;
 import com.gmail.alfonz19.util.initialize.context.path.PathNode;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -17,7 +17,7 @@ public class GeneratorAccessor {
      * Regarding {@link Generator; generators}. Methods to be available in all generators implement interface
      * {@link Generator}. Might be even empty just to have some nice type to pass around. All generators then have to
      * implement {@link Generator}, which forces implementor some required methods to be implemented, like
-     * {@link AbstractGenerator#create(InitializationContext, PathNode)}, but these are protected not to be visible in builders syntax. Most
+     * {@link AbstractGenerator#create(InitializationConfiguration, PathNode)}, but these are protected not to be visible in builders syntax. Most
      * typically they will be called just from subclasses and everything is fine. But sometimes we need to call them
      * somehow even if they are not accessible. This is purpose of this class; if developer know he should call them, he
      * can do that via this mediator.
@@ -30,16 +30,16 @@ public class GeneratorAccessor {
     }
 
     public static <T> T create(Generator<T> generator,
-                               InitializationContext initializationContext,
+                               InitializationConfiguration initializationConfiguration,
                                PathNode pathNode) {
-        return castGenerator(generator).create(initializationContext, pathNode);
+        return castGenerator(generator).create(initializationConfiguration, pathNode);
     }
 
     public static <T> List<T> create(Generator<T> generator,
                                      int number,
-                                     InitializationContext initializationContext,
+                                     InitializationConfiguration initializationConfiguration,
                                      PathNode pathNode) {
-        return castGenerator(generator).create(number, initializationContext, pathNode);
+        return castGenerator(generator).create(number, initializationConfiguration, pathNode);
     }
 
     public static <T> AbstractGenerator<T> castGenerator(Generator<T> generator) {

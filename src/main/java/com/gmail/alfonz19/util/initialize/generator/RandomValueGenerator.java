@@ -1,7 +1,7 @@
 package com.gmail.alfonz19.util.initialize.generator;
 
 import com.gmail.alfonz19.util.initialize.context.CalculatedNodeData;
-import com.gmail.alfonz19.util.initialize.context.InitializationContext;
+import com.gmail.alfonz19.util.initialize.context.InitializationConfiguration;
 import com.gmail.alfonz19.util.initialize.context.path.PathNode;
 import com.gmail.alfonz19.util.initialize.exception.InitializeException;
 import com.gmail.alfonz19.util.initialize.util.RandomUtil;
@@ -94,7 +94,7 @@ public class RandomValueGenerator extends AbstractGenerator<Object> {
     }
 
     @Override
-    public Object create(InitializationContext initializationContext, PathNode pathNode) {
+    public Object create(InitializationConfiguration initializationConfiguration, PathNode pathNode) {
         if (reusingGuessedType) {
             if (guessTypeResultToReuse == null) {
                 guessTypeResultToReuse = guessType(pathNode);

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.gmail.alfonz19.util.initialize.builder.BuilderWithParentBuilderReference;
 import com.gmail.alfonz19.util.initialize.builder.EnumConfiguration;
 import com.gmail.alfonz19.util.initialize.context.CalculatedNodeData;
-import com.gmail.alfonz19.util.initialize.context.InitializationContext;
+import com.gmail.alfonz19.util.initialize.context.InitializationConfiguration;
 import com.gmail.alfonz19.util.initialize.context.path.PathNode;
 import com.gmail.alfonz19.util.initialize.exception.InitializeException;
 import com.gmail.alfonz19.util.initialize.rules.FindFirstApplicableRule;
@@ -97,7 +97,7 @@ public class InstanceGenerator<SOURCE_INSTANCE> extends AbstractGenerator<SOURCE
 //    }
 
     @Override
-    public SOURCE_INSTANCE create(InitializationContext initializationContext, PathNode pathNode) {
+    public SOURCE_INSTANCE create(InitializationConfiguration initializationConfiguration, PathNode pathNode) {
         //path node might be different between invocation. Example 1 generator to generate N items in collection.
         //each item will have different pathNode.
         //calculatedNodeData will be always the same, but they need to be set at least one, and it cannot be done
@@ -107,27 +107,27 @@ public class InstanceGenerator<SOURCE_INSTANCE> extends AbstractGenerator<SOURCE
 
         SOURCE_INSTANCE instance = this.instanceSupplier.get();
 
-        applyRulesFromPathContext(instance, initializationContext, pathNode);
+        applyRulesFromPathContext(instance, initializationConfiguration, pathNode);
 
-        applyAllInitializations(instance, initializationContext, pathNode);
+        applyAllInitializations(instance, initializationConfiguration, pathNode);
         return instance;
     }
 
     private void applyAllInitializations(SOURCE_INSTANCE instance,
-                                         InitializationContext initializationContext,
+                                         InitializationConfiguration initializationConfiguration,
                                          PathNode pathNode) {
         this.propertyDescriptorsInitializations.values()
-                .forEach(initializations -> initializations.init(instance, initializationContext, pathNode));
+                .forEach(initializations -> initializations.init(instance, initializationConfiguration, pathNode));
     }
 
     private void applyRulesFromPathContext(SOURCE_INSTANCE instance,
-                                           InitializationContext initializationContext,
+                                           InitializationConfiguration initializationConfiguration,
                                            PathNode pathNode) {
         List<PropertyDescriptor> unsetProperties = findUninitializedProperties();
         unsetProperties.forEach(propertyDescriptor -> {
             PathNode subPathNode = new PathNode.PropertyDescriptorBasedPathNode(pathNode, propertyDescriptor);
 
-            FindFirstApplicableRule.getGeneratorFromFirstApplicableRule(instance, initializationContext, subPathNode)
+            FindFirstApplicableRule.getGeneratorFromFirstApplicableRule(instance, initializationConfiguration, subPathNode)
                     .ifPresent(generator -> addPropertyDescriptorInitialization(propertyDescriptor, generator));
         });
     }
@@ -273,10 +273,10 @@ public class InstanceGenerator<SOURCE_INSTANCE> extends AbstractGenerator<SOURCE
 
     private void addPropertyDescriptorInitialization(PropertyDescriptor propertyDescriptor,
                                                      Generator<?> valueGenerator) {
-        PropertyDescriptorInitialization pdi = (instance, initializationContext, pathNode) -> {
+        PropertyDescriptorInitialization pdi = (instance, initializationConfiguration, pathNode) -> {
             PathNode.PropertyDescriptorBasedPathNode subNode =
                     new PathNode.PropertyDescriptorBasedPathNode(pathNode, propertyDescriptor);
-            subNode.setValue(instance, GeneratorAccessor.create(valueGenerator, initializationContext, subNode));
+            subNode.setValue(instance, GeneratorAccessor.create(valueGenerator, initializationConfiguration, subNode));
 
         };
 
@@ -284,7 +284,7 @@ public class InstanceGenerator<SOURCE_INSTANCE> extends AbstractGenerator<SOURCE
     }
 
     private void addSkippingPropertyDescriptorInitialization(PropertyDescriptor propertyDescriptor) {
-        PropertyDescriptorInitialization pdi = (instance, initializationContext, pathNode) -> {
+        PropertyDescriptorInitialization pdi = (instance, initializationConfiguration, pathNode) -> {
             //NO-OP
         };
         addPropertyDescriptorInitialization(propertyDescriptor, pdi);
@@ -305,7 +305,7 @@ public class InstanceGenerator<SOURCE_INSTANCE> extends AbstractGenerator<SOURCE
     @FunctionalInterface
     private interface PropertyDescriptorInitialization {
         void init(Object instance,
-                  InitializationContext initializationContext,
+                  InitializationConfiguration initializationConfiguration,
                   PathNode pathNode);
     }
 

@@ -1,6 +1,6 @@
 package com.gmail.alfonz19.util.initialize.rules;
 
-import com.gmail.alfonz19.util.initialize.context.InitializationContext;
+import com.gmail.alfonz19.util.initialize.context.InitializationConfiguration;
 import com.gmail.alfonz19.util.initialize.context.path.PathNode;
 import com.gmail.alfonz19.util.initialize.generator.Generator;
 import lombok.AccessLevel;
@@ -21,8 +21,8 @@ import org.slf4j.Logger;
 public class FindFirstApplicableRule {
     private static final Logger RULES_DEBUGGING_LOGGER = org.slf4j.LoggerFactory.getLogger("RULES_DEBUGGING");
 
-    public static Optional<Generator<?>> getGeneratorFromFirstApplicableRule(Object instance, InitializationContext initializationContext, PathNode pathNode) {
-        Stream<Rule> streamOfRules = iteratorToStream(new HierarchyRulesIterator(initializationContext, pathNode));
+    public static Optional<Generator<?>> getGeneratorFromFirstApplicableRule(Object instance, InitializationConfiguration initializationConfiguration, PathNode pathNode) {
+        Stream<Rule> streamOfRules = iteratorToStream(new HierarchyRulesIterator(initializationConfiguration, pathNode));
 
         String msgToLog = String.format(
                 "Looking for generator for path='%s':\n\t↳ classType='%s'\n\t↳ genericClassType='%s'\n",
@@ -48,19 +48,19 @@ public class FindFirstApplicableRule {
     }
 
     private static class HierarchyRulesIterator implements Iterator<Rule> {
-        private final InitializationContext initializationContext;
+        private final InitializationConfiguration initializationConfiguration;
         private PathNode pathNode;
         private Iterator<Rule> iterator;
 
-        public HierarchyRulesIterator(InitializationContext initializationContext,
+        public HierarchyRulesIterator(InitializationConfiguration initializationConfiguration,
                                       PathNode pathNode) {
-            this.initializationContext = initializationContext;
+            this.initializationConfiguration = initializationConfiguration;
             this.pathNode = pathNode;
             iterator = getRulesIteratorForCurrentPathNode();
         }
 
         public Iterator<Rule> getRulesIteratorForCurrentPathNode() {
-            Rules rules = this.initializationContext.getRulesForPath(pathNode.getPath());
+            Rules rules = this.initializationConfiguration.getRulesForPath(pathNode.getPath());
             return rules == null ? Collections.emptyListIterator() : rules.iterator();
         }
 

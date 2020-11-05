@@ -2,7 +2,7 @@ package com.gmail.alfonz19.util.initialize.generator;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.gmail.alfonz19.util.initialize.context.CalculatedNodeData;
-import com.gmail.alfonz19.util.initialize.context.InitializationContext;
+import com.gmail.alfonz19.util.initialize.context.InitializationConfiguration;
 import com.gmail.alfonz19.util.initialize.context.path.PathNode;
 import com.gmail.alfonz19.util.initialize.exception.InitializeException;
 import com.gmail.alfonz19.util.initialize.util.RandomUtil;
@@ -45,7 +45,7 @@ public class EnumInstanceGenerator<ENUM_CLASS extends GENERATES, GENERATES> exte
 
     //TODO MMUCHA: verify Generates can be assigned from enum?
     @Override
-    public GENERATES create(InitializationContext initializationContext, PathNode pathNode) {
+    public GENERATES create(InitializationConfiguration initializationConfiguration, PathNode pathNode) {
         if (selectFrom == null) {
             if (testEnumClass == null) {
                 //enum instance wasn't known earlier, try to find it out from pathNode

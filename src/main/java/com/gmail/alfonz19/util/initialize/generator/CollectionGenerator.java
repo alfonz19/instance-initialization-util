@@ -3,7 +3,7 @@ package com.gmail.alfonz19.util.initialize.generator;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.gmail.alfonz19.util.initialize.Config;
 import com.gmail.alfonz19.util.initialize.context.CalculatedNodeData;
-import com.gmail.alfonz19.util.initialize.context.InitializationContext;
+import com.gmail.alfonz19.util.initialize.context.InitializationConfiguration;
 import com.gmail.alfonz19.util.initialize.context.path.PathComponent;
 import com.gmail.alfonz19.util.initialize.context.path.PathNode;
 import com.gmail.alfonz19.util.initialize.exception.InitializeException;
@@ -80,14 +80,14 @@ public class CollectionGenerator<ITEM_TYPE, GENERATES> extends AbstractGenerator
     }
 
     @Override
-    protected GENERATES create(InitializationContext initializationContext, PathNode pathNode) {
+    protected GENERATES create(InitializationConfiguration initializationConfiguration, PathNode pathNode) {
         if (overwriteCalculatedNodeData || pathNode.getCalculatedNodeData() == null) {
             pathNode.setCalculatedNodeData(getCalculatedNodeData());
         }
 
         int numberOfItemsToBeGenerated = sizeSpecification.getRandomValueAccordingToSpecification();
 
-        Generator<? extends ITEM_TYPE> itemGeneratorToUse = getGeneratorToUse(initializationContext, pathNode);
+        Generator<? extends ITEM_TYPE> itemGeneratorToUse = getGeneratorToUse(initializationConfiguration, pathNode);
 
         CalculatedNodeData itemsCalculatedNodeData = (pathNode.getCalculatedNodeData().representsParameterizedType())
                 ? ReflectUtil.unwrapParameterizedType(pathNode.getCalculatedNodeData())
@@ -100,7 +100,7 @@ public class CollectionGenerator<ITEM_TYPE, GENERATES> extends AbstractGenerator
                     //create array-like subPaths using index.
                     .map(index -> new PathNode.CollectionItemNode(pathNode, index, itemsCalculatedNodeData))
                     .map((Function<PathNode, ITEM_TYPE>) pt -> GeneratorAccessor.create(itemGeneratorToUse,
-                            initializationContext,
+                            initializationConfiguration,
                             pt))
                     .collect(Collectors.toList());
             return listInstanceSupplier.apply(items);
@@ -123,7 +123,7 @@ public class CollectionGenerator<ITEM_TYPE, GENERATES> extends AbstractGenerator
                 .map(index -> new PathNode.CollectionItemNode(pathNode, index, itemsCalculatedNodeData))
                 .collect(Collectors.toMap(Function.identity(),
                         (Function<PathNode, ITEM_TYPE>) pt -> GeneratorAccessor.create(itemGeneratorToUse,
-                                initializationContext,
+                                initializationConfiguration,
                                 pt)));
 
         List<? extends ITEM_TYPE> shuffledItems = instancePathToGeneratedValue.keySet().stream()
@@ -143,7 +143,7 @@ public class CollectionGenerator<ITEM_TYPE, GENERATES> extends AbstractGenerator
         return listInstanceSupplier.apply(shuffledItems);
     }
 
-    private Generator<? extends ITEM_TYPE> getGeneratorToUse(InitializationContext initializationContext,
+    private Generator<? extends ITEM_TYPE> getGeneratorToUse(InitializationConfiguration initializationConfiguration,
                                                              PathNode pathNode) {
         if (this.itemGenerator != null) {
             return itemGenerator;
@@ -152,7 +152,7 @@ public class CollectionGenerator<ITEM_TYPE, GENERATES> extends AbstractGenerator
         //noinspection unchecked
         Generator<? extends ITEM_TYPE> itemGeneratorToUse =
                 (Generator<? extends ITEM_TYPE>) FindFirstApplicableRule.getGeneratorFromFirstApplicableRule(null,
-                        initializationContext,
+                        initializationConfiguration,
                         pathNode).orElse(null);
 
         if (itemGeneratorToUse == null) {

@@ -10,34 +10,34 @@ import java.util.Map;
 /**
  * Acts as a global configuration for given initialization.
  */
-public class InitializationContext {
+public class InitializationConfiguration {
     private final Map<Path, Rules> rulesForPath = new HashMap<>();
     private final Map<Path, Rules> randomValueGeneratorRulesPerPath = new HashMap<>();
 
-    public InitializationContext() {
+    public InitializationConfiguration() {
     }
 
-    public InitializationContext(Rules globalRules) {
+    public InitializationConfiguration(Rules globalRules) {
         setGlobalRules(globalRules);
     }
 
-    public InitializationContext setGlobalRules(Rules globalRules) {
+    public InitializationConfiguration setGlobalRules(Rules globalRules) {
         rulesForPath.put(InstancePath.ROOT_PATH, globalRules);
         return this;
     }
 
-    public InitializationContext setGlobalRandomValueGeneratorRules(Rules globalRules) {
+    public InitializationConfiguration setGlobalRandomValueGeneratorRules(Rules globalRules) {
         randomValueGeneratorRulesPerPath.put(InstancePath.ROOT_PATH, globalRules);
         return this;
     }
 
-    public InitializationContext setRulesForPath(Path path, Rules rules) {
+    public InitializationConfiguration setRulesForPath(Path path, Rules rules) {
         rulesForPath.put(path, rules);
         return this;
     }
 
 
-    public InitializationContext setRandomValueGeneratorRulesForPath(Path path, Rules rules) {
+    public InitializationConfiguration setRandomValueGeneratorRulesForPath(Path path, Rules rules) {
         randomValueGeneratorRulesPerPath.put(path, rules);
         return this;
     }

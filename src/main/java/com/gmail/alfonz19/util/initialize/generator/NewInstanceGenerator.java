@@ -1,7 +1,7 @@
 package com.gmail.alfonz19.util.initialize.generator;
 
 import com.gmail.alfonz19.util.initialize.context.CalculatedNodeData;
-import com.gmail.alfonz19.util.initialize.context.InitializationContext;
+import com.gmail.alfonz19.util.initialize.context.InitializationConfiguration;
 import com.gmail.alfonz19.util.initialize.context.path.PathNode;
 import com.gmail.alfonz19.util.initialize.util.ClassDataCache;
 import com.gmail.alfonz19.util.initialize.util.ReflectUtil;
@@ -21,7 +21,7 @@ public class NewInstanceGenerator extends AbstractGenerator<Object> {
     }
 
     @Override
-    protected Object create(InitializationContext initializationContext, PathNode pathNode) {
+    protected Object create(InitializationConfiguration initializationConfiguration, PathNode pathNode) {
         CalculatedNodeData calculatedNodeData = pathNode.getCalculatedNodeData();
         if (supplier == null) {
             Class<?> classType = calculatedNodeData.getClassType();
@@ -37,7 +37,7 @@ public class NewInstanceGenerator extends AbstractGenerator<Object> {
                 supplier,
                 typeVariableAssignment);
 
-        return instanceGenerator.create(initializationContext, pathNode);
+        return instanceGenerator.create(initializationConfiguration, pathNode);
     }
 
     public Supplier<?> createNewInstanceCreatingSupplier(Class<?> classType) {

@@ -1,7 +1,7 @@
 package com.gmail.alfonz19.util.initialize.generator;
 
 import com.gmail.alfonz19.util.initialize.context.CalculatedNodeData;
-import com.gmail.alfonz19.util.initialize.context.InitializationContext;
+import com.gmail.alfonz19.util.initialize.context.InitializationConfiguration;
 import com.gmail.alfonz19.util.initialize.context.path.PathNode;
 
 @SuppressWarnings("java:S119")
@@ -27,7 +27,7 @@ abstract class AbstractNumberInstanceGenerator<T extends Number, SELF_TYPE exten
     }
 
     @Override
-    public final T create(InitializationContext initializationContext, PathNode pathNode) {
+    public final T create(InitializationConfiguration initializationConfiguration, PathNode pathNode) {
         return minMaxSpecification.getRandomValueAccordingToSpecification();
     }
 }

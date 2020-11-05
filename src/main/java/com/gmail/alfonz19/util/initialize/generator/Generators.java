@@ -1,7 +1,7 @@
 package com.gmail.alfonz19.util.initialize.generator;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.gmail.alfonz19.util.initialize.context.InitializationContext;
+import com.gmail.alfonz19.util.initialize.context.InitializationConfiguration;
 import com.gmail.alfonz19.util.initialize.context.path.PathNode;
 import com.gmail.alfonz19.util.initialize.util.ReflectUtil;
 import com.gmail.alfonz19.util.initialize.util.TypeReferenceUtil;
@@ -249,7 +249,7 @@ public class Generators {
     public static <T> Generator<T> generatorFromSupplier(Supplier<T> supplier) {
         return new AbstractGenerator<T>() {
             @Override
-            protected T create(InitializationContext initializationContext, PathNode pathNode) {
+            protected T create(InitializationConfiguration initializationConfiguration, PathNode pathNode) {
                 return supplier.get();
             }
         };
