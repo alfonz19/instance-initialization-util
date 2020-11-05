@@ -15,7 +15,7 @@ import com.gmail.alfonz19.util.example.to.GenericClass;
 import com.gmail.alfonz19.util.example.to.GenericSubClass;
 import com.gmail.alfonz19.util.example.to.RootDto;
 import com.gmail.alfonz19.util.example.to.TestingInterface;
-import com.gmail.alfonz19.util.initialize.InitializationUsingRules;
+import com.gmail.alfonz19.util.initialize.Initialize;
 import com.gmail.alfonz19.util.initialize.generator.Generators;
 import com.gmail.alfonz19.util.initialize.rules.PredefinedRules;
 import com.gmail.alfonz19.util.initialize.rules.Rules;
@@ -645,7 +645,7 @@ public class ExampleUsageTest {
     @Test
     public void testFullAutoRandomInitialization() {
         ClassReferencingGenericSubSubClass initialized =
-                InitializationUsingRules.withConfiguration(new Rules().addRules(PredefinedRules.ALL_RULES))
+                Initialize.withConfiguration(new Rules(PredefinedRules.LIST_OF_ALL_RULES))
                         .initialize(instance(ClassReferencingGenericSubSubClass::new));
 
         initializedInstanceLogger.logInitializedInstance(initialized);

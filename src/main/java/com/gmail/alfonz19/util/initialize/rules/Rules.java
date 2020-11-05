@@ -11,6 +11,13 @@ public class Rules {
 
     private final List<Rule> ruleList = new LinkedList<>();
 
+    public Rules() {
+    }
+
+    public Rules(List<Rule> rules) {
+        addRules(rules);
+    }
+
     public Rules addRule(RuleBuilder ruleBuilder) {
         return addRule(ruleBuilder.build());
     }

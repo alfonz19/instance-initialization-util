@@ -30,7 +30,8 @@ import static com.gmail.alfonz19.util.initialize.util.PredicatesBooleanOperation
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class PredefinedRules {
 
-    public static List<Rule> ALL_RULES = createAllRulesFromThisClass();
+    public static List<Rule> LIST_OF_ALL_RULES = createAllRulesFromThisClass();
+    public static Rules ALL_RULES = new Rules(LIST_OF_ALL_RULES);
 
     private static List<Rule> createAllRulesFromThisClass() {
         return Arrays.stream(PredefinedRules.class.getMethods())

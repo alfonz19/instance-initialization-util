@@ -13,7 +13,7 @@ import org.hamcrest.CoreMatchers;
 import org.junit.Rule;
 import org.junit.Test;
 
-import static com.gmail.alfonz19.util.initialize.InitializationUsingRules.withConfiguration;
+import static com.gmail.alfonz19.util.initialize.Initialize.withConfiguration;
 import static com.gmail.alfonz19.util.initialize.generator.Generators.instance;
 import static com.gmail.alfonz19.util.initialize.generator.Generators.list;
 import static com.gmail.alfonz19.util.initialize.rules.RuleBuilder.applyGenerator;

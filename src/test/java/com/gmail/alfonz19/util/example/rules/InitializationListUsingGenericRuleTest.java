@@ -2,7 +2,7 @@ package com.gmail.alfonz19.util.example.rules;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.gmail.alfonz19.testsupport.InitializedInstanceTestLogging;
-import com.gmail.alfonz19.util.initialize.InitializationUsingRules;
+import com.gmail.alfonz19.util.initialize.Initialize;
 import com.gmail.alfonz19.util.initialize.rules.Rules;
 
 import java.util.ArrayList;
@@ -38,7 +38,7 @@ public class InitializationListUsingGenericRuleTest {
                         .ifClassTypeIsEqualTo(List.class));
 
         List<List<String>> instance =
-                InitializationUsingRules.withConfiguration(rules)
+                Initialize.withConfiguration(rules)
                         .initialize(list(LinkedList::new, new TypeReference<List<List<String>>>() {}));
         initializedInstanceLogger.logInitializedInstance(instance);
 
@@ -52,7 +52,7 @@ public class InitializationListUsingGenericRuleTest {
                         .ifClassTypeIsEqualTo(List.class));
 
         List<List<String>> instance =
-                InitializationUsingRules.withConfiguration(rules)
+                Initialize.withConfiguration(rules)
                         .initialize(list(new TypeReference<List<List<String>>>() {}));
         initializedInstanceLogger.logInitializedInstance(instance);
         assertCreatedInstance(instance, ArrayList.class);
