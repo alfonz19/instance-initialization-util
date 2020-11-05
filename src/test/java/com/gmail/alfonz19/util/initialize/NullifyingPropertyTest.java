@@ -14,6 +14,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import static com.gmail.alfonz19.util.initialize.Initializer.create;
 import static com.gmail.alfonz19.util.initialize.NullifyingPropertyTest.TestInstance;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -48,7 +49,7 @@ public class NullifyingPropertyTest extends AbstractTestSingleAndMultipleInstanc
 
         expectedException.expect(SpecificTypePropertySelectorDoesNotDenoteProperty.class);
         expectedException.expectMessage("SpecificTypePropertySelector in class 'com.gmail.alfonz19.util.initialize.NullifyingPropertyTest$TestInstance' does not select property, method 'getInitializedFinalStringValue' s probably just a getter.");
-        TestInstance rootDto = Initialize.initialize(Generators.instance(TestInstance::new)
+        TestInstance rootDto = create(Generators.instance(TestInstance::new)
                 .nullifyProperty(propertySelector));
 
         assertThat(rootDto, notNullValue());

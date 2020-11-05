@@ -16,6 +16,7 @@ import com.gmail.alfonz19.util.example.to.GenericSubClass;
 import com.gmail.alfonz19.util.example.to.RootDto;
 import com.gmail.alfonz19.util.example.to.TestingInterface;
 import com.gmail.alfonz19.util.initialize.Initialize;
+import com.gmail.alfonz19.util.initialize.Initializer;
 import com.gmail.alfonz19.util.initialize.generator.Generators;
 import com.gmail.alfonz19.util.initialize.rules.PredefinedRules;
 import com.gmail.alfonz19.util.initialize.rules.Rules;
@@ -33,7 +34,7 @@ import java.util.stream.Stream;
 import org.junit.Rule;
 import org.junit.Test;
 
-import static com.gmail.alfonz19.util.initialize.Initialize.initialize;
+import static com.gmail.alfonz19.util.initialize.Initializer.create;
 import static com.gmail.alfonz19.util.initialize.generator.Generators.array;
 import static com.gmail.alfonz19.util.initialize.generator.Generators.defaultValue;
 import static com.gmail.alfonz19.util.initialize.generator.Generators.enumeratedType;
@@ -69,7 +70,7 @@ public class ExampleUsageTest {
     //<editor-fold desc="Basic initializations">
     @Test
     public void testInstanceCreationUsingSupplier() {
-        ClassWithOneStringProperty initialized = initialize(instance(ClassWithOneStringProperty::new));
+        ClassWithOneStringProperty initialized = create(instance(ClassWithOneStringProperty::new));
         initializedInstanceLogger.logInitializedInstance(initialized);
 
         //instance was created.
@@ -81,7 +82,7 @@ public class ExampleUsageTest {
 
     @Test
     public void testInstanceCreationUsingClass() {
-        ClassWithOneStringProperty initialized = initialize(instance(ClassWithOneStringProperty.class));
+        ClassWithOneStringProperty initialized = create(instance(ClassWithOneStringProperty.class));
         initializedInstanceLogger.logInitializedInstance(initialized);
 
         //instance was created.
@@ -93,7 +94,8 @@ public class ExampleUsageTest {
 
     @Test
     public void testInstanceCreationWhenInstantiatingSubClassOfReturnedType() {
-        TestingInterface initialized = initialize(instance(TestingInterface.class, ClassImplementingInterfaceA::new));
+        TestingInterface initialized =
+                create(instance(TestingInterface.class, ClassImplementingInterfaceA::new));
         initializedInstanceLogger.logInitializedInstance(initialized);
 
         //instance was created.
@@ -112,7 +114,7 @@ public class ExampleUsageTest {
     public void testListInitializationWithoutSpecifiedListImplementation() {
         //top-level list creation without specified List implementation, having all items of same type
         List<ClassImplementingInterfaceA> initialized =
-                initialize(list(instance(ClassImplementingInterfaceA::new)).withSize(4));
+                create(list(instance(ClassImplementingInterfaceA::new)).withSize(4));
         initializedInstanceLogger.logInitializedInstance(initialized);
 
         assertThat(initialized, notNullValue());
@@ -129,7 +131,8 @@ public class ExampleUsageTest {
     public void testListInitializationWithoutSpecifiedListImplementationWithItemPropertiesRandomlyInitialized() {
         //top-level list creation without specified List implementation, having all items of same type
         List<ClassImplementingInterfaceA> initialized =
-                initialize(list(instance(ClassImplementingInterfaceA::new).setUnsetPropertiesRandomly()).withSize(4));
+                create(list(instance(ClassImplementingInterfaceA::new).setUnsetPropertiesRandomly()).withSize(
+                        4));
         initializedInstanceLogger.logInitializedInstance(initialized);
 
         assertThat(initialized, notNullValue());
@@ -146,7 +149,7 @@ public class ExampleUsageTest {
     public void testListInitializationWithoutSpecifiedListImplementationIntoListVariableUsingInterface() {
         //top-level list creation without specified List implementation, using interface as a type, having all items of same type
         List<? extends TestingInterface> initialized =
-                initialize(list(instance(ClassImplementingInterfaceA::new)).withSize(4));
+                create(list(instance(ClassImplementingInterfaceA::new)).withSize(4));
         initializedInstanceLogger.logInitializedInstance(initialized);
 
         assertThat(initialized, notNullValue());
@@ -164,7 +167,8 @@ public class ExampleUsageTest {
         //top-level list creation without specified List implementation, using interface as a type, having all items of same type
         //we provide generic type to instance call to avoid getting type List<? extends TestingInterface>
         List<TestingInterface> initialized =
-                initialize(list(Generators.<TestingInterface>instance(ClassImplementingInterfaceA::new)).withSize(4));
+                create(list(Generators.<TestingInterface>instance(ClassImplementingInterfaceA::new)).withSize(
+                        4));
 
         initializedInstanceLogger.logInitializedInstance(initialized);
 
@@ -182,7 +186,7 @@ public class ExampleUsageTest {
     public void testListInitializationIntoListVariableUsingInterfaceWithAvoidingUsingExtendsKeywordByProvidingClassType() {
         //top-level list creation without specified List implementation, using interface as a type, having all items of same type, 2nd syntax
         List<TestingInterface> initialized =
-                initialize(list(instance(TestingInterface.class, ClassImplementingInterfaceA::new))
+                create(list(instance(TestingInterface.class, ClassImplementingInterfaceA::new))
                         .withSize(4));
 
         initializedInstanceLogger.logInitializedInstance(initialized);
@@ -201,7 +205,7 @@ public class ExampleUsageTest {
     public void testListInitializationWithSpecifiedListImplementationIntoListVariableUsingInterface() {
         //top-level list creation with specified LinkedList implementation, using interface as a type, having all items of same type
         List<? extends TestingInterface> initialized =
-                initialize(list(LinkedList::new, instance(ClassImplementingInterfaceA::new)).withSize(4));
+                create(list(LinkedList::new, instance(ClassImplementingInterfaceA::new)).withSize(4));
         initializedInstanceLogger.logInitializedInstance(initialized);
 
         assertThat(initialized, notNullValue());
@@ -220,7 +224,7 @@ public class ExampleUsageTest {
         //having all items of alternating type.
 
         List<TestingInterface> initialized =
-                initialize(list(roundRobinGenerator(
+                create(list(roundRobinGenerator(
                         instance(ClassImplementingInterfaceA::new).setUnsetPropertiesRandomly(),
                         instance(ClassImplementingInterfaceB::new)))
                         .withSize(4));
@@ -252,7 +256,7 @@ public class ExampleUsageTest {
         //or if we want just List<TestingInterface> we need to provide classType to instance calls, is instance(TestingInterface.class, ...)
         //or instance has to provided with actual type.
         List<? extends TestingInterface> initialized =
-                initialize(list(roundRobinGenerator(instance(ClassImplementingInterfaceB::new))).withSize(4));
+                create(list(roundRobinGenerator(instance(ClassImplementingInterfaceB::new))).withSize(4));
 
         initializedInstanceLogger.logInitializedInstance(initialized);
 
@@ -271,7 +275,7 @@ public class ExampleUsageTest {
     public void testSetInitializationWithAllItemsEqual() {
         //top-level list creation without specified List implementation, having all items of same type
         Set<ClassImplementingInterfaceA> initialized =
-                initialize(set(instance(ClassImplementingInterfaceA::new)).withSize(4));
+                create(set(instance(ClassImplementingInterfaceA::new)).withSize(4));
         initializedInstanceLogger.logInitializedInstance(initialized);
 
         assertThat(initialized, notNullValue());
@@ -288,7 +292,8 @@ public class ExampleUsageTest {
     public void testSetInitialization() {
         //top-level list creation without specified List implementation, having all items of same type
         Set<ClassImplementingInterfaceA> initialized =
-                initialize(set(instance(ClassImplementingInterfaceA::new).setUnsetPropertiesRandomly()).withSize(4));
+                create(set(instance(ClassImplementingInterfaceA::new).setUnsetPropertiesRandomly()).withSize(
+                        4));
         initializedInstanceLogger.logInitializedInstance(initialized);
 
         assertThat(initialized, notNullValue());
@@ -305,7 +310,9 @@ public class ExampleUsageTest {
     public void testStreamInitialization() {
         //top-level list creation without specified List implementation, having all items of same type
         Stream<ClassImplementingInterfaceA> initialized;
-        initialized = initialize(Generators.stream(instance(ClassImplementingInterfaceA::new).setUnsetPropertiesRandomly()).withSize(4));
+        initialized =
+                create(Generators.stream(instance(ClassImplementingInterfaceA::new).setUnsetPropertiesRandomly())
+                        .withSize(4));
 
         assertThat(initialized, notNullValue());
         assertThat(initialized, isA(Stream.class));
@@ -324,7 +331,8 @@ public class ExampleUsageTest {
     public void testArrayInitialization() {
         //top-level array creation
         ClassWithOneStringProperty[] initialized =
-                initialize(array(ClassWithOneStringProperty.class, instance(ClassWithOneStringProperty::new).setUnsetPropertiesRandomly())
+                create(array(ClassWithOneStringProperty.class,
+                        instance(ClassWithOneStringProperty::new).setUnsetPropertiesRandomly())
                         .withSize(4));
 
         initializedInstanceLogger.logInitializedInstance(initialized);
@@ -343,7 +351,7 @@ public class ExampleUsageTest {
     public void testArrayInitialization2() {
         //top-level array creation
         ClassWithOneStringProperty[] initialized =
-                initialize(array(instance(ClassWithOneStringProperty::new).setUnsetPropertiesRandomly())
+                create(array(instance(ClassWithOneStringProperty::new).setUnsetPropertiesRandomly())
                         .withSize(4));
 
         initializedInstanceLogger.logInitializedInstance(initialized);
@@ -362,7 +370,7 @@ public class ExampleUsageTest {
     public void testArrayInitializationWithSubclasses() {
         //top-level array creation
         TestingInterface[] initialized =
-                initialize(array(instance(ClassImplementingInterfaceA::new).setUnsetPropertiesRandomly())
+                create(array(instance(ClassImplementingInterfaceA::new).setUnsetPropertiesRandomly())
                         .withSize(4));
 
         initializedInstanceLogger.logInitializedInstance(initialized);
@@ -384,7 +392,7 @@ public class ExampleUsageTest {
     @Test
     public void testSettingValueOfPropertyDescriptor() {
         //support for simple setter
-        ClassWithOneStringProperty initialized = initialize(instance(ClassWithOneStringProperty::new)
+        ClassWithOneStringProperty initialized = create(instance(ClassWithOneStringProperty::new)
                 .setProperty(ClassWithOneStringProperty::getStringProperty).toValue("value"));
 
         initializedInstanceLogger.logInitializedInstance(initialized);
@@ -397,7 +405,7 @@ public class ExampleUsageTest {
     @Test
     public void testSettingValueOfPropertyDescriptorToValueGeneratedByStringGenerator() {
         //set specific String property
-        ClassWithOneStringProperty initialized = initialize(instance(ClassWithOneStringProperty::new)
+        ClassWithOneStringProperty initialized = create(instance(ClassWithOneStringProperty::new)
                 .setProperty(ClassWithOneStringProperty::getStringProperty)
                 .to(randomString()
                         .withSize(10)
@@ -414,9 +422,10 @@ public class ExampleUsageTest {
     @Test
     public void testSettingValueOfAllStringsToValueGeneratedByStringGenerator() {
         //set all String properties
-        ClassWithMultipleStringProperties initialized = initialize(instance(ClassWithMultipleStringProperties::new)
-                .setAllPropertiesHavingType(String.class)
-                .to(randomString().withSize(10).addPrefix("abc")));
+        ClassWithMultipleStringProperties initialized =
+                create(instance(ClassWithMultipleStringProperties::new)
+                        .setAllPropertiesHavingType(String.class)
+                        .to(randomString().withSize(10).addPrefix("abc")));
 
         initializedInstanceLogger.logInitializedInstance(initialized);
 
@@ -430,7 +439,7 @@ public class ExampleUsageTest {
     @Test
     public void testSettingValueOfPropertyDescriptorToRandomEnumValueWithVerboseSyntax() {
         //enum assignment, needlessly verbose variant.
-        ClassWithOneEnumProperty initialized = initialize(instance(ClassWithOneEnumProperty::new)
+        ClassWithOneEnumProperty initialized = create(instance(ClassWithOneEnumProperty::new)
                 .setProperty(ClassWithOneEnumProperty::getEnumProperty)
                 .to(enumeratedType(ClassWithOneEnumProperty.E.class).random()));
 
@@ -442,7 +451,7 @@ public class ExampleUsageTest {
     @Test
     public void testSettingValueOfPropertyDescriptorToRandomEnumValueWithShorterSyntax() {
         //enum assignment.
-        ClassWithOneEnumProperty initialized = initialize(instance(ClassWithOneEnumProperty::new)
+        ClassWithOneEnumProperty initialized = create(instance(ClassWithOneEnumProperty::new)
                 .setEnumProperty(ClassWithOneEnumProperty::getEnumProperty).random());
 
         initializedInstanceLogger.logInitializedInstance(initialized);
@@ -453,7 +462,7 @@ public class ExampleUsageTest {
     @Test
     public void testSettingValueOfPropertyDescriptorToRandomEnumFromGivenList() {
         //simplified enum specification
-        ClassWithOneEnumProperty initialized = initialize(instance(ClassWithOneEnumProperty::new)
+        ClassWithOneEnumProperty initialized = create(instance(ClassWithOneEnumProperty::new)
                 .setEnumProperty(ClassWithOneEnumProperty::getEnumProperty)
                 .randomFrom(ClassWithOneEnumProperty.E.A, ClassWithOneEnumProperty.E.B));
 
@@ -469,7 +478,7 @@ public class ExampleUsageTest {
     @Test
     public void testInitializingRawUsageOfGenericTypeImplementedByEnumWhichWasRandomlyChosen() {
         //noinspection rawtypes  //this is limitation of this usage, generic type cannot be guessed.
-        Supplier supplier = initialize(enumeratedType(EnumImplementingInterface.class, Supplier.class));
+        Supplier supplier = create(enumeratedType(EnumImplementingInterface.class, Supplier.class));
 
         assertThat(supplier, notNullValue());
         assertThat(supplier.get(), anyOf(is("A"), is("B")));
@@ -478,31 +487,35 @@ public class ExampleUsageTest {
     @Test
     public void testInitializingGenericTypeImplementedByEnumWhichWasRandomlyChosen() {
         Supplier<String> supplier1 =
-                initialize(enumeratedType(EnumImplementingInterface.class, new TypeReference<Supplier<String>>() {}));
+                create(enumeratedType(EnumImplementingInterface.class,
+                        new TypeReference<Supplier<String>>() {
+                        }));
         assertThat(supplier1.get(), anyOf(is("A"), is("B")));
 
         Supplier<String> supplier2 =
-                initialize(enumeratedType(EnumImplementingInterface.class, new TypeReference<Supplier<String>>() {})
+                create(enumeratedType(EnumImplementingInterface.class,
+                        new TypeReference<Supplier<String>>() {
+                        })
                         .randomFrom(EnumImplementingInterface.A));
         assertThat(supplier2.get(), is("A"));
     }
 
     @Test
     public void testSettingValueOfPropertyDescriptorToGenericInterfaceImplementedByEnumWhichWasRandomlyChosen() {
-        ClassWithSupplierProperty instance = initialize(instance(ClassWithSupplierProperty.class)
+        ClassWithSupplierProperty instance = create(instance(ClassWithSupplierProperty.class)
                 .setProperty(ClassWithSupplierProperty::getSupplier)
-                .to(enumeratedType(EnumImplementingInterface.class, new TypeReference<Supplier<String>>() {})));
+                .to(enumeratedType(EnumImplementingInterface.class, new TypeReference<Supplier<String>>() {
+                })));
 
         assertThat(instance.getSupplier().get(), anyOf(is("A"), is("B")));
     }
 
     @Test
     public void testSettingValueOfPropertyDescriptorsToRandomIntegers() {
-        ClassWithIntegerProperties initialized = initialize(
-                instance(ClassWithIntegerProperties::new)
-                        .setPropertyTo(ClassWithIntegerProperties::getIntegerProperty, randomInt().biggerThan(10).smallerThan(20))
-                        .setPropertyTo(ClassWithIntegerProperties::getIntProperty, randomInt().biggerThan(10).smallerThan(20))
-        );
+        ClassWithIntegerProperties initialized = create(instance(ClassWithIntegerProperties::new)
+                .setPropertyTo(ClassWithIntegerProperties::getIntegerProperty,
+                        randomInt().biggerThan(10).smallerThan(20))
+                .setPropertyTo(ClassWithIntegerProperties::getIntProperty, randomInt().biggerThan(10).smallerThan(20)));
 
         initializedInstanceLogger.logInitializedInstance(initialized);
 
@@ -513,11 +526,9 @@ public class ExampleUsageTest {
 
     @Test
     public void testSettingValueOfPropertyDescriptorsToDefaultValues() {
-        ClassWithIntegerProperties initialized = initialize(
-                instance(ClassWithIntegerProperties::new)
-                        .setPropertyTo(ClassWithIntegerProperties::getIntegerProperty, defaultValue())
-                        .setPropertyTo(ClassWithIntegerProperties::getIntProperty, defaultValue())
-        );
+        ClassWithIntegerProperties initialized = create(instance(ClassWithIntegerProperties::new)
+                .setPropertyTo(ClassWithIntegerProperties::getIntegerProperty, defaultValue())
+                .setPropertyTo(ClassWithIntegerProperties::getIntProperty, defaultValue()));
 
         initializedInstanceLogger.logInitializedInstance(initialized);
 
@@ -529,7 +540,7 @@ public class ExampleUsageTest {
     @Test
     public void nestedListInitializationWithAlternatingGenerators() {
         //initialize nested list instance: List<AssociatedClass>, using alternating generators for that list.
-        RootDto initialized = initialize(instance(RootDto::new)
+        RootDto initialized = create(instance(RootDto::new)
                 .setProperty(RootDto::getListInterfaces).to(
                         list(
                                 roundRobinGenerator(
@@ -570,15 +581,17 @@ public class ExampleUsageTest {
             return result;
         };
 
-        ClassWithMultipleStringProperties initialized = initialize(instance(instanceSupplier)
+        //to nullify any value which might be present there after initialization.
+        //to skip this property. After this action this property will be flagged as 'processed'
+        //initialize randomly all unprocessed properties.
+        ClassWithMultipleStringProperties initialized = create(instance(instanceSupplier)
                 //to nullify any value which might be present there after initialization.
                 .nullifyProperty(ClassWithMultipleStringProperties::getStringPropertyA)
                 //to skip this property. After this action this property will be flagged as 'processed'
                 .skipProperty(ClassWithMultipleStringProperties::getStringPropertyB)
 
                 //initialize randomly all unprocessed properties.
-                .setUnsetPropertiesRandomly()
-        );
+                .setUnsetPropertiesRandomly());
 
         initializedInstanceLogger.logInitializedInstance(initialized);
 
@@ -599,8 +612,8 @@ public class ExampleUsageTest {
     @Test
     public void testRandomInitializationOfGenericClassWithCustomSupplier() {
         GenericClass<Integer> initialized =
-                initialize(
-                        instance(GenericClass::new, new TypeReference<GenericClass<Integer>>() {})
+                create(instance(GenericClass::new, new TypeReference<GenericClass<Integer>>() {
+                })
                         .setUnsetPropertiesRandomly());
 
         initializedInstanceLogger.logInitializedInstance(initialized);
@@ -613,7 +626,8 @@ public class ExampleUsageTest {
     @Test
     public void testRandomInitializationOfGenericClassWithCalculatedSupplier() {
         GenericClass<Integer> initialized =
-                initialize(instance(new TypeReference<GenericClass<Integer>>() {}).setUnsetPropertiesRandomly());
+                create(instance(new TypeReference<GenericClass<Integer>>() {
+                }).setUnsetPropertiesRandomly());
 
         initializedInstanceLogger.logInitializedInstance(initialized);
 
@@ -629,7 +643,8 @@ public class ExampleUsageTest {
     @Test
     public void testInitializationOfGenericClassHavingGenericParent() {
         GenericSubClass<Integer, String> instance =
-                initialize(instance(new TypeReference<GenericSubClass<Integer, String>>() {})
+                create(instance(new TypeReference<GenericSubClass<Integer, String>>() {
+                })
                         .setUnsetPropertiesRandomly());
 
         initializedInstanceLogger.logInitializedInstance(instance);

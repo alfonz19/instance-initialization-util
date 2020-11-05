@@ -13,14 +13,6 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Initialize {
 
-    public static <T> T initialize(Generator<T> generator) {
-        return Initializer.create(generator);
-    }
-
-    public static <T> List<T> initializeList(Generator<T> generator, int number) {
-        return Initializer.createListOfInstances(generator).withSize(number);
-    }
-
     public static InitializationUsingRules withConfiguration(Rules rules) {
         return withConfiguration(new InitializationConfiguration(rules));
     }
