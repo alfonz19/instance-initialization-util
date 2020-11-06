@@ -292,11 +292,11 @@ public class InstanceGenerator<SOURCE_INSTANCE> extends AbstractGenerator<SOURCE
 
     private void addPropertyDescriptorInitialization(PropertyDescriptor propertyDescriptor,
                                                      PropertyDescriptorInitialization pdi) {
-        testIfPropertyDescriptorIsNotUser(propertyDescriptor);
+        testIfPropertyDescriptorIsNotUsed(propertyDescriptor);
         this.propertyDescriptorsInitializations.put(propertyDescriptor, pdi);
     }
 
-    private void testIfPropertyDescriptorIsNotUser(PropertyDescriptor propertyDescriptor) {
+    private void testIfPropertyDescriptorIsNotUsed(PropertyDescriptor propertyDescriptor) {
         if (this.propertyDescriptorsInitializations.containsKey(propertyDescriptor)) {
             throw new InitializeException(String.format("Property %s is already configured.", propertyDescriptor));
         }
