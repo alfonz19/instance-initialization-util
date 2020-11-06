@@ -151,9 +151,8 @@ public class CollectionGenerator<ITEM_TYPE, GENERATES> extends AbstractGenerator
 
         //noinspection unchecked
         Generator<? extends ITEM_TYPE> itemGeneratorToUse =
-                (Generator<? extends ITEM_TYPE>) FindFirstApplicableRule.getGeneratorFromFirstApplicableRule(null,
-                        initializationConfiguration,
-                        pathNode).orElse(null);
+                (Generator<? extends ITEM_TYPE>) FindFirstApplicableRule
+                        .getGeneratorFromFirstApplicableRule(initializationConfiguration, pathNode).orElse(null);
 
         if (itemGeneratorToUse == null) {
             itemGeneratorToUse = Generators.defaultValue();
