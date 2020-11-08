@@ -215,10 +215,8 @@ public class InstanceGenerator<SOURCE_INSTANCE> extends AbstractGenerator<SOURCE
     }
 
     public InstanceGenerator<SOURCE_INSTANCE> setUnsetPropertiesRandomly() {
-        findUninitializedProperties().stream()
-                .map(pd -> new Pair<>(pd, Generators.randomForGuessedType(false, true)))
-                .filter(pair->pair.getSecond().canGenerateValue(pair.first, getCalculatedNodeData()))
-                .forEach(pair -> addPropertyDescriptorInitialization(pair.first, pair.second));
+        findUninitializedProperties()
+                .forEach(pd->addPropertyDescriptorInitialization(pd, Generators.randomValueOrDefault()));
 
         return this;
     }

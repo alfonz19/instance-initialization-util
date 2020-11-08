@@ -2,6 +2,7 @@ package com.gmail.alfonz19.util.initialize.context;
 
 import com.gmail.alfonz19.util.initialize.context.path.InstancePath;
 import com.gmail.alfonz19.util.initialize.context.path.Path;
+import com.gmail.alfonz19.util.initialize.rules.PredefinedRules;
 import com.gmail.alfonz19.util.initialize.rules.Rules;
 
 import java.util.HashMap;
@@ -15,9 +16,11 @@ public class InitializationConfiguration {
     private final Map<Path, Rules> randomValueGeneratorRulesPerPath = new HashMap<>();
 
     public InitializationConfiguration() {
+        setGlobalRandomValueGeneratorRules(PredefinedRules.basicJavaTypes());
     }
 
     public InitializationConfiguration(Rules globalRules) {
+        this();
         setGlobalRules(globalRules);
     }
 

@@ -19,8 +19,8 @@ import static com.gmail.alfonz19.util.initialize.Config.UNCONFIGURED_STRING_SIZE
 import static com.gmail.alfonz19.util.initialize.generator.Generators.enumeratedType;
 import static com.gmail.alfonz19.util.initialize.generator.Generators.generatorFromSupplier;
 import static com.gmail.alfonz19.util.initialize.generator.Generators.list;
-import static com.gmail.alfonz19.util.initialize.generator.Generators.randomForGuessedType;
 import static com.gmail.alfonz19.util.initialize.generator.Generators.randomString;
+import static com.gmail.alfonz19.util.initialize.generator.Generators.randomValueOrDefault;
 import static com.gmail.alfonz19.util.initialize.generator.Generators.set;
 import static com.gmail.alfonz19.util.initialize.generator.PathNodePredicates.classTypeIsEqualTo;
 import static com.gmail.alfonz19.util.initialize.rules.RuleBuilder.applyGenerator;
@@ -30,22 +30,28 @@ import static com.gmail.alfonz19.util.initialize.util.PredicatesBooleanOperation
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class PredefinedRules {
 
-    public static List<Rule> LIST_OF_ALL_RULES = createAllRulesFromThisClass();
-    public static Rules ALL_RULES = new Rules(LIST_OF_ALL_RULES);
+    public static Rules ALL_RULES = new Rules()
+            .addRules(basicJavaTypes())
+            .addRules(collections())
+            .addRule(createInstanceUsingNoArgConstructor());
 
-    private static List<Rule> createAllRulesFromThisClass() {
-        return Arrays.stream(PredefinedRules.class.getMethods())
-                .filter(method->method.getReturnType().equals(RuleBuilder.class))
-                .filter(method->method.getParameterCount() == 0)
-                .map(method -> {
-                    try {
-                        return (RuleBuilder)method.invoke(null);
-                    } catch (Exception e) {
-                        throw new InitializeException("Unable to create list of all predefined rules", e);
-                    }
-                })
-                .map(RuleBuilder::build)
-                .collect(Collectors.toList());
+
+    public static Rules basicJavaTypes() {
+        return new Rules()
+            .addRule(string())
+            .addRule(uuidType4())
+            .addRule(integerValue())
+            .addRule(longValue())
+            .addRule(shortValue())
+            .addRule(byteValue())
+            .addRule(booleanValue())
+            .addRule(enumeratedValue());
+    }
+
+    public static Rules collections() {
+        return new Rules()
+                .addRule(createListInstances())
+                .addRule(createSetInstances());
     }
 
     public static RuleBuilder string() {
@@ -100,25 +106,25 @@ public class PredefinedRules {
         return createNewGeneratorAndApply(Generators::newInstanceViaNoArgConstructor)
                 .toCreateRule("Automatically create new instance for null valued properties, which class does have zero-arg constructor and path ins't too deep")
                 //instance == null happens if we don't have instance available when applying rule. Typically can happen in collections, where items are generated prior to collection instance, as not all can be created first (like Stream).
-                .ifPathNode("property is null-valued", (instance, pathNode) -> instance != null && pathNode.getCurrentValue(instance) == null)
+//                .ifPathNode("property is null-valued", (instance, pathNode) -> instance != null && pathNode.getCurrentValue(instance) == null)
                 .ifType("has public no-arg constructor", classType -> ClassDataCache.canBeInstantiatedUsingNoArgConstructor(ReflectUtil.getRawType(classType)))
                 .ifPathLengthIsLessThan(Config.MAX_DEPTH_FOR_AUTOMATIC_NO_ARG_CONSTRUCTOR_INSTANCE_CREATION);
     }
 
     public static RuleBuilder createListInstances() {
-        return RuleBuilder.applyGenerator(list(randomForGuessedType(true)))
+        return RuleBuilder.applyGenerator(list(randomValueOrDefault()))
                 .toCreateRule("Automatically create new instance for java.util.List descendants")
                 //instance == null happens if we don't have instance available when applying rule. Typically can happen in collections, where items are generated prior to collection instance, as not all can be created first (like Stream).
-                .ifPathNode((instance, pathNode) -> instance != null && pathNode.getCurrentValue(instance) == null)
+//                .ifPathNode("property is null-valued", (instance, pathNode) -> instance != null && pathNode.getCurrentValue(instance) == null)
                 .ifClassTypeIsAssignableFrom(List.class)
                 .ifPathLengthIsLessThan(Config.MAX_DEPTH_FOR_AUTOMATIC_NO_ARG_CONSTRUCTOR_INSTANCE_CREATION);
     }
 
     public static RuleBuilder createSetInstances() {
-        return RuleBuilder.applyGenerator(set(randomForGuessedType(true)))
+        return RuleBuilder.applyGenerator(set(randomValueOrDefault()))
                 .toCreateRule("Automatically create new instance for java.util.Set descendants")
                 //instance == null happens if we don't have instance available when applying rule. Typically can happen in collections, where items are generated prior to collection instance, as not all can be created first (like Stream).
-                .ifPathNode((instance, pathNode) -> instance != null && pathNode.getCurrentValue(instance) == null)
+//                .ifPathNode("property is null-valued", (instance, pathNode) -> instance != null && pathNode.getCurrentValue(instance) == null)
                 .ifClassTypeIsAssignableFrom(Set.class)
                 .ifPathLengthIsLessThan(Config.MAX_DEPTH_FOR_AUTOMATIC_NO_ARG_CONSTRUCTOR_INSTANCE_CREATION);
     }

@@ -86,8 +86,9 @@ public enum RandomUtil {
             }
             String str = Long.toString(randomLong);
             int strLength = str.length();
-            stringBuilder.append(str, 0, remainingSize);
-            remainingSize -= strLength;
+            int take = Math.min(remainingSize, strLength);
+            stringBuilder.append(str, 0, take);
+            remainingSize -= take;
         }
         return stringBuilder.toString();
 

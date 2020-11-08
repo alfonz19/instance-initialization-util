@@ -14,7 +14,7 @@ import org.junit.Test;
 import static com.gmail.alfonz19.util.initialize.Initializer.configureRules;
 import static com.gmail.alfonz19.util.initialize.generator.Generators.instance;
 import static com.gmail.alfonz19.util.initialize.generator.Generators.list;
-import static com.gmail.alfonz19.util.initialize.generator.Generators.randomForGuessedType;
+import static com.gmail.alfonz19.util.initialize.generator.Generators.randomValueOrDefault;
 import static com.gmail.alfonz19.util.initialize.rules.RuleBuilder.applyGenerator;
 import static org.hamcrest.CoreMatchers.isA;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -32,7 +32,7 @@ public class InitializationOfGenericClassHavingGenericParentTest {
     @Test
     public void automaticInitializationOfGenericClassHavingGenericParent() {
         Rules rules = new Rules()
-                .addRule(applyGenerator(list(randomForGuessedType(true, false)).withSize(5))
+                .addRule(applyGenerator(list(randomValueOrDefault()).withSize(5))
                         .ifClassTypeIsEqualTo(List.class));
 
         GenericSubClass<Integer, String> instance = configureRules(rules)

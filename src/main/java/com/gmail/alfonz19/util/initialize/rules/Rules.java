@@ -32,6 +32,11 @@ public class Rules {
         return this;
     }
 
+    public Rules addRules(Rules rules) {
+        ruleList.addAll(rules.getRuleList());
+        return this;
+    }
+
     public List<Rule> getRuleList() {
         return Collections.unmodifiableList(ruleList);
     }

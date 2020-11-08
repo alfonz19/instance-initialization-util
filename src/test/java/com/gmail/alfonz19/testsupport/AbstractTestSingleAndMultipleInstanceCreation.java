@@ -10,6 +10,9 @@ import static com.gmail.alfonz19.util.initialize.Initializer.create;
 public abstract class AbstractTestSingleAndMultipleInstanceCreation<T> {
 
     @Rule
+    public InitializedInstanceTestLogging initializedInstanceLogger = new InitializedInstanceTestLogging();
+
+    @Rule
     public RepeatedTestRule repeatRule = new RepeatedTestRule();
 
     public static final int NUMBER_OF_INSTANCES = 5;
@@ -18,6 +21,9 @@ public abstract class AbstractTestSingleAndMultipleInstanceCreation<T> {
     @RepeatTest(times = NUMBER_OF_INSTANCES)
     public void testCreationOfNullValuedItemsCollection() {
         T t = create(createGenerator());
+
+        initializedInstanceLogger.logInitializedInstance(t);
+
         assertCreatedInstance(t);
     }
 

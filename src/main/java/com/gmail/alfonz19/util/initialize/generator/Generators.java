@@ -3,6 +3,8 @@ package com.gmail.alfonz19.util.initialize.generator;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.gmail.alfonz19.util.initialize.context.InitializationConfiguration;
 import com.gmail.alfonz19.util.initialize.context.path.PathNode;
+import com.gmail.alfonz19.util.initialize.exception.InitializeException;
+import com.gmail.alfonz19.util.initialize.rules.FindFirstApplicableRule;
 import com.gmail.alfonz19.util.initialize.util.ReflectUtil;
 import com.gmail.alfonz19.util.initialize.util.TypeReferenceUtil;
 import lombok.AccessLevel;
@@ -13,7 +15,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -78,12 +82,43 @@ public class Generators {
         return new EnumInstanceGenerator<>(classType, interfaceEnumImplements);
     }
 
-    public static RandomValueGenerator randomForGuessedType(boolean useDefaultValueAsFallback) {
-        return new RandomValueGenerator(useDefaultValueAsFallback, false);
+    public static Generator<Object> randomValueOrFail() {
+        return RVG.orFail();
     }
 
-    public static RandomValueGenerator randomForGuessedType(boolean useDefaultValueAsFallback, boolean reusingGuessedType) {
-        return new RandomValueGenerator(useDefaultValueAsFallback, reusingGuessedType);
+    public static Generator<Object> randomValueOrDefault() {
+        return RVG.orDefault();
+    }
+
+    public static class RVG extends AbstractGenerator<Object> {
+        private final BiFunction<PathNode, Optional<Generator<?>>, Generator<?>> finisher;
+        private Generator<?> generator = null;
+
+        public RVG(BiFunction<PathNode, Optional<Generator<?>>, Generator<?>> finisher) {
+            this.finisher = finisher;
+        }
+
+        public static Generator<Object> orFail() {
+            return new RVG((pathNode, e) -> e.orElseThrow(
+                    () -> new InitializeException(String.format("Unable to initialize %s", pathNode.getPath().getPathAsString()))));
+        }
+
+        public static Generator<Object> orDefault() {
+            return new RVG((pathNode, e) -> e.orElseGet(Generators::defaultValue));
+        }
+
+        @Override
+        protected Object create(InitializationConfiguration initializationConfiguration, PathNode pathNode) {
+            if (generator == null) {
+                Optional<Generator<?>> firstApplicableRule =
+                        FindFirstApplicableRule.getGeneratorFromFirstApplicableRandomGeneratorRule(null,
+                                initializationConfiguration,
+                                pathNode);
+                generator = finisher.apply(pathNode, firstApplicableRule);
+            }
+
+            return GeneratorAccessor.create(generator, initializationConfiguration, pathNode);
+        }
     }
 
     public static <T> DefaultValueGenerator<T> defaultValue() {
